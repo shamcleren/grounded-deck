@@ -15,6 +15,10 @@
       "description": "Architecture docs define layers, data flow, and constraints."
     },
     {
+      "id": "continuity_contract",
+      "description": "The repository contains durable AI continuation guidance, project state, and anti-drift decisions."
+    },
+    {
       "id": "schema_completeness",
       "description": "Slide spec schema is present and includes required planning and grounding fields."
     },

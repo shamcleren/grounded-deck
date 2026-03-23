@@ -12,6 +12,7 @@ GroundedDeck uses eval-driven development:
 ## Capability Evals
 
 - the repository defines the product target and architecture boundaries
+- the repository defines the AI continuity contract and current project state
 - the repository defines a structured `slide spec` intermediate representation
 - the repository provides local harness and rubric files
 - the repository can generate a standard self-acceptance report
@@ -21,6 +22,7 @@ GroundedDeck uses eval-driven development:
 - key project docs and harness files must remain present after refactors
 - schema updates must not silently remove required fields
 - eval definitions must keep both capability and regression sections
+- AI continuity files must keep readable next-step and anti-drift guidance
 
 ## Grader Strategy
 
@@ -39,3 +41,4 @@ GroundedDeck uses eval-driven development:
 - validate example `slide spec` instances against schema
 - grade sample decks for coverage and grounding
 - inspect exported PPT artifacts for editable object usage and Chinese font rules
+- grade continuity artifacts so future agents can safely resume from repository state alone

@@ -127,6 +127,7 @@ def render_report(results: list[CheckResult]) -> str:
 
 def main() -> int:
     required_paths = [
+        ROOT / "AGENTS.md",
         ROOT / "docs",
         ROOT / "harness",
         ROOT / "reports",
@@ -144,7 +145,13 @@ def main() -> int:
     results.append(
         file_contains(
             ROOT / "README.md",
-            ["# GroundedDeck", "## Repository Layout", "## Self-Acceptance"],
+            ["# GroundedDeck", "## AI Continuity", "## Repository Layout", "## Self-Acceptance"],
+        )
+    )
+    results.append(
+        file_contains(
+            ROOT / "AGENTS.md",
+            ["# AGENTS", "## Required Read Order", "## Operating Contract", "## Completion Protocol"],
         )
     )
     results.append(
@@ -163,6 +170,18 @@ def main() -> int:
         file_contains(
             ROOT / "docs" / "evaluation-plan.md",
             ["# Evaluation Plan", "## Capability Evals", "## Regression Evals", "## Next Stage"],
+        )
+    )
+    results.append(
+        file_contains(
+            ROOT / "docs" / "PROJECT-STATE.md",
+            ["# Project State", "## Current Phase", "## Current Next Action", "## Definition of Done for Phase One"],
+        )
+    )
+    results.append(
+        file_contains(
+            ROOT / "docs" / "ARCHITECTURE-DECISIONS.md",
+            ["# Architecture Decisions", "## Fixed Invariants", "## Decision Log", "## Change Policy"],
         )
     )
     results.append(validate_schema(ROOT / "schemas" / "slide-spec.schema.json"))

@@ -37,6 +37,17 @@ This repository currently contains the foundation scaffold:
 
 The first milestone is to build an end-to-end `ingest -> slide spec -> quality checks` path before adding a full renderer.
 
+## AI Continuity
+
+This repository is built to survive long-running AI-driven development across many sessions.
+
+- repository docs are the canonical memory
+- future agents should resume from repo state, not chat context
+- architecture changes must be recorded, not implied
+- project status and the single next action must remain explicit
+
+Read [AGENTS.md](/Users/renjinming/code/my_porjects/shamcleren/grounded-deck/AGENTS.md), [docs/PROJECT-STATE.md](/Users/renjinming/code/my_porjects/shamcleren/grounded-deck/docs/PROJECT-STATE.md), and [docs/ARCHITECTURE-DECISIONS.md](/Users/renjinming/code/my_porjects/shamcleren/grounded-deck/docs/ARCHITECTURE-DECISIONS.md) before continuing implementation work.
+
 ## Architecture
 
 ```text
@@ -55,6 +66,7 @@ Sources
 ```text
 .
 ├── .claude/evals/            # Eval definitions
+├── AGENTS.md                 # AI continuation contract
 ├── .github/                  # GitHub community files and templates
 ├── docs/                     # Product, architecture, and evaluation docs
 ├── harness/                  # Deterministic self-acceptance harness
@@ -79,6 +91,7 @@ Current checks verify:
 
 - required project directories exist
 - key docs define goals, constraints, and evaluation strategy
+- AI continuity docs define current state and anti-drift rules
 - the `slide spec` schema contains grounding and coverage fields
 - eval definitions include both capability and regression checks
 - a standard markdown report is generated locally
