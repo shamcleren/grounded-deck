@@ -22,6 +22,7 @@ Foundation complete. The repository has:
 - defined initial eval-driven project rules
 - added open-source community files and templates
 - added AI continuity, anti-drift, and project-state artifacts
+- added startup, handoff, and task-board artifacts for session continuation
 
 ## Current Next Action
 

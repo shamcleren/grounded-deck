@@ -79,8 +79,8 @@ def validate_rubric(path: Path) -> CheckResult:
         return CheckResult("rubric.json", False, f"invalid json: {exc}")
 
     criteria = rubric.get("criteria", [])
-    if len(criteria) < 5:
-        return CheckResult("rubric.json", False, "expected at least 5 criteria")
+    if len(criteria) < 7:
+        return CheckResult("rubric.json", False, "expected at least 7 criteria")
     return CheckResult("rubric.json", True, f"{len(criteria)} criteria present")
 
 
@@ -127,6 +127,7 @@ def render_report(results: list[CheckResult]) -> str:
 
 def main() -> int:
     required_paths = [
+        ROOT / "START-HERE.md",
         ROOT / "AGENTS.md",
         ROOT / "docs",
         ROOT / "harness",
@@ -146,6 +147,12 @@ def main() -> int:
         file_contains(
             ROOT / "README.md",
             ["# GroundedDeck", "## AI Continuity", "## Repository Layout", "## Self-Acceptance"],
+        )
+    )
+    results.append(
+        file_contains(
+            ROOT / "START-HERE.md",
+            ["# Start Here", "## 30-Second Startup", "## What To Do Next", "## Before Ending a Session"],
         )
     )
     results.append(
@@ -176,6 +183,18 @@ def main() -> int:
         file_contains(
             ROOT / "docs" / "PROJECT-STATE.md",
             ["# Project State", "## Current Phase", "## Current Next Action", "## Definition of Done for Phase One"],
+        )
+    )
+    results.append(
+        file_contains(
+            ROOT / "docs" / "LATEST-HANDOFF.md",
+            ["# Latest Handoff", "## What Was Just Completed", "## Immediate Next Action", "## Resume Hint"],
+        )
+    )
+    results.append(
+        file_contains(
+            ROOT / "docs" / "TASK-BOARD.md",
+            ["# Task Board", "## In Progress", "## Ready Next", "## Update Rule"],
         )
     )
     results.append(

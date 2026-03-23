@@ -46,7 +46,7 @@ This repository is built to survive long-running AI-driven development across ma
 - architecture changes must be recorded, not implied
 - project status and the single next action must remain explicit
 
-Read [AGENTS.md](AGENTS.md), [docs/PROJECT-STATE.md](docs/PROJECT-STATE.md), and [docs/ARCHITECTURE-DECISIONS.md](docs/ARCHITECTURE-DECISIONS.md) before continuing implementation work.
+Read [START-HERE.md](START-HERE.md), [AGENTS.md](AGENTS.md), [docs/PROJECT-STATE.md](docs/PROJECT-STATE.md), [docs/LATEST-HANDOFF.md](docs/LATEST-HANDOFF.md), and [docs/ARCHITECTURE-DECISIONS.md](docs/ARCHITECTURE-DECISIONS.md) before continuing implementation work.
 
 ## Architecture
 
@@ -66,6 +66,7 @@ Sources
 ```text
 .
 ├── .claude/evals/            # Eval definitions
+├── START-HERE.md             # Quick startup entrypoint for new sessions
 ├── AGENTS.md                 # AI continuation contract
 ├── .github/                  # GitHub community files and templates
 ├── docs/                     # Product, architecture, and evaluation docs
@@ -92,6 +93,7 @@ Current checks verify:
 - required project directories exist
 - key docs define goals, constraints, and evaluation strategy
 - AI continuity docs define current state and anti-drift rules
+- a startup and handoff path exists for future sessions
 - the `slide spec` schema contains grounding and coverage fields
 - eval definitions include both capability and regression checks
 - a standard markdown report is generated locally

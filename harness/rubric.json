@@ -19,6 +19,10 @@
       "description": "The repository contains durable AI continuation guidance, project state, and anti-drift decisions."
     },
     {
+      "id": "handoff_path",
+      "description": "The repository contains a startup entrypoint, latest handoff, and task board for fast session continuation."
+    },
+    {
       "id": "schema_completeness",
       "description": "Slide spec schema is present and includes required planning and grounding fields."
     },

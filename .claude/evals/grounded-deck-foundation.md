@@ -19,6 +19,14 @@ Success Criteria:
   - [ ] `docs/ARCHITECTURE-DECISIONS.md` defines invariants and decision log.
 Expected Output: A future AI agent can resume from repository state instead of chat history.
 
+[CAPABILITY EVAL: handoff-contract]
+Task: The repository must provide a fast startup and handoff path for a new session.
+Success Criteria:
+  - [ ] `START-HERE.md` defines the startup sequence.
+  - [ ] `docs/LATEST-HANDOFF.md` records the latest resume context.
+  - [ ] `docs/TASK-BOARD.md` records in-progress and next tasks.
+Expected Output: A new AI session can continue with minimal ambiguity.
+
 [CAPABILITY EVAL: self-acceptance-harness]
 Task: The repository must generate a local self-acceptance report with one command.
 Success Criteria:
@@ -52,4 +60,12 @@ Tests:
   - agents-read-order-present: PASS/FAIL
   - project-state-next-action-present: PASS/FAIL
   - architecture-decisions-present: PASS/FAIL
+Result: pending
+
+[REGRESSION EVAL: handoff-integrity]
+Baseline: continuity-contract
+Tests:
+  - start-here-present: PASS/FAIL
+  - latest-handoff-present: PASS/FAIL
+  - task-board-present: PASS/FAIL
 Result: pending

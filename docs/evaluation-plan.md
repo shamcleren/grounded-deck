@@ -13,6 +13,7 @@ GroundedDeck uses eval-driven development:
 
 - the repository defines the product target and architecture boundaries
 - the repository defines the AI continuity contract and current project state
+- the repository defines a startup path and explicit handoff artifacts
 - the repository defines a structured `slide spec` intermediate representation
 - the repository provides local harness and rubric files
 - the repository can generate a standard self-acceptance report
@@ -23,6 +24,7 @@ GroundedDeck uses eval-driven development:
 - schema updates must not silently remove required fields
 - eval definitions must keep both capability and regression sections
 - AI continuity files must keep readable next-step and anti-drift guidance
+- startup and handoff files must keep a clear resume path for a new session
 
 ## Grader Strategy
 
@@ -42,3 +44,4 @@ GroundedDeck uses eval-driven development:
 - grade sample decks for coverage and grounding
 - inspect exported PPT artifacts for editable object usage and Chinese font rules
 - grade continuity artifacts so future agents can safely resume from repository state alone
+- grade handoff completeness and task-board freshness
