@@ -46,7 +46,7 @@ This repository is built to survive long-running AI-driven development across ma
 - architecture changes must be recorded, not implied
 - project status and the single next action must remain explicit
 
-Read [AGENTS.md](/Users/renjinming/code/my_porjects/shamcleren/grounded-deck/AGENTS.md), [docs/PROJECT-STATE.md](/Users/renjinming/code/my_porjects/shamcleren/grounded-deck/docs/PROJECT-STATE.md), and [docs/ARCHITECTURE-DECISIONS.md](/Users/renjinming/code/my_porjects/shamcleren/grounded-deck/docs/ARCHITECTURE-DECISIONS.md) before continuing implementation work.
+Read [AGENTS.md](AGENTS.md), [docs/PROJECT-STATE.md](docs/PROJECT-STATE.md), and [docs/ARCHITECTURE-DECISIONS.md](docs/ARCHITECTURE-DECISIONS.md) before continuing implementation work.
 
 ## Architecture
 
@@ -109,7 +109,7 @@ make report
 ```
 
 Latest report path:
-[reports/self-acceptance-latest.md](/Users/renjinming/code/my_porjects/shamcleren/grounded-deck/reports/self-acceptance-latest.md)
+[reports/self-acceptance-latest.md](reports/self-acceptance-latest.md)
 
 ## Roadmap
 
@@ -118,12 +118,12 @@ Latest report path:
 3. Introduce editable PPTX rendering with Chinese-safe defaults.
 4. Add artifact-level grading for layout type selection and output editability.
 
-See [docs/ROADMAP.md](/Users/renjinming/code/my_porjects/shamcleren/grounded-deck/docs/ROADMAP.md) for the current plan.
+See [docs/ROADMAP.md](docs/ROADMAP.md) for the current plan.
 
 ## Contributing
 
-See [CONTRIBUTING.md](/Users/renjinming/code/my_porjects/shamcleren/grounded-deck/CONTRIBUTING.md), [CODE_OF_CONDUCT.md](/Users/renjinming/code/my_porjects/shamcleren/grounded-deck/CODE_OF_CONDUCT.md), and [SECURITY.md](/Users/renjinming/code/my_porjects/shamcleren/grounded-deck/SECURITY.md).
+See [CONTRIBUTING.md](CONTRIBUTING.md), [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md), and [SECURITY.md](SECURITY.md).
 
 ## License
 
-MIT. See [LICENSE](/Users/renjinming/code/my_porjects/shamcleren/grounded-deck/LICENSE).
+MIT. See [LICENSE](LICENSE).

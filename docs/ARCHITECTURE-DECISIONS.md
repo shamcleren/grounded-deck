@@ -33,4 +33,4 @@ These decisions should not drift silently:
 
 ## Change Policy
 
-If a future change alters a fixed invariant or changes the module split, record a new decision entry in this file and update [docs/PROJECT-STATE.md](/Users/renjinming/code/my_porjects/shamcleren/grounded-deck/docs/PROJECT-STATE.md).
+If a future change alters a fixed invariant or changes the module split, record a new decision entry in this file and update [docs/PROJECT-STATE.md](PROJECT-STATE.md).

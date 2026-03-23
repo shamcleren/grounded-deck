@@ -2,8 +2,8 @@
 
 ## Before You Start
 
-- read [README.md](/Users/renjinming/code/my_porjects/shamcleren/grounded-deck/README.md)
-- read [docs/architecture.md](/Users/renjinming/code/my_porjects/shamcleren/grounded-deck/docs/architecture.md)
+- read [README.md](README.md)
+- read [docs/architecture.md](docs/architecture.md)
 - run `make eval` before submitting changes
 
 ## Contribution Rules
