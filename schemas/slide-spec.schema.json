@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local-ppt.example/schemas/slide-spec.schema.json",
+  "title": "Slide Specification",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "deck_goal",
+    "audience",
+    "slides"
+  ],
+  "properties": {
+    "deck_goal": {
+      "type": "string",
+      "minLength": 1
+    },
+    "audience": {
+      "type": "string",
+      "minLength": 1
+    },
+    "slides": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "slide_id",
+          "title",
+          "goal",
+          "layout_type",
+          "key_points",
+          "visual_elements",
+          "source_bindings",
+          "must_include_checks"
+        ],
+        "properties": {
+          "slide_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "goal": {
+            "type": "string",
+            "minLength": 1
+          },
+          "layout_type": {
+            "type": "string",
+            "enum": [
+              "cover",
+              "section",
+              "summary",
+              "timeline",
+              "comparison",
+              "process",
+              "hierarchy",
+              "matrix",
+              "chart",
+              "quote"
+            ]
+          },
+          "key_points": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "visual_elements": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true,
+              "required": [
+                "type"
+              ],
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          },
+          "source_bindings": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "pattern": "^.+:.+$"
+            }
+          },
+          "must_include_checks": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "speaker_notes": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

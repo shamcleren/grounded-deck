@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "name": "grounded-deck-foundation",
+  "criteria": [
+    {
+      "id": "repo_structure",
+      "description": "Repository contains the expected directories and files for foundation work."
+    },
+    {
+      "id": "product_definition",
+      "description": "Product docs define target quality, differentiation, and non-goals."
+    },
+    {
+      "id": "architecture_coverage",
+      "description": "Architecture docs define layers, data flow, and constraints."
+    },
+    {
+      "id": "schema_completeness",
+      "description": "Slide spec schema is present and includes required planning and grounding fields."
+    },
+    {
+      "id": "eval_harness",
+      "description": "Local self-acceptance command and eval definitions are present."
+    }
+  ]
+}
