@@ -4,12 +4,12 @@
 
 ## In Progress
 
-- decide which parts of the refreshed strongest-demo online output should become future regression fixtures or acceptance checks
+- compare future strongest-demo live refreshes against the archived acceptance snapshot before promoting more provider-backed planning changes
 
 ## Ready Next
 
 - continue improving provider-backed planning and grading against the strongest-demo path without weakening deterministic coverage
-- decide which portions of the live strongest-demo output should become future regression fixtures or acceptance checks
+- decide whether any additional strongest-demo live structure should be promoted beyond the current acceptance summary
 - keep canonical docs bilingual via separate language files and switch links
 
 ## Later

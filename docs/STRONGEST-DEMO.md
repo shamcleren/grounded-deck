@@ -24,6 +24,21 @@ The deterministic strongest-demo bundle is:
 - slide spec: [strongest-demo-slide-spec.json](/Users/renjinming/code/my_porjects/shamcleren/grounded-deck/fixtures/slide-spec/strongest-demo-slide-spec.json)
 - quality report: [strongest-demo-quality-report.json](/Users/renjinming/code/my_porjects/shamcleren/grounded-deck/fixtures/quality-reports/strongest-demo-quality-report.json)
 
+The refreshed live strongest-demo snapshot is archived at:
+
+- [acceptance-summary.json](/Users/renjinming/.codex/worktrees/a0d6/grounded-deck/reports/live-verification-history/strongest-demo-1774362852/acceptance-summary.json)
+- [slide-spec.json](/Users/renjinming/.codex/worktrees/a0d6/grounded-deck/reports/live-verification-history/strongest-demo-1774362852/slide-spec.json)
+- [quality-report.json](/Users/renjinming/.codex/worktrees/a0d6/grounded-deck/reports/live-verification-history/strongest-demo-1774362852/quality-report.json)
+
+## Live Acceptance Snapshot
+
+The current repository-owned live acceptance summary promotes these stable strongest-demo checks:
+
+- six total slides with a `summary -> timeline -> comparison -> process -> chart -> summary` layout sequence
+- one grounded content slide per required source unit with the expected unit-to-layout mapping
+- a trailing `Decision Backbone` summary slide grounded to all four required units
+- `quality_status = pass`, `grounded_content_slides = 5`, and all four units matched by the visual-form grader
+
 ## Success Metrics
 
 The demo is only considered convincing if all of the following stay true:

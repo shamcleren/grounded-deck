@@ -4,7 +4,7 @@
 
 ## Session Summary
 
-GroundedDeck now carries the accepted provider-prompt tightening patch on a curator branch, keeps `make eval` green on the current tree, and has a freshly re-verified strongest-demo online result archived alongside the earlier accepted live baseline.
+GroundedDeck now carries the accepted provider-prompt tightening patch on a curator branch, keeps `make eval` green on the current tree, and preserves the refreshed strongest-demo online result as a repository-owned history snapshot plus acceptance summary instead of only a rolling `latest` pointer.
 
 ## What Was Just Completed
 
@@ -37,6 +37,9 @@ GroundedDeck now carries the accepted provider-prompt tightening patch on a cura
 - re-ran `python3 -m pytest tests/test_pipeline.py` and `make eval`, both of which pass on the curator branch
 - linked `.env.runtime.local` from the canonical repo into this worktree, then ran `make check-live-env`, `make live-status`, `make verify-online`, and `make archive-online-verification`
 - refreshed `reports/live-verification-latest.{json,md}` with a passing strongest-demo online verification for the tightened prompt baseline
+- updated `make archive-online-verification` so archived live summaries now point to repository-owned copies under `reports/live-verification-history/`
+- captured the refreshed strongest-demo live artifacts and a structural acceptance summary under `reports/live-verification-history/strongest-demo-1774362852/`
+- added deterministic tests that verify the archived strongest-demo acceptance summary still matches the committed live slide spec and quality report
 
 ## Current Status
 
@@ -58,16 +61,18 @@ GroundedDeck now carries the accepted provider-prompt tightening patch on a cura
 - provider prompt tightening for strongest-demo: integrated on the current curator branch
 - self-acceptance after prompt tightening: passing
 - strongest-demo online verification after prompt tightening: passing and re-archived
+- live verification archive now preserves repo-local copies of the verified artifacts instead of `/tmp` paths
+- refreshed strongest-demo live acceptance snapshot: committed under `reports/live-verification-history/strongest-demo-1774362852/`
 - renderer implementation: still deferred
 
 ## Immediate Next Action
 
-Decide which parts of the refreshed strongest-demo online output should become future regression fixtures or acceptance checks.
+Use the archived strongest-demo live acceptance snapshot to compare future live refreshes before promoting more provider-backed planning changes.
 
 ## First Concrete Tasks
 
-1. treat `reports/live-verification-latest.json` and `reports/live-verification-latest.md` as the canonical first live-run memory
-2. compare the refreshed strongest-demo online output against the first accepted live baseline instead of treating every new pass as interchangeable
+1. treat `reports/live-verification-latest.json` and `reports/live-verification-latest.md` as rolling pointers to the latest archived live snapshot
+2. compare future strongest-demo online refreshes against `reports/live-verification-history/strongest-demo-1774362852/acceptance-summary.json`
 3. keep `make verify-online` passing on the real provider path while preserving `make eval`
 4. record any future provider-specific compatibility decisions in repository docs instead of leaving them implicit
 

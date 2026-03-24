@@ -6,12 +6,12 @@
 
 ## 进行中
 
-- 决定把刷新后的 strongest-demo 在线输出中的哪些部分上升为未来的回归 fixture 或 acceptance check
+- 让后续 strongest-demo live refresh 先和已归档 acceptance snapshot 对比，再决定后续 provider-backed planning 改动是否继续上升
 
 ## 下一批待做
 
 - 在不削弱确定性回归覆盖的前提下，继续改进 strongest-demo 路径上的 provider-backed planning 与 grading
-- 决定 live strongest-demo 输出里的哪些部分应该上升为未来的回归 fixture 或 acceptance check
+- 决定是否还有额外的 strongest-demo live 结构需要继续提升到 acceptance summary 之外
 - 后续新增 canonical docs 时，保持中英双语并采用独立语言文件
 
 ## 后续

@@ -44,15 +44,16 @@ The strongest deterministic planning demo is now curated back onto `main` as a c
 - integrated the accepted worker patch that tightens provider planner and grader prompts around the strongest-demo baseline
 - restored the `src/visual` and `src/renderer` package scaffolds so `make eval` remains green on the current repository tree
 - refreshed strongest-demo online verification for the tightened prompt baseline and re-archived a passing live result
+- promoted the refreshed strongest-demo live run into a repository-owned history snapshot with a structural acceptance summary
 
 ## Current Next Action
 
-Decide which parts of the refreshed strongest-demo online output should become future regression fixtures or acceptance checks.
+Use the archived strongest-demo live acceptance snapshot to compare future live refreshes before promoting more provider-backed planning changes.
 
 ## Immediate Priorities
 
-1. preserve the first archived strongest-demo live verification as the acceptance baseline while comparing future refreshes against it
-2. decide which stable aspects of the refreshed strongest-demo online output should be promoted into regression fixtures or acceptance checks
+1. preserve the repository-owned strongest-demo live acceptance snapshot while keeping `reports/live-verification-latest.*` as the rolling pointer
+2. compare future strongest-demo live refreshes against the archived acceptance summary instead of treating every passing run as interchangeable
 3. keep provider-backed planning improvements and `make verify-online` healthy without weakening deterministic regression coverage
 
 External feedback has been absorbed as a prioritization change, not an architecture change. The environment-variable configuration contract is documented in `docs/runtime-config.md`, placeholder values are rejected during live preflight, and the strongest-demo live path has now been proven once against a real provider while preserving the deterministic baseline.

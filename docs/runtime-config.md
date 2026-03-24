@@ -98,6 +98,10 @@ This writes:
 
 - `reports/live-verification-latest.json`
 - `reports/live-verification-latest.md`
+- `reports/live-verification-history/<input>-<generated_at_unix>/verification-summary.json`
+- `reports/live-verification-history/<input>-<generated_at_unix>/verification-report.md`
+- copied repo-local artifact files for `normalized-pack.json`, `slide-spec.json`, and `quality-report.json` when present
+- `reports/live-verification-history/<input>-<generated_at_unix>/acceptance-summary.json` for successful runs with all three artifacts present
 
 To read the archived report:
 
@@ -106,6 +110,7 @@ make report-live-verification
 ```
 
 The archived report can represent either a successful run or a failed attempt with an explicit error section.
+The rolling `live-verification-latest.*` files now point to the repository-owned copied artifacts instead of `/tmp` paths.
 
 ## Live Verification Expectations
 

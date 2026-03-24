@@ -24,6 +24,21 @@ GroundedDeck 当前最强的 planning demo 是中国新能源汽车出海进入�
 - slide spec：[strongest-demo-slide-spec.json](/Users/renjinming/code/my_porjects/shamcleren/grounded-deck/fixtures/slide-spec/strongest-demo-slide-spec.json)
 - quality report：[strongest-demo-quality-report.json](/Users/renjinming/code/my_porjects/shamcleren/grounded-deck/fixtures/quality-reports/strongest-demo-quality-report.json)
 
+刷新后的 strongest-demo live 快照归档在：
+
+- [acceptance-summary.json](/Users/renjinming/.codex/worktrees/a0d6/grounded-deck/reports/live-verification-history/strongest-demo-1774362852/acceptance-summary.json)
+- [slide-spec.json](/Users/renjinming/.codex/worktrees/a0d6/grounded-deck/reports/live-verification-history/strongest-demo-1774362852/slide-spec.json)
+- [quality-report.json](/Users/renjinming/.codex/worktrees/a0d6/grounded-deck/reports/live-verification-history/strongest-demo-1774362852/quality-report.json)
+
+## Live Acceptance Snapshot
+
+当前仓库内持久化的 live acceptance summary 已经提升了这些稳定检查项：
+
+- 总页数固定为 6，布局序列为 `summary -> timeline -> comparison -> process -> chart -> summary`
+- 每个必需 source unit 都对应一页 grounded content slide，并保持预期的 unit-to-layout 映射
+- 末尾的 `Decision Backbone` 总结页必须同时绑定全部 4 个必需 source unit
+- `quality_status = pass`、`grounded_content_slides = 5`，并且 visual-form grader 需要匹配全部 4 个 unit
+
 ## Success Metrics
 
 只有在以下条件全部成立时，这个 demo 才算“有说服力”：

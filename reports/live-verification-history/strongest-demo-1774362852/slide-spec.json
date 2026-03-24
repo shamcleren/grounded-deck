@@ -1,0 +1,147 @@
+{
+  "deck_goal": "Recommend a grounded China EV market-entry plan for Europe and Southeast Asia.",
+  "audience": "Regional strategy leaders deciding 2025 market sequencing",
+  "slides": [
+    {
+      "slide_id": "slide-01",
+      "title": "China EV Market Entry: Europe & Southeast Asia Strategy",
+      "goal": "Introduce the deck purpose and frame the strategic question for regional decision-makers",
+      "layout_type": "summary",
+      "key_points": [
+        "Recommend a China EV market-entry plan targeting Europe and Southeast Asia",
+        "Support 2025 market sequencing decisions for regional strategy leaders"
+      ],
+      "visual_elements": [
+        "Main title with deck goal statement",
+        "Subtitle identifying audience: Regional strategy leaders",
+        "Clean, professional cover with minimal decorative elements"
+      ],
+      "source_bindings": [],
+      "must_include_checks": [],
+      "speaker_notes": "This deck synthesizes evidence from market tracking, entry playbooks, and cost benchmarks to recommend a grounded 2025 sequencing plan. The audience is regional strategy leaders responsible for execution decisions."
+    },
+    {
+      "slide_id": "slide-02",
+      "title": "出口时间线 (Export Timeline)",
+      "goal": "Establish the chronological evolution of China EV export strategy from 2022 to 2024",
+      "layout_type": "timeline",
+      "key_points": [
+        "2022: 试点市场 (pilot market) phase",
+        "2023: Formation of dual-track strategy — Europe and Southeast Asia",
+        "2024: Channel deepening by region",
+        "核心结论: 2022-2024 年，中国新能源汽车出口节奏已经从单点放量转向分区域深化"
+      ],
+      "visual_elements": [
+        "Horizontal timeline with three phases: 2022 → 2023 → 2024",
+        "Phase labels in zh-CN with brief descriptors",
+        "Arrow showing directional shift from single-point to regional deepening",
+        "Source citation at bottom: src-01:sec-01"
+      ],
+      "source_bindings": [
+        "src-01:sec-01"
+      ],
+      "must_include_checks": [
+        "src-01:sec-01"
+      ],
+      "speaker_notes": "The export trajectory from 2022 to 2024 shows a clear maturation. What began as single-point pilots in 2022 evolved into a structured dual-track approach by 2023, with 2024 marking the shift toward region-specific channel deepening. This context sets the foundation for our 2025 sequencing recommendation."
+    },
+    {
+      "slide_id": "slide-03",
+      "title": "欧洲 vs 东南亚对比 (Europe vs Southeast Asia Comparison)",
+      "goal": "Surface the strategic tradeoffs between Europe and Southeast Asia market entry",
+      "layout_type": "comparison",
+      "key_points": [
+        "Europe: Higher unit revenue, stronger brand elevation potential, but heavier certification, tariff, and after-sales compliance burden",
+        "Southeast Asia: Faster channel establishment, more responsive local partners",
+        "核心结论: 欧洲适合追求品牌抬升与高客单价，东南亚更适合追求进入速度与渠道复制"
+      ],
+      "visual_elements": [
+        "Two-column comparison layout: Europe | Southeast Asia",
+        "Criteria rows: Unit revenue, Brand value, Channel speed, Regulatory burden, Partner responsiveness",
+        "Visual icons or color coding for strengths/weaknesses per column",
+        "Source citation: src-01:sec-02"
+      ],
+      "source_bindings": [
+        "src-01:sec-02"
+      ],
+      "must_include_checks": [
+        "src-01:sec-02"
+      ],
+      "speaker_notes": "This comparison clarifies the fundamental tradeoff. Europe offers higher margins and brand positioning but demands upfront investment in compliance and after-sales infrastructure. Southeast Asia trades lower unit economics for speed and operational flexibility. The strategic fit depends on whether the priority is brand building or market velocity."
+    },
+    {
+      "slide_id": "slide-04",
+      "title": "进入路径 (Entry Path)",
+      "goal": "Present the recommended stepwise market entry sequence for 2025",
+      "layout_type": "process",
+      "key_points": [
+        "Step 1: Establish distribution, service, and spare parts response in Southeast Asia",
+        "Step 2: Validate operational model in Southeast Asia market conditions",
+        "Step 3: Migrate validated model to priority European countries",
+        "核心结论: 先在东南亚建立渠道和售后，再择机进入欧洲，是更稳妥的 2025 市场进入路径"
+      ],
+      "visual_elements": [
+        "Sequential process flow: Southeast Asia (Step 1 & 2) → Migration Arrow → Europe (Step 3)",
+        "Step boxes with icons for distribution, service, spare parts",
+        "Decision gate indicator for timing of Europe entry",
+        "Source citation: src-02:sec-01"
+      ],
+      "source_bindings": [
+        "src-02:sec-01"
+      ],
+      "must_include_checks": [
+        "src-02:sec-01"
+      ],
+      "speaker_notes": "The entry playbook recommends Southeast Asia first. Building distribution, service, and spare parts capability in a more responsive market allows operational validation before confronting European compliance complexity. The model is then transferred to Europe once confidence is established. This staged approach reduces execution risk in 2025."
+    },
+    {
+      "slide_id": "slide-05",
+      "title": "成本与利润指标 (Cost & Margin Indicators)",
+      "goal": "Present battery cost reduction as an enabling buffer for pricing and channel investment",
+      "layout_type": "chart",
+      "key_points": [
+        "Trailing 12-month battery pack cost reduction: 18%",
+        "This cost buffer enables: competitive pricing in target markets, channel subsidies, after-sales investment",
+        "核心结论: 18% 的电池成本降幅为价格带竞争和渠道投入提供了缓冲空间"
+      ],
+      "visual_elements": [
+        "Bar chart or waterfall showing 18% cost reduction with before/after metrics",
+        "Three downstream benefit callouts: pricing competitiveness, channel subsidies, after-sales investment",
+        "Percentage callout prominently displayed",
+        "Source citation: src-03:sec-01"
+      ],
+      "source_bindings": [
+        "src-03:sec-01"
+      ],
+      "must_include_checks": [
+        "src-03:sec-01"
+      ],
+      "speaker_notes": "The 18% battery cost reduction over the past 12 months is a significant enabler. It provides financial headroom for aggressive pricing in competitive markets, margin for channel partner subsidies, and investment capacity in after-sales infrastructure. This cost buffer supports both the Southeast Asia speed-first and Europe quality-first strategies."
+    },
+    {
+      "slide_id": "slide-06",
+      "title": "Decision Backbone",
+      "goal": "Compress minimum grounded claims into a decision-ready summary for strategy leaders",
+      "layout_type": "summary",
+      "key_points": [
+        "China EV exports have shifted from single-point to regional deepening (2022-2024)",
+        "Europe favors brand elevation and high unit economics; Southeast Asia favors speed and channel replication",
+        "Recommended 2025 path: Build and validate in Southeast Asia first, then migrate to Europe",
+        "18% battery cost reduction provides pricing and channel investment buffer"
+      ],
+      "visual_elements": [
+        "Four concise bullet points, each grounded to a source unit",
+        "Source tag next to each bullet (src-01:sec-01, src-01:sec-02, src-02:sec-01, src-03:sec-01)",
+        "Clean layout with clear visual hierarchy for rapid executive consumption"
+      ],
+      "source_bindings": [
+        "src-01:sec-01",
+        "src-01:sec-02",
+        "src-02:sec-01",
+        "src-03:sec-01"
+      ],
+      "must_include_checks": [],
+      "speaker_notes": "These four grounded claims form the minimum evidence base for the 2025 sequencing recommendation. They are directly sourced and auditable. Strategy leaders can reference this backbone to anchor subsequent detailed discussions or implementation planning."
+    }
+  ]
+}

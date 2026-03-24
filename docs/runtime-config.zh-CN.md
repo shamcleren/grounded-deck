@@ -98,6 +98,10 @@ make archive-online-verification
 
 - `reports/live-verification-latest.json`
 - `reports/live-verification-latest.md`
+- `reports/live-verification-history/<input>-<generated_at_unix>/verification-summary.json`
+- `reports/live-verification-history/<input>-<generated_at_unix>/verification-report.md`
+- 如果三份运行时工件存在，还会复制出仓库内版本的 `normalized-pack.json`、`slide-spec.json` 和 `quality-report.json`
+- 如果运行成功且三份工件齐全，还会生成 `reports/live-verification-history/<input>-<generated_at_unix>/acceptance-summary.json`
 
 如果要查看已经归档的验证报告，可以运行：
 
@@ -106,6 +110,7 @@ make report-live-verification
 ```
 
 归档报告既可以表示一次成功运行，也可以表示一次带有明确错误信息的失败尝试。
+滚动的 `live-verification-latest.*` 文件现在会指向仓库内持久化的副本，而不是 `/tmp` 路径。
 
 ## Live Verification 预期
 

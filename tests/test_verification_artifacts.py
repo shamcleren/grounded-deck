@@ -8,6 +8,7 @@ from pathlib import Path
 from src.runtime.env import load_runtime_env
 from src.runtime.verification import (
     archive_verification_summary,
+    build_live_acceptance_snapshot,
     build_failure_summary,
     render_verification_report,
     render_live_verification_checklist,
@@ -15,6 +16,9 @@ from src.runtime.verification import (
     validate_live_verification_env,
     write_live_verification_checklist,
 )
+
+
+ROOT = Path(__file__).resolve().parent.parent
 
 
 class VerificationArtifactTests(unittest.TestCase):
@@ -204,6 +208,99 @@ class VerificationArtifactTests(unittest.TestCase):
             self.assertEqual(json.loads(archived_json.read_text(encoding="utf-8"))["provider"], "openai-compatible")
             self.assertIn("Live Verification Report", archived_md.read_text(encoding="utf-8"))
 
+    def test_archive_verification_summary_copies_live_artifacts_into_history(self) -> None:
+        summary = {
+            "mode": "online-verification",
+            "provider": "openai-compatible",
+            "model": "gpt-4.1-mini",
+            "input_path": "fixtures/source-packs/example-source-pack.json",
+            "generated_at_unix": 1774252930,
+            "artifacts": {},
+            "quality_status": "pass",
+        }
+
+        normalized_pack = {
+            "deck_goal": "Recommend an example entry plan.",
+            "audience": "Example strategy leaders",
+            "source_units": [
+                {
+                    "unit_id": "src-01:sec-01",
+                    "source_binding": "src-01:sec-01",
+                }
+            ],
+        }
+        slide_spec = {
+            "slides": [
+                {
+                    "title": "Example Intro",
+                    "layout_type": "summary",
+                    "source_bindings": [],
+                    "must_include_checks": [],
+                },
+                {
+                    "title": "Example Timeline",
+                    "layout_type": "timeline",
+                    "source_bindings": ["src-01:sec-01"],
+                    "must_include_checks": ["src-01:sec-01"],
+                },
+                {
+                    "title": "Decision Backbone",
+                    "layout_type": "summary",
+                    "source_bindings": ["src-01:sec-01"],
+                    "must_include_checks": [],
+                },
+            ]
+        }
+        quality_report = {
+            "status": "pass",
+            "coverage": {
+                "covered_units_ids": ["src-01:sec-01"],
+            },
+            "grounding": {
+                "grounded_slides": 2,
+                "total_content_slides": 2,
+            },
+            "visual_form": {
+                "matched_units_ids": ["src-01:sec-01"],
+            },
+        }
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            normalized_path = tmp_path / "normalized-pack.json"
+            slide_spec_path = tmp_path / "slide-spec.json"
+            quality_report_path = tmp_path / "quality-report.json"
+            normalized_path.write_text(json.dumps(normalized_pack, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+            slide_spec_path.write_text(json.dumps(slide_spec, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+            quality_report_path.write_text(json.dumps(quality_report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+            summary["artifacts"] = {
+                "normalized_pack": str(normalized_path),
+                "slide_spec": str(slide_spec_path),
+                "quality_report": str(quality_report_path),
+            }
+
+            summary_path = tmp_path / "verification-summary.json"
+            summary_path.write_text(json.dumps(summary, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+            output_dir = tmp_path / "reports"
+            archived_json, _ = archive_verification_summary(summary_path, output_dir)
+
+            archived_summary = json.loads(archived_json.read_text(encoding="utf-8"))
+            history_dir = output_dir / "live-verification-history" / "example-1774252930"
+
+            self.assertEqual(
+                archived_summary["artifacts"]["slide_spec"],
+                str(history_dir / "slide-spec.json"),
+            )
+            self.assertTrue((history_dir / "verification-summary.json").exists())
+            self.assertTrue((history_dir / "verification-report.md").exists())
+            self.assertTrue((history_dir / "acceptance-summary.json").exists())
+
+            acceptance_summary = json.loads((history_dir / "acceptance-summary.json").read_text(encoding="utf-8"))
+            self.assertEqual(acceptance_summary["unit_layouts"], {"src-01:sec-01": "timeline"})
+            self.assertEqual(acceptance_summary["decision_backbone"]["title"], "Decision Backbone")
+
     def test_archive_verification_summary_preserves_failure_details(self) -> None:
         summary = {
             "mode": "online-verification",
@@ -231,6 +328,20 @@ class VerificationArtifactTests(unittest.TestCase):
             output_dir = Path(tmpdir) / "reports"
             with self.assertRaises(FileNotFoundError):
                 archive_verification_summary(Path(tmpdir) / "missing.json", output_dir)
+
+    def test_committed_strongest_demo_acceptance_summary_matches_archived_artifacts(self) -> None:
+        history_dir = ROOT / "reports" / "live-verification-history" / "strongest-demo-1774362852"
+        archived_summary = json.loads((history_dir / "verification-summary.json").read_text(encoding="utf-8"))
+        expected = json.loads((history_dir / "acceptance-summary.json").read_text(encoding="utf-8"))
+
+        rebuilt = build_live_acceptance_snapshot(
+            archived_summary,
+            normalized_pack_path=history_dir / "normalized-pack.json",
+            slide_spec_path=history_dir / "slide-spec.json",
+            quality_report_path=history_dir / "quality-report.json",
+        )
+
+        self.assertEqual(rebuilt, expected)
 
 
 if __name__ == "__main__":

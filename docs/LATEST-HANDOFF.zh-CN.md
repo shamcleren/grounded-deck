@@ -6,7 +6,7 @@
 
 ## 会话摘要
 
-GroundedDeck 当前在 curator 分支上已经带着被接受的 provider prompt 收紧补丁，当前仓库树上的 `make eval` 保持通过，并且 strongest-demo 在线验证已经基于这条新 prompt 基线重新跑通并完成归档，同时保留了更早那条被接受的 live baseline。
+GroundedDeck 当前在 curator 分支上已经带着被接受的 provider prompt 收紧补丁，当前仓库树上的 `make eval` 保持通过；而且 strongest-demo 在线验证的刷新结果现在不再只是一个滚动 `latest` 指针，而是已经以仓库内历史快照和 acceptance summary 的形式持久化保存。
 
 ## 刚刚完成的内容
 
@@ -39,6 +39,9 @@ GroundedDeck 当前在 curator 分支上已经带着被接受的 provider prompt
 - 重新运行了 `python3 -m pytest tests/test_pipeline.py` 和 `make eval`，当前 curator 分支均通过
 - 将 canonical repo 中的 `.env.runtime.local` 链接到当前 worktree，然后依次运行了 `make check-live-env`、`make live-status`、`make verify-online` 和 `make archive-online-verification`
 - 用收紧后的 prompt 基线刷新了 `reports/live-verification-latest.{json,md}`，且 strongest-demo 在线验证结果为通过
+- 更新了 `make archive-online-verification`，让归档后的 live summary 现在指向 `reports/live-verification-history/` 下的仓库内副本
+- 将刷新后的 strongest-demo live artifacts 和结构化 acceptance summary 固化到 `reports/live-verification-history/strongest-demo-1774362852/`
+- 增加了确定性测试，校验 strongest-demo 的已归档 acceptance summary 仍然和提交进仓库的 live slide spec / quality report 一致
 
 ## 当前状态
 
@@ -60,16 +63,18 @@ GroundedDeck 当前在 curator 分支上已经带着被接受的 provider prompt
 - strongest-demo 的 provider prompt 收紧：已整合到当前 curator 分支
 - prompt 收紧后的 self-acceptance：通过
 - prompt 收紧后的 strongest-demo online verification：通过且已重新归档
+- live verification archive 现在会保留已验证工件的仓库内副本，而不再只记录 `/tmp` 路径
+- 刷新后的 strongest-demo live acceptance snapshot：已提交到 `reports/live-verification-history/strongest-demo-1774362852/`
 - renderer 实现：仍然延后
 
 ## 立即下一步
 
-决定把刷新后的 strongest-demo 在线输出中的哪些部分上升为未来的回归 fixture 或 acceptance check。
+使用已归档的 strongest-demo live acceptance snapshot 对比后续 live refresh，再决定后续 provider-backed planning 改动是否可以继续上升。
 
 ## 第一批具体任务
 
-1. 将 `reports/live-verification-latest.json` 和 `reports/live-verification-latest.md` 视为第一条规范 live-run 记忆
-2. 将刷新后的 strongest-demo 在线输出与第一条被接受的 live baseline 做对比，而不是把每次通过都视为可互换
+1. 将 `reports/live-verification-latest.json` 和 `reports/live-verification-latest.md` 视为指向最新 live 历史快照的滚动指针
+2. 让后续 strongest-demo 在线刷新结果与 `reports/live-verification-history/strongest-demo-1774362852/acceptance-summary.json` 做对比
 3. 在保留 `make eval` 稳定性的前提下，让 `make verify-online` 在真实 provider 路径上持续可用
 4. 后续如果再出现 provider 兼容性细节，必须记录进仓库文档，而不是留在隐式上下文里
 

@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 from pathlib import Path
+from shutil import copy2
 from time import time
 
 from src.runtime.env import load_runtime_env
@@ -67,6 +68,70 @@ def build_failure_summary(
     }
 
 
+def build_live_acceptance_snapshot(
+    summary: dict,
+    *,
+    normalized_pack_path: Path,
+    slide_spec_path: Path,
+    quality_report_path: Path,
+) -> dict:
+    normalized_pack = json.loads(normalized_pack_path.read_text(encoding="utf-8"))
+    slide_spec = json.loads(slide_spec_path.read_text(encoding="utf-8"))
+    quality_report = json.loads(quality_report_path.read_text(encoding="utf-8"))
+
+    slides = slide_spec.get("slides", [])
+    intro_slide = slides[0] if slides else {}
+
+    covered_unit_ids = quality_report.get("coverage", {}).get("covered_units_ids") or [
+        unit["unit_id"] for unit in normalized_pack.get("source_units", [])
+    ]
+    unit_layouts: dict[str, str] = {}
+    unit_slide_titles: dict[str, str] = {}
+    decision_backbone = {}
+
+    for slide in slides:
+        checks = slide.get("must_include_checks", [])
+        if len(checks) == 1:
+            unit_id = checks[0]
+            unit_layouts[unit_id] = slide.get("layout_type", "unknown")
+            unit_slide_titles[unit_id] = slide.get("title", "")
+        if (
+            slide.get("layout_type") == "summary"
+            and not checks
+            and slide.get("source_bindings")
+            and set(slide["source_bindings"]) == set(covered_unit_ids)
+        ):
+            decision_backbone = {
+                "title": slide.get("title", ""),
+                "layout_type": slide.get("layout_type", "unknown"),
+                "source_bindings": slide.get("source_bindings", []),
+            }
+
+    return {
+        "mode": summary.get("mode", "unknown"),
+        "provider": summary.get("provider", "unknown"),
+        "model": summary.get("model", "unknown"),
+        "input_path": summary.get("input_path", "unknown"),
+        "generated_at_unix": summary.get("generated_at_unix"),
+        "quality_status": quality_report.get("status", summary.get("quality_status", "unknown")),
+        "slide_count": len(slides),
+        "layout_sequence": [slide.get("layout_type", "unknown") for slide in slides],
+        "intro_slide": {
+            "title": intro_slide.get("title", ""),
+            "layout_type": intro_slide.get("layout_type", "unknown"),
+            "source_bindings": intro_slide.get("source_bindings", []),
+            "must_include_checks": intro_slide.get("must_include_checks", []),
+        },
+        "unit_layouts": unit_layouts,
+        "unit_slide_titles": unit_slide_titles,
+        "decision_backbone": decision_backbone,
+        "covered_unit_ids": covered_unit_ids,
+        "grounded_content_slides": quality_report.get("grounding", {}).get("grounded_slides"),
+        "total_content_slides": quality_report.get("grounding", {}).get("total_content_slides"),
+        "visual_matched_unit_ids": quality_report.get("visual_form", {}).get("matched_units_ids", []),
+    }
+
+
 def _is_placeholder(value: str | None) -> bool:
     if value is None:
         return True
@@ -99,18 +164,67 @@ def validate_live_verification_env(env: dict[str, str] | None = None) -> tuple[b
     return (len(missing) == 0 and len(invalid) == 0, missing + invalid)
 
 
+def _history_dir_name(summary: dict) -> str:
+    input_stem = Path(summary.get("input_path", "live-verification")).stem
+    if input_stem.endswith("-source-pack"):
+        input_stem = input_stem[: -len("-source-pack")]
+    generated_at_unix = summary.get("generated_at_unix", "unknown")
+    return f"{input_stem}-{generated_at_unix}"
+
+
 def archive_verification_summary(summary_path: Path, output_dir: Path) -> tuple[Path, Path]:
     if not summary_path.exists():
         raise FileNotFoundError(f"verification summary not found: {summary_path}")
 
     summary = json.loads(summary_path.read_text(encoding="utf-8"))
     output_dir.mkdir(parents=True, exist_ok=True)
+    history_dir = output_dir / "live-verification-history" / _history_dir_name(summary)
+    history_dir.mkdir(parents=True, exist_ok=True)
+
+    archived_summary = dict(summary)
+    archived_artifacts: dict[str, str] = {}
+    for artifact_name, artifact_path in summary.get("artifacts", {}).items():
+        artifact_value = str(artifact_path)
+        artifact_source = Path(artifact_value)
+        if artifact_source.exists():
+            archived_target = history_dir / artifact_source.name
+            copy2(artifact_source, archived_target)
+            archived_artifacts[artifact_name] = str(archived_target)
+        else:
+            archived_artifacts[artifact_name] = artifact_value
+    archived_summary["artifacts"] = archived_artifacts
+
+    verification_summary_target = history_dir / "verification-summary.json"
+    verification_report_target = history_dir / "verification-report.md"
+    verification_summary_target.write_text(
+        json.dumps(archived_summary, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    verification_report_target.write_text(render_verification_report(archived_summary) + "\n", encoding="utf-8")
+
+    if {
+        "normalized_pack",
+        "slide_spec",
+        "quality_report",
+    }.issubset(archived_artifacts):
+        archived_paths = {key: Path(value) for key, value in archived_artifacts.items()}
+        if all(path.exists() for path in archived_paths.values()):
+            acceptance_summary = build_live_acceptance_snapshot(
+                archived_summary,
+                normalized_pack_path=archived_paths["normalized_pack"],
+                slide_spec_path=archived_paths["slide_spec"],
+                quality_report_path=archived_paths["quality_report"],
+            )
+            (history_dir / "acceptance-summary.json").write_text(
+                json.dumps(acceptance_summary, ensure_ascii=False, indent=2) + "\n",
+                encoding="utf-8",
+            )
 
     json_target = output_dir / "live-verification-latest.json"
     md_target = output_dir / "live-verification-latest.md"
 
-    json_target.write_text(json.dumps(summary, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    md_target.write_text(render_verification_report(summary) + "\n", encoding="utf-8")
+    json_target.write_text(json.dumps(archived_summary, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    md_target.write_text(render_verification_report(archived_summary) + "\n", encoding="utf-8")
 
     return json_target, md_target
 
@@ -132,7 +246,7 @@ def render_live_verification_checklist(env: dict[str, str] | None = None) -> str
         "2. Replace placeholder values copied from `.env.runtime.example` before attempting a live run.",
         "3. Run `make verify-online` to execute the live provider path.",
         "4. Inspect `/tmp/grounded-deck-online/verification-summary.json`.",
-        "5. Run `make archive-online-verification` to copy the latest result into `reports/`.",
+        "5. Run `make archive-online-verification` to copy the latest result into `reports/` and `reports/live-verification-history/`.",
         "6. Update `docs/LATEST-HANDOFF.md` and `docs/TASK-BOARD.md` with the observed result.",
         "",
         "## Success Criteria",
@@ -140,6 +254,7 @@ def render_live_verification_checklist(env: dict[str, str] | None = None) -> str
         "- `quality_status` is `pass` in `verification-summary.json`.",
         "- The summary references `normalized-pack.json`, `slide-spec.json`, and `quality-report.json`.",
         "- `reports/live-verification-latest.json` and `.md` are present after archiving.",
+        "- A repo-owned live snapshot exists under `reports/live-verification-history/` after archiving.",
         "- `make live-status` reports `Environment Ready: yes` before the live run starts.",
         "",
     ]
