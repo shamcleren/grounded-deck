@@ -4,7 +4,7 @@
 
 ## Session Summary
 
-GroundedDeck now carries the accepted acceptance-alignment provider patch on the curator branch, keeps `make eval` green on the current tree, and preserves a freshly re-verified strongest-demo online result whose archived acceptance summary still matches the established live baseline.
+GroundedDeck still carries the accepted acceptance-alignment provider patch, and this curator pass confirmed that the remaining worker prompt variants are superseded by the archived strongest-demo live baseline rather than representing newer verified output to integrate.
 
 ## What Was Just Completed
 
@@ -45,6 +45,8 @@ GroundedDeck now carries the accepted acceptance-alignment provider patch on the
 - re-ran `make eval`, `make check-live-env`, `make live-status`, `make verify-online`, and `make archive-online-verification` after the acceptance-alignment patch
 - refreshed `reports/live-verification-latest.{json,md}` again and archived a matching strongest-demo live snapshot under `reports/live-verification-history/strongest-demo-1774366441/`
 - confirmed `reports/live-verification-history/strongest-demo-1774366441/acceptance-summary.json` matches the prior accepted strongest-demo baseline structurally
+- recovered this automation worktree from detached `HEAD` onto `curator/groundeddeck-auto-sprint-2b-curator-20260324` before doing curator review work
+- reviewed the remaining local worker prompt-variant branches and confirmed they are alternative prompt shapes without a newer archived verification result beyond the accepted acceptance-aligned strongest-demo baseline
 
 ## Current Status
 
@@ -71,6 +73,7 @@ GroundedDeck now carries the accepted acceptance-alignment provider patch on the
 - refreshed strongest-demo live acceptance snapshot: committed under `reports/live-verification-history/strongest-demo-1774362852/`
 - refreshed strongest-demo live acceptance snapshot after acceptance alignment: present under `reports/live-verification-history/strongest-demo-1774366441/`
 - latest archived strongest-demo acceptance snapshot remains structurally identical to the previously accepted baseline
+- remaining worker prompt variants: reviewed and currently superseded by the accepted strongest-demo live baseline, so no new verified worker output is pending integration
 - renderer implementation: still deferred
 
 ## Immediate Next Action
@@ -82,7 +85,7 @@ Use the archived strongest-demo live acceptance snapshot to compare future live 
 1. treat `reports/live-verification-latest.json` and `reports/live-verification-latest.md` as rolling pointers to the latest archived live snapshot
 2. compare future strongest-demo online refreshes against `reports/live-verification-history/strongest-demo-1774366441/acceptance-summary.json`
 3. keep `make verify-online` passing on the real provider path while preserving `make eval`
-4. record any future provider-specific compatibility or acceptance-baseline decisions in repository docs instead of leaving them implicit
+4. wait for a new verified worker patch or a live refresh delta before promoting another provider prompt change
 
 ## Do Not Drift
 

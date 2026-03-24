@@ -6,7 +6,7 @@
 
 ## 会话摘要
 
-GroundedDeck 当前在 curator 分支上已经带着被接受的 acceptance-alignment provider 补丁，当前仓库树上的 `make eval` 保持通过；而且最新一次 strongest-demo 在线验证重新归档后，其 acceptance summary 仍与既有 live 基线结构一致。
+GroundedDeck 仍然保持着已接受的 acceptance-alignment provider 补丁；而这次 curator 轮次确认，剩余 worker prompt 变体都只是已归档 strongest-demo live 基线之外的替代写法，并不存在比当前基线更新且已验证的输出可供整合。
 
 ## 刚刚完成的内容
 
@@ -47,6 +47,8 @@ GroundedDeck 当前在 curator 分支上已经带着被接受的 acceptance-alig
 - 在 acceptance-alignment 补丁落地后重新运行了 `make eval`、`make check-live-env`、`make live-status`、`make verify-online` 和 `make archive-online-verification`
 - 再次刷新 `reports/live-verification-latest.{json,md}`，并将一致的 strongest-demo live 快照归档到 `reports/live-verification-history/strongest-demo-1774366441/`
 - 确认 `reports/live-verification-history/strongest-demo-1774366441/acceptance-summary.json` 与此前接受的 strongest-demo 基线在结构上保持一致
+- 在执行 curator review 之前，将当前 automation worktree 从 detached `HEAD` 恢复并挂接到 `curator/groundeddeck-auto-sprint-2b-curator-20260324`
+- 复核了剩余本地 worker prompt 变体分支，确认它们只是替代性 prompt 结构，没有比当前 acceptance-aligned strongest-demo 基线更新的归档验证结果
 
 ## 当前状态
 
@@ -73,6 +75,7 @@ GroundedDeck 当前在 curator 分支上已经带着被接受的 acceptance-alig
 - 刷新后的 strongest-demo live acceptance snapshot：已提交到 `reports/live-verification-history/strongest-demo-1774362852/`
 - acceptance alignment 之后再次刷新的 strongest-demo live acceptance snapshot：已存在于 `reports/live-verification-history/strongest-demo-1774366441/`
 - 最新归档 strongest-demo acceptance snapshot 与此前接受的基线在结构上保持一致
+- 剩余 worker prompt 变体：已经复核，当前都被已接受 strongest-demo live 基线覆盖，因此没有新的已验证 worker 输出等待整合
 - renderer 实现：仍然延后
 
 ## 立即下一步
@@ -84,7 +87,7 @@ GroundedDeck 当前在 curator 分支上已经带着被接受的 acceptance-alig
 1. 将 `reports/live-verification-latest.json` 和 `reports/live-verification-latest.md` 视为指向最新 live 历史快照的滚动指针
 2. 让后续 strongest-demo 在线刷新结果与 `reports/live-verification-history/strongest-demo-1774366441/acceptance-summary.json` 做对比
 3. 在保留 `make eval` 稳定性的前提下，让 `make verify-online` 在真实 provider 路径上持续可用
-4. 后续如果再出现 provider 兼容性细节或 acceptance 基线决策，必须记录进仓库文档，而不是留在隐式上下文里
+4. 在出现新的已验证 worker 补丁或 live refresh 差异之前，不要继续上升新的 provider prompt 改动
 
 ## 不要漂移
 

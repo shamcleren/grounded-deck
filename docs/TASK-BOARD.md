@@ -9,7 +9,7 @@
 ## Ready Next
 
 - continue improving provider-backed planning and grading against the strongest-demo path without weakening deterministic coverage
-- review whether any remaining worker prompt variants add value beyond the current acceptance-aligned strongest-demo baseline
+- wait for a new verified worker patch or a strongest-demo live-refresh delta before promoting another prompt change
 - keep canonical docs bilingual via separate language files and switch links
 
 ## Later

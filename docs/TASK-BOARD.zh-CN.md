@@ -11,7 +11,7 @@
 ## 下一批待做
 
 - 在不削弱确定性回归覆盖的前提下，继续改进 strongest-demo 路径上的 provider-backed planning 与 grading
-- 复核剩余 worker prompt 变体是否还能在当前 acceptance-aligned strongest-demo 基线之外带来增益
+- 在出现新的已验证 worker 补丁或 strongest-demo live refresh 差异之前，不要继续上升新的 prompt 改动
 - 后续新增 canonical docs 时，保持中英双语并采用独立语言文件
 
 ## 后续
