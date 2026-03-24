@@ -3,7 +3,7 @@
   "provider": "openai-compatible",
   "model": "MiniMax-M2.7",
   "input_path": "fixtures/source-packs/strongest-demo-source-pack.json",
-  "generated_at_unix": 1774353368,
+  "generated_at_unix": 1774362852,
   "artifacts": {
     "normalized_pack": "/tmp/grounded-deck-online/normalized-pack.json",
     "slide_spec": "/tmp/grounded-deck-online/slide-spec.json",

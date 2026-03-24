@@ -43,16 +43,19 @@
 - 使用 MiniMax-M2.7 针对规范 strongest-demo 输入完成并归档了第一次成功在线验证
 - 强化了 OpenAI-compatible provider 路径，使其能够拆分 MiniMax 的推理输出，并兼容 `<think>` 包裹的 JSON 响应
 - 增加了带角色锁的 automation 支持，让更高频的 worker / curator 调度不会发生不安全重叠
+- 整合了已接受的 worker 补丁，围绕 strongest-demo 基线收紧 provider planner 与 grader prompt
+- 补回了 `src/visual` 与 `src/renderer` 包脚手架，使当前仓库树上的 `make eval` 继续保持通过
+- 针对收紧后的 prompt 基线重新执行了 strongest-demo 在线验证，并重新归档了通过的 live 结果
 
 ## 当前唯一下一步
 
-以已归档的 strongest-demo 在线验证为基线，在不削弱确定性回归覆盖的前提下扩展 provider-backed planning。
+决定把刷新后的 strongest-demo 在线输出中的哪些稳定部分上升为未来的回归 fixture 或 acceptance check。
 
 ## 近期优先级
 
-1. 将已归档的 strongest-demo live verification 工件作为第一条被接受的在线基线沉淀进仓库记忆
-2. 在保持 `make eval` 稳定的前提下，继续改进 strongest-demo 路径上的 provider-backed planning 和 grading
-3. 让 `make verify-online` 保持可复用，作为真实 provider 路径的回归探针
+1. 保留第一次已归档 strongest-demo live verification 作为验收基线，并将后续刷新结果与之对比
+2. 决定刷新后的 strongest-demo 在线输出里哪些稳定部分应该提升为回归 fixture 或 acceptance check
+3. 在不削弱确定性回归覆盖的前提下，继续推进 provider-backed planning 改进并保持 `make verify-online` 健康
 
 这次吸收外部评价，只调整优先级，不调整架构边界。环境变量配置约定已经写入 `docs/runtime-config.md`，而且 live 预检现在会拦截占位值。现在 strongest-demo 已经在真实 provider 上跑通一次，接下来要做的是在保留确定性基线的前提下继续扩展 provider-backed planning。
 

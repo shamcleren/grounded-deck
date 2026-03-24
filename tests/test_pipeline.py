@@ -326,10 +326,15 @@ class PipelineFixtureTests(unittest.TestCase):
 
     def test_openai_compatible_provider_can_draft_with_mock_transport(self) -> None:
         expected = load_json(SLIDE_SPEC_FIXTURE)
+        normalized = load_json(STRONGEST_DEMO_NORMALIZED_FIXTURE)
 
         def fake_transport(request: dict) -> dict:
             self.assertEqual(request["json"]["response_format"], {"type": "json_object"})
-            self.assertIn("deck_goal", request["json"]["messages"][1]["content"])
+            self.assertIn("Return only valid JSON matching the slide-spec schema", request["json"]["messages"][0]["content"])
+            self.assertIn("Then add exactly one content slide per source unit.", request["json"]["messages"][1]["content"])
+            self.assertIn("must_include_checks to exactly [unit_id]", request["json"]["messages"][1]["content"])
+            self.assertIn("timeline for chronology/year-based evidence", request["json"]["messages"][1]["content"])
+            self.assertIn("china-ev-market-entry", request["json"]["messages"][1]["content"])
             return {
                 "choices": [
                     {
@@ -351,7 +356,7 @@ class PipelineFixtureTests(unittest.TestCase):
             transport=fake_transport,
         )
 
-        drafted = provider.draft_slide_spec(load_json(NORMALIZED_FIXTURE))
+        drafted = provider.draft_slide_spec(normalized)
         self.assertEqual(drafted, expected)
 
     def test_openai_compatible_provider_rejects_invalid_slide_spec_shape(self) -> None:
@@ -390,9 +395,15 @@ class PipelineFixtureTests(unittest.TestCase):
             "provider": "openai-compatible",
             "model": "gpt-4.1-mini",
         }
+        normalized = load_json(STRONGEST_DEMO_NORMALIZED_FIXTURE)
+        slide_spec = load_json(STRONGEST_DEMO_SLIDE_SPEC_FIXTURE)
 
         def fake_transport(request: dict) -> dict:
+            self.assertIn("Grade strictly against source coverage, slide grounding, and visual-form fit.", request["json"]["messages"][0]["content"])
+            self.assertIn("Check whether each unit-backed content slide uses the appropriate layout_type", request["json"]["messages"][1]["content"])
+            self.assertIn("Prefer fail over partial credit", request["json"]["messages"][1]["content"])
             self.assertIn("slide_spec", request["json"]["messages"][1]["content"])
+            self.assertIn("slide-src-01-sec-01", request["json"]["messages"][1]["content"])
             return {
                 "choices": [
                     {
@@ -415,8 +426,8 @@ class PipelineFixtureTests(unittest.TestCase):
         )
 
         report = provider.grade_slide_spec(
-            load_json(NORMALIZED_FIXTURE),
-            load_json(SLIDE_SPEC_FIXTURE),
+            normalized,
+            slide_spec,
         )
         self.assertEqual(report, expected)
 

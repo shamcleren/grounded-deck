@@ -374,18 +374,71 @@ class OpenAICompatibleProvider(Provider):
             return snippet[:limit] + "..."
         return snippet
 
+    @staticmethod
+    def build_planner_system_prompt() -> str:
+        return (
+            "You are GroundedDeck's planner. "
+            "Return only valid JSON matching the slide-spec schema. "
+            "Required root fields: deck_goal, audience, slides. "
+            "Each slide must include slide_id, title, goal, layout_type, key_points, visual_elements, "
+            "source_bindings, must_include_checks, and speaker_notes. "
+            "Keep the output source-grounded, editable, and auditable. "
+            "Do not invent facts, source bindings, or unit IDs. "
+            "Preserve the source language used in grounded claims where possible."
+        )
+
+    @staticmethod
+    def build_planner_user_prompt(normalized_pack: dict) -> str:
+        return (
+            "Draft a grounded slide spec from this normalized source pack.\n"
+            "Planning rules:\n"
+            "- Start with one cover slide that uses the deck goal and audience.\n"
+            "- Add one summary slide titled 'Decision Backbone' that compresses the minimum grounded claims.\n"
+            "- Then add exactly one content slide per source unit.\n"
+            "- For each content slide, set must_include_checks to exactly [unit_id] and source_bindings to exactly "
+            "[source_binding].\n"
+            "- Choose layout_type from the source structure: timeline for chronology/year-based evidence, comparison "
+            "for tradeoffs or vs framing, process for stepwise entry/action paths, chart for numeric or metric-heavy "
+            "evidence, otherwise summary.\n"
+            "- Keep key_points tightly grounded to the unit claims or source text.\n"
+            "- Keep visual_elements editable and specific to the chosen layout.\n"
+            "- Return JSON only.\n"
+            f"normalized_pack={json.dumps(normalized_pack, ensure_ascii=False)}"
+        )
+
+    @staticmethod
+    def build_grader_system_prompt() -> str:
+        return (
+            "You are GroundedDeck's quality grader. "
+            "Return only valid JSON with status, failures, coverage, grounding, visual_form, provider, and model. "
+            "Required fields: status, failures, coverage, grounding, visual_form. "
+            "Coverage must include required_units and covered_units. "
+            "Grounding must include total_content_slides and grounded_slides. "
+            "Visual_form must include expected_units and matched_units. "
+            "Grade strictly against source coverage, slide grounding, and visual-form fit. "
+            "Report failures for missing or invented bindings, uncovered unit IDs, ungrounded content slides, and "
+            "layout mismatches."
+        )
+
+    @staticmethod
+    def build_grader_user_prompt(normalized_pack: dict, slide_spec: dict) -> str:
+        return (
+            "Grade this slide_spec against the normalized source pack.\n"
+            "Grading rules:\n"
+            "- Count whether every source unit is covered by must_include_checks.\n"
+            "- Count whether every non-cover slide is grounded by source_bindings.\n"
+            "- Check whether each unit-backed content slide uses the appropriate layout_type: timeline, comparison, "
+            "process, chart, or summary.\n"
+            "- Prefer fail over partial credit when required evidence is missing.\n"
+            "- Return JSON only.\n"
+            f"normalized_pack={json.dumps(normalized_pack, ensure_ascii=False)}\n"
+            f"slide_spec={json.dumps(slide_spec, ensure_ascii=False)}"
+        )
+
     def draft_slide_spec(self, normalized_pack: dict) -> dict:
         request_payload = self.build_chat_request(
-            system_prompt=(
-                "You are GroundedDeck's planner. "
-                "Return only valid JSON matching the slide-spec schema. "
-                "Required root fields: deck_goal, audience, slides. "
-                "Each slide must include slide_id, title, goal, layout_type, key_points, visual_elements, source_bindings, must_include_checks."
-            ),
-            user_prompt=(
-                "Draft a grounded slide spec from this normalized source pack:\n"
-                f"{json.dumps(normalized_pack, ensure_ascii=False)}"
-            ),
+            system_prompt=self.build_planner_system_prompt(),
+            user_prompt=self.build_planner_user_prompt(normalized_pack),
             response_format={"type": "json_object"},
         )
         parsed = self.parse_json_response(self.transport(request_payload))
@@ -394,19 +447,8 @@ class OpenAICompatibleProvider(Provider):
 
     def grade_slide_spec(self, normalized_pack: dict, slide_spec: dict) -> dict:
         request_payload = self.build_chat_request(
-            system_prompt=(
-                "You are GroundedDeck's quality grader. "
-                "Return only valid JSON with status, failures, coverage, grounding, visual_form, provider, and model. "
-                "Required fields: status, failures, coverage, grounding, visual_form. "
-                "Coverage must include required_units and covered_units. "
-                "Grounding must include total_content_slides and grounded_slides. "
-                "Visual_form must include expected_units and matched_units."
-            ),
-            user_prompt=(
-                "Grade this slide_spec against the normalized source pack.\n"
-                f"normalized_pack={json.dumps(normalized_pack, ensure_ascii=False)}\n"
-                f"slide_spec={json.dumps(slide_spec, ensure_ascii=False)}"
-            ),
+            system_prompt=self.build_grader_system_prompt(),
+            user_prompt=self.build_grader_user_prompt(normalized_pack, slide_spec),
             response_format={"type": "json_object"},
         )
         parsed = self.parse_json_response(self.transport(request_payload))

@@ -4,7 +4,7 @@
 
 ## Session Summary
 
-GroundedDeck now has a canonical strongest-demo bundle, an explicit automation governance layer, the deterministic fixture-backed pipeline, and one archived successful online verification run against the strongest-demo input.
+GroundedDeck now carries the accepted provider-prompt tightening patch on a curator branch, keeps `make eval` green on the current tree, and has a freshly re-verified strongest-demo online result archived alongside the earlier accepted live baseline.
 
 ## What Was Just Completed
 
@@ -31,6 +31,12 @@ GroundedDeck now has a canonical strongest-demo bundle, an explicit automation g
 - configured the live provider path against MiniMax-M2.7 and archived the first successful strongest-demo online verification under `reports/live-verification-latest.{json,md}`
 - hardened the OpenAI-compatible provider integration so MiniMax reasoning output is split cleanly and `<think>`-wrapped JSON responses can still be parsed and diagnosed
 - added a repository-owned automation role-lock utility so worker and curator schedules can be safely increased without overlapping substantive work
+- integrated the accepted worker patch from `auto/groundeddeck-auto-sprint/provider-planning-prompt-tightening`
+- tightened the OpenAI-compatible provider planner and grader prompts around the strongest-demo baseline structure, layout expectations, and grading focus
+- restored `src/visual/__init__.py` and `src/renderer/__init__.py` so the current repository tree satisfies the self-acceptance completeness checks
+- re-ran `python3 -m pytest tests/test_pipeline.py` and `make eval`, both of which pass on the curator branch
+- linked `.env.runtime.local` from the canonical repo into this worktree, then ran `make check-live-env`, `make live-status`, `make verify-online`, and `make archive-online-verification`
+- refreshed `reports/live-verification-latest.{json,md}` with a passing strongest-demo online verification for the tightened prompt baseline
 
 ## Current Status
 
@@ -49,16 +55,19 @@ GroundedDeck now has a canonical strongest-demo bundle, an explicit automation g
 - automation role locks for higher-frequency schedules: present
 - first successful strongest-demo online verification: archived in `reports/live-verification-latest.json` and `reports/live-verification-latest.md`
 - near-term focus: expand provider-backed planning from the verified strongest-demo baseline without weakening deterministic evals
+- provider prompt tightening for strongest-demo: integrated on the current curator branch
+- self-acceptance after prompt tightening: passing
+- strongest-demo online verification after prompt tightening: passing and re-archived
 - renderer implementation: still deferred
 
 ## Immediate Next Action
 
-Use the archived strongest-demo online verification as the baseline for the next provider-backed planning iteration while preserving deterministic regression coverage.
+Decide which parts of the refreshed strongest-demo online output should become future regression fixtures or acceptance checks.
 
 ## First Concrete Tasks
 
 1. treat `reports/live-verification-latest.json` and `reports/live-verification-latest.md` as the canonical first live-run memory
-2. improve provider-backed planning and grading behavior against the strongest-demo path
+2. compare the refreshed strongest-demo online output against the first accepted live baseline instead of treating every new pass as interchangeable
 3. keep `make verify-online` passing on the real provider path while preserving `make eval`
 4. record any future provider-specific compatibility decisions in repository docs instead of leaving them implicit
 

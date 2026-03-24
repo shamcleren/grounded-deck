@@ -6,11 +6,11 @@
 
 ## 进行中
 
-- 以已验证的 strongest-demo 基线为起点，在不削弱确定性回归覆盖的前提下扩展 provider-backed planning
+- 决定把刷新后的 strongest-demo 在线输出中的哪些部分上升为未来的回归 fixture 或 acceptance check
 
 ## 下一批待做
 
-- 收紧 strongest-demo 路径上的 provider-backed planning 和 grading prompt
+- 在不削弱确定性回归覆盖的前提下，继续改进 strongest-demo 路径上的 provider-backed planning 与 grading
 - 决定 live strongest-demo 输出里的哪些部分应该上升为未来的回归 fixture 或 acceptance check
 - 后续新增 canonical docs 时，保持中英双语并采用独立语言文件
 
@@ -23,7 +23,7 @@
 
 ## 阻塞项
 
-- strongest-demo live verification 路径当前无阻塞项
+- 当前 strongest-demo planning 基线没有阻塞项
 
 ## 更新规则
 

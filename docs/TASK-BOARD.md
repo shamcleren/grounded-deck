@@ -4,11 +4,11 @@
 
 ## In Progress
 
-- expand provider-backed planning from the verified strongest-demo baseline without weakening deterministic regression coverage
+- decide which parts of the refreshed strongest-demo online output should become future regression fixtures or acceptance checks
 
 ## Ready Next
 
-- tighten provider-backed planning and grading prompts against the strongest-demo path
+- continue improving provider-backed planning and grading against the strongest-demo path without weakening deterministic coverage
 - decide which portions of the live strongest-demo output should become future regression fixtures or acceptance checks
 - keep canonical docs bilingual via separate language files and switch links
 
@@ -21,7 +21,7 @@
 
 ## Blockers
 
-- none for the strongest-demo live verification path
+- none for the current strongest-demo planning baseline
 
 ## Update Rule
 

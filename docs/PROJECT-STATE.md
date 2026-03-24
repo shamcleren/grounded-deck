@@ -41,16 +41,19 @@ The strongest deterministic planning demo is now curated back onto `main` as a c
 - captured and archived the first successful online verification run against the canonical strongest-demo input with MiniMax-M2.7
 - hardened the OpenAI-compatible provider path for MiniMax by splitting reasoning output and tolerating `<think>`-wrapped JSON responses
 - added lock-protected automation support so higher-frequency worker and curator schedules do not overlap unsafely
+- integrated the accepted worker patch that tightens provider planner and grader prompts around the strongest-demo baseline
+- restored the `src/visual` and `src/renderer` package scaffolds so `make eval` remains green on the current repository tree
+- refreshed strongest-demo online verification for the tightened prompt baseline and re-archived a passing live result
 
 ## Current Next Action
 
-Use the archived strongest-demo live verification as the baseline for expanding provider-backed planning without weakening deterministic regression coverage.
+Decide which parts of the refreshed strongest-demo online output should become future regression fixtures or acceptance checks.
 
 ## Immediate Priorities
 
-1. preserve the archived strongest-demo live verification artifact in repository memory as the first accepted online baseline
-2. improve provider-backed planning and grading against the strongest-demo path while keeping `make eval` stable
-3. keep `make verify-online` healthy as a reusable regression probe for the real provider path
+1. preserve the first archived strongest-demo live verification as the acceptance baseline while comparing future refreshes against it
+2. decide which stable aspects of the refreshed strongest-demo online output should be promoted into regression fixtures or acceptance checks
+3. keep provider-backed planning improvements and `make verify-online` healthy without weakening deterministic regression coverage
 
 External feedback has been absorbed as a prioritization change, not an architecture change. The environment-variable configuration contract is documented in `docs/runtime-config.md`, placeholder values are rejected during live preflight, and the strongest-demo live path has now been proven once against a real provider while preserving the deterministic baseline.
 
