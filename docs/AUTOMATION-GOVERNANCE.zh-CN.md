@@ -76,6 +76,7 @@ verifier 职责：
 - 运行 `make verify-online`
 - 运行 `make archive-online-verification`
 - 确认 `reports/live-verification-latest.json` 和 `reports/live-verification-latest.md` 已生成
+- 如果 automation worktree 里没有 `.env.runtime.local`，但 canonical main worktree 里有，则在 live 检查前临时创建 symlink 或拷贝进去，并且绝不提交这个 secrets 文件
 
 verifier 不得静默用 deterministic 输出冒充 online verification。
 
@@ -145,6 +146,7 @@ automation prompt 应明确写出：
 - 一次运行只推进一个子任务
 - 在声明可交付前先跑 `make eval`
 - 在运行 `make curator-finalize` 或声称分支可合并之前，先形成一个干净的原子提交
+- 如果需要做 live verification，而当前 automation worktree 缺少 `.env.runtime.local`，则从 canonical main worktree 引入该文件后再执行，但绝不提交 secrets 文件
 - 遇到真实阻塞时停止，不要顺手扩 scope
 
 ## GroundedDeck 当前策略

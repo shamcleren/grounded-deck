@@ -76,6 +76,7 @@ Verifier responsibilities:
 - run `make verify-online`
 - run `make archive-online-verification`
 - confirm `reports/live-verification-latest.json` and `reports/live-verification-latest.md` exist
+- if the automation worktree does not contain `.env.runtime.local` but the canonical main worktree does, create a temporary symlink or copy before live checks and never commit it
 
 Verifier runs must not silently substitute deterministic output for online verification.
 
@@ -145,6 +146,7 @@ Automation prompts should explicitly say:
 - only one subtask should be advanced in one run
 - run `make eval` before declaring a branch ready
 - create a clean atomic commit before running `make curator-finalize` or claiming a branch is ready to merge
+- when live verification is required, bootstrap `.env.runtime.local` into the automation worktree from the canonical main worktree if needed, but never commit the secrets file
 - stop when a real blocker is reached instead of broadening scope
 
 ## Current Policy For GroundedDeck
