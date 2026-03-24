@@ -25,6 +25,12 @@
 - duplication 和 coherence grader
 - 生成 deck review 报告
 
+## 里程碑 3.5：最强 Demo 证明
+
+- 一个最强的端到端 planning demo case
+- coverage、grounding、visual-form selection 的显式 success metrics
+- 一套可复现的工件组合，同时展示 source pack、`slide spec` 和 quality report
+
 ## 里程碑 4：可编辑渲染
 
 - 原生文本渲染
@@ -36,4 +42,5 @@
 
 - 示例数据集
 - 可复现实例输出
+- 与通用 AI PPT 工作流的对比样例
 - 面向发布候选版本的 benchmark rubric

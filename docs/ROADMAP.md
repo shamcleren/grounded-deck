@@ -23,6 +23,12 @@
 - duplication and coherence grader
 - deck review report generation
 
+## Milestone 3.5: Strongest Demo Proof
+
+- one strongest end-to-end planning demo case
+- explicit success metrics for coverage, grounding, and visual-form selection
+- reproducible artifact bundle that shows source pack, `slide spec`, and quality report together
+
 ## Milestone 4: Editable Rendering
 
 - native text rendering
@@ -34,4 +40,5 @@
 
 - sample datasets
 - reproducible output examples
+- comparison case against generic AI PPT workflows
 - benchmark rubric for release candidates

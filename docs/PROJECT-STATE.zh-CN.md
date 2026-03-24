@@ -38,15 +38,15 @@
 
 ## 当前唯一下一步
 
-在不削弱确定性回归覆盖的前提下，留下一次成功的在线验证记录。
+先产出一个最强的端到端 planning demo，再在不削弱确定性回归覆盖的前提下，留下一次成功的在线验证记录。
 
 ## 近期优先级
 
-1. 把 `.env.runtime.local` 里的占位值替换成真实 provider 配置
-2. 保留 fixture 驱动的确定性输出，作为 `make eval` 的回归基线
-3. 留下一次成功的在线验证工件，并根据真实响应继续收紧 prompt
+1. 定义一个最强 demo case，让 grounded source material 稳定产出有说服力的 `slide spec`
+2. 明确 planning quality 的 success metrics，包括 coverage、grounding 和 visual-form 选择质量
+3. 把 `.env.runtime.local` 里的占位值替换成真实 provider 配置，并留下一次成功的在线验证工件
 
-环境变量配置约定已经写入 `docs/runtime-config.md`，而且 live 预检现在会拦截占位值。剩余工作是沉淀第一次成功在线运行的结果。
+这次吸收外部评价，只调整优先级，不调整架构边界。环境变量配置约定已经写入 `docs/runtime-config.md`，而且 live 预检现在会拦截占位值。接下来要做的是在保留确定性基线的前提下，用一个最强 demo 证明产品价值。
 
 ## 当前约束
 
@@ -55,6 +55,7 @@
 - 中文渲染质量是一等需求
 - 架构必须保持 source-grounded 且可审计
 - 仓库文档必须足以支持 AI 跨会话继续工作
+- 可以因为外部反馈调整优先级和 demo 策略，但不能无记录地改动架构边界
 
 ## 第一阶段完成定义
 

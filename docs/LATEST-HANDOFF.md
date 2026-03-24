@@ -23,6 +23,7 @@ GroundedDeck now includes a deterministic fixture-backed pipeline slice in addit
 - added an opt-in `make verify-online` path that refuses deterministic fallback
 - added automatic verification-summary artifacts for runtime executions
 - tightened live-env checks so placeholder values such as `REPLACE_ME` are treated as invalid
+- absorbed external product feedback by narrowing near-term focus toward a strongest demo and planning-quality proof points without changing architecture boundaries
 
 ## Current Status
 
@@ -36,18 +37,19 @@ GroundedDeck now includes a deterministic fixture-backed pipeline slice in addit
 - placeholder env detection: present
 - live status correctly reports placeholder config as not ready
 - live credentials / real backend: not yet configured
+- near-term focus: strongest end-to-end planning demo and explicit planning-quality metrics
 - renderer implementation: still deferred
 
 ## Immediate Next Action
 
-Capture one successful online verification run while preserving the deterministic fixture pipeline.
+Produce one strongest end-to-end planning demo while preserving the deterministic fixture pipeline, then capture one successful online verification run.
 
 ## First Concrete Tasks
 
-1. replace placeholder values in `.env.runtime.local` with real provider settings
-2. run `make check-live-env`, `make live-status`, and `make verify-online`
-3. archive the resulting `verification-summary.json`
-4. tighten prompts and validators based on observed live outputs
+1. choose one strongest demo input pack and define what “convincing output” means
+2. write explicit planning-quality success metrics for coverage, grounding, and visual-form selection
+3. replace placeholder values in `.env.runtime.local` with real provider settings
+4. run `make check-live-env`, `make live-status`, `make verify-online`, and archive the resulting `verification-summary.json`
 
 ## Do Not Drift
 

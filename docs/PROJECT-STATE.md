@@ -36,15 +36,15 @@ Foundation complete. A deterministic baseline pipeline and provider abstraction 
 
 ## Current Next Action
 
-Capture one successful online verification run without weakening deterministic regression coverage.
+Produce one strongest end-to-end planning demo, then capture one successful online verification run without weakening deterministic regression coverage.
 
 ## Immediate Priorities
 
-1. replace placeholder values in `.env.runtime.local` with real provider settings
-2. keep fixture-based deterministic outputs as regression baselines for `make eval`
-3. capture one successful online verification artifact and harden prompts from observed responses
+1. define one strongest demo case that takes grounded source material to a convincing `slide spec`
+2. make planning quality explicit with coverage, grounding, and visual-form success metrics
+3. replace placeholder values in `.env.runtime.local` with real provider settings and capture one successful online verification artifact
 
-The environment-variable configuration contract is now documented in `docs/runtime-config.md`, and placeholder values are now rejected during live preflight. The remaining work is capturing the first successful online run.
+External feedback has been absorbed as a prioritization change, not an architecture change. The environment-variable configuration contract is documented in `docs/runtime-config.md`, placeholder values are rejected during live preflight, and the next work is to prove product value with a strongest demo while preserving the deterministic baseline.
 
 ## Active Constraints
 
@@ -53,6 +53,7 @@ The environment-variable configuration contract is now documented in `docs/runti
 - Chinese rendering quality is a first-class requirement
 - architecture must remain source-grounded and auditable
 - repository docs must stay sufficient for AI continuation
+- feedback may change priorities and demo strategy, but must not silently change architecture boundaries
 
 ## Definition of Done for Phase One
 

@@ -25,6 +25,7 @@ GroundedDeck 现在除了连续性仓库结构之外，还包含一条由 fixtur
 - 添加了拒绝 deterministic fallback 的 `make verify-online` 路径
 - 为运行时执行增加了自动生成的 verification-summary 工件
 - 收紧了 live env 检查，`REPLACE_ME` 这类占位值现在会被视为无效配置
+- 吸收了一轮外部产品反馈，把近期重点收敛到最强 demo 和 planning-quality 证明点，但没有改动架构边界
 
 ## 当前状态
 
@@ -38,18 +39,19 @@ GroundedDeck 现在除了连续性仓库结构之外，还包含一条由 fixtur
 - placeholder env detection：已具备
 - live status 已能把占位配置识别为未就绪
 - live 凭证 / 真实后端：尚未配置
+- 近期重点：最强端到端 planning demo，以及显式 planning-quality metrics
 - renderer 实现：仍然延后
 
 ## 立即下一步
 
-在保留确定性 fixture pipeline 的前提下，留下一次成功的在线验证记录。
+在保留确定性 fixture pipeline 的前提下，先做一个最强端到端 planning demo，再留下一次成功的在线验证记录。
 
 ## 第一批具体任务
 
-1. 把 `.env.runtime.local` 里的占位值替换成真实 provider 配置
-2. 运行 `make check-live-env`、`make live-status` 和 `make verify-online`
-3. 归档生成的 `verification-summary.json`
-4. 根据真实输出继续收紧 prompt 和 validator
+1. 选一个最强 demo 输入包，并定义“有说服力输出”的标准
+2. 写清楚 coverage、grounding、visual-form selection 的 planning-quality success metrics
+3. 把 `.env.runtime.local` 里的占位值替换成真实 provider 配置
+4. 运行 `make check-live-env`、`make live-status`、`make verify-online`，并归档生成的 `verification-summary.json`
 
 ## 不要漂移
 

@@ -10,6 +10,8 @@
 
 ## 下一批待做
 
+- 定义一个最强的端到端 planning demo case
+- 写清 coverage、grounding、visual-form accuracy 的 success metrics
 - 把 `.env.runtime.local` 中的占位值替换为真实配置，并跑通第一次 `make verify-online`
 - 留下一次成功 live verification 的记录或工件形态
 - 把第一次成功的 `verification-summary.json` 工件形态沉淀进仓库记忆
@@ -19,6 +21,7 @@
 
 - 用 provider-backed planning 替换当前确定性 planner 启发式
 - 增加模型辅助的 narrative 和 visual-form grading
+- 在最强 demo 之后，再补一个和通用 AI PPT 工具的公开对比样例
 - 在 planning contract 稳定之前暂缓 renderer 实现
 
 ## 阻塞项
