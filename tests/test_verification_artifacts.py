@@ -10,6 +10,7 @@ from src.runtime.verification import (
     archive_verification_summary,
     build_live_acceptance_snapshot,
     build_failure_summary,
+    compare_acceptance_summaries,
     render_verification_report,
     render_live_verification_checklist,
     render_live_verification_status,
@@ -342,6 +343,50 @@ class VerificationArtifactTests(unittest.TestCase):
         )
 
         self.assertEqual(rebuilt, expected)
+
+    def test_latest_strongest_demo_refresh_matches_accepted_baseline_except_timestamp(self) -> None:
+        accepted = json.loads(
+            (
+                ROOT
+                / "reports"
+                / "live-verification-history"
+                / "strongest-demo-1774370225"
+                / "acceptance-summary.json"
+            ).read_text(encoding="utf-8")
+        )
+        latest_refresh = json.loads(
+            (
+                ROOT
+                / "reports"
+                / "live-verification-history"
+                / "strongest-demo-1774374429"
+                / "acceptance-summary.json"
+            ).read_text(encoding="utf-8")
+        )
+
+        self.assertEqual(compare_acceptance_summaries(accepted, latest_refresh), [])
+
+    def test_compare_acceptance_summaries_reports_non_timestamp_deltas(self) -> None:
+        baseline = {
+            "generated_at_unix": 1,
+            "slide_count": 6,
+            "intro_slide": {"title": "Baseline"},
+        }
+        candidate = {
+            "generated_at_unix": 2,
+            "slide_count": 5,
+            "intro_slide": {"title": "Changed"},
+        }
+
+        differences = compare_acceptance_summaries(baseline, candidate)
+
+        self.assertEqual(
+            differences,
+            [
+                "acceptance_summary.intro_slide.title: baseline='Baseline' candidate='Changed'",
+                "acceptance_summary.slide_count: baseline=6 candidate=5",
+            ],
+        )
 
 
 if __name__ == "__main__":

@@ -4,7 +4,7 @@
 
 ## Session Summary
 
-GroundedDeck still uses the archived strongest-demo acceptance snapshot as the provider-planning baseline, and this curator pass confirmed there is no newer verified worker output to promote beyond the accepted `strongest-demo-1774370225` live snapshot. The rolling live pointer has now been refreshed to a newer passing run at `strongest-demo-1774374429`, which remains structurally identical to the accepted baseline aside from the timestamp.
+GroundedDeck still uses the archived strongest-demo acceptance snapshot as the provider-planning baseline, and this curator pass promoted the accepted worker patch from `auto/groundeddeck-auto-sprint-b/grading-acceptance-delta-check`. The rolling live pointer now references a newer passing run at `strongest-demo-1774381550`, and the new comparison helper confirms it remains structurally identical to the accepted `strongest-demo-1774370225` baseline aside from the timestamp.
 
 ## What Was Just Completed
 
@@ -62,6 +62,11 @@ GroundedDeck still uses the archived strongest-demo acceptance snapshot as the p
 - linked `.env.runtime.local` from the canonical repo into this worktree, then ran `make check-live-env`, `make live-status`, `make verify-online`, and `make archive-online-verification` for the baseline-pointer alignment change
 - observed one failed live refresh under `reports/live-verification-history/strongest-demo-1774374274/`, then re-ran live verification and archived a passing strongest-demo live snapshot under `reports/live-verification-history/strongest-demo-1774374429/`
 - confirmed `reports/live-verification-history/strongest-demo-1774374429/acceptance-summary.json` matches the accepted strongest-demo baseline structurally aside from the run timestamp
+- reviewed the remaining worker branches again and accepted `auto/groundeddeck-auto-sprint-b/grading-acceptance-delta-check` because it codifies the current strongest-demo acceptance-snapshot comparison rule instead of introducing another unverified prompt variant
+- integrated the accepted worker patch so `src/runtime/verification.py` now exposes `compare_acceptance_summaries()` and deterministic tests assert that only `generated_at_unix` may differ between accepted and refreshed strongest-demo acceptance summaries
+- linked `.env.runtime.local` from the canonical repo into this worktree, then ran `make check-live-env`, `make live-status`, `make verify-online`, and `make archive-online-verification` for the acceptance-delta comparison patch
+- observed one transient live grading-format failure while retrying `make verify-online`, then re-ran live verification successfully and archived a passing strongest-demo live snapshot under `reports/live-verification-history/strongest-demo-1774381550/`
+- confirmed `reports/live-verification-history/strongest-demo-1774381550/acceptance-summary.json` matches the accepted strongest-demo baseline structurally aside from the run timestamp
 
 ## Current Status
 
@@ -90,13 +95,14 @@ GroundedDeck still uses the archived strongest-demo acceptance snapshot as the p
 - strongest-demo prompt guardrails now load their baseline from the archived acceptance summary instead of duplicating constants in code
 - strongest-demo summary-slide prompt rules now require explicit empty evidence arrays, which restored live provider compliance with the slide-spec validator
 - refreshed strongest-demo live acceptance snapshot after the acceptance-summary-driven guardrail patch: present under `reports/live-verification-history/strongest-demo-1774370225/`
-- most recent passing strongest-demo live refresh after the baseline-pointer alignment: present under `reports/live-verification-history/strongest-demo-1774374429/`
+- strongest-demo acceptance-delta comparison helper: present in `src/runtime/verification.py` with deterministic regression coverage
+- most recent passing strongest-demo live refresh after the acceptance-delta comparison patch: present under `reports/live-verification-history/strongest-demo-1774381550/`
 - latest archived strongest-demo live refresh remains structurally aligned with the accepted baseline; only the run timestamp changed
 - latest archived strongest-demo acceptance snapshot remains structurally identical to the previously accepted baseline
 - canonical strongest-demo docs now reference the repository-owned accepted live snapshot at `reports/live-verification-history/strongest-demo-1774370225/`
 - provider guardrail code, deterministic tests, and canonical next-step docs now point at the same accepted strongest-demo snapshot: `reports/live-verification-history/strongest-demo-1774370225/`
-- the latest rolling live pointer now references `reports/live-verification-history/strongest-demo-1774374429/`, while the accepted strongest-demo baseline remains `reports/live-verification-history/strongest-demo-1774370225/`
-- remaining worker prompt variants: reviewed and currently superseded by the accepted strongest-demo live baseline, so no new verified worker output is pending integration
+- the latest rolling live pointer now references `reports/live-verification-history/strongest-demo-1774381550/`, while the accepted strongest-demo baseline remains `reports/live-verification-history/strongest-demo-1774370225/`
+- remaining worker prompt variants: reviewed and currently unverified against a newer archived strongest-demo acceptance delta, so no further worker output is pending integration
 - renderer implementation: still deferred
 
 ## Immediate Next Action
@@ -108,7 +114,7 @@ Use the archived strongest-demo live acceptance snapshot to compare future live 
 1. treat `reports/live-verification-latest.json` and `reports/live-verification-latest.md` as rolling pointers to the latest archived live snapshot
 2. compare future strongest-demo online refreshes against `reports/live-verification-history/strongest-demo-1774370225/acceptance-summary.json`
 3. keep `make verify-online` passing on the real provider path while preserving `make eval`
-4. wait for a new verified worker patch or a live refresh delta before promoting another provider prompt change
+4. wait for a new verified worker patch or a live refresh delta beyond `strongest-demo-1774381550` before promoting another provider prompt change
 
 ## Do Not Drift
 

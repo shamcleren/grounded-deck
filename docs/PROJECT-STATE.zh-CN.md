@@ -54,6 +54,8 @@
 - 在 acceptance-summary 驱动的 guardrail 补丁落地后再次刷新 strongest-demo 在线验证，并将结构一致的新 live 快照归档到 `reports/live-verification-history/strongest-demo-1774370225/`
 - 将 strongest-demo provider guardrail 基线和确定性测试统一指向已接受的仓库内快照 `reports/live-verification-history/strongest-demo-1774370225/`
 - 在基线指针统一后再次刷新 strongest-demo 在线验证，并将结构一致的新 live 快照归档到 `reports/live-verification-history/strongest-demo-1774374429/`
+- 整合了 `auto/groundeddeck-auto-sprint-b/grading-acceptance-delta-check` 上被接受的 worker 补丁，让 strongest-demo acceptance-summary 的对比逻辑在代码和测试中显式化，并且只容忍 `generated_at_unix` 变化
+- 在 acceptance-delta comparison 补丁落地后再次刷新 strongest-demo 在线验证，并将结构一致的新 live 快照归档到 `reports/live-verification-history/strongest-demo-1774381550/`
 
 ## 当前唯一下一步
 

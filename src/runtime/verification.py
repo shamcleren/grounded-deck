@@ -19,6 +19,63 @@ PLACEHOLDER_VALUES = {
 }
 
 
+def _strip_acceptance_summary_keys(value: object, ignored_keys: set[str]) -> object:
+    if isinstance(value, dict):
+        return {
+            key: _strip_acceptance_summary_keys(item, ignored_keys)
+            for key, item in value.items()
+            if key not in ignored_keys
+        }
+    if isinstance(value, list):
+        return [_strip_acceptance_summary_keys(item, ignored_keys) for item in value]
+    return value
+
+
+def compare_acceptance_summaries(
+    baseline: dict,
+    candidate: dict,
+    *,
+    ignored_keys: set[str] | None = None,
+) -> list[str]:
+    ignored = {"generated_at_unix"} if ignored_keys is None else set(ignored_keys)
+
+    normalized_baseline = _strip_acceptance_summary_keys(baseline, ignored)
+    normalized_candidate = _strip_acceptance_summary_keys(candidate, ignored)
+    if normalized_baseline == normalized_candidate:
+        return []
+
+    differences: list[str] = []
+
+    def _walk(path: str, left: object, right: object) -> None:
+        if type(left) is not type(right):
+            differences.append(
+                f"{path}: type mismatch baseline={type(left).__name__} candidate={type(right).__name__}"
+            )
+            return
+        if isinstance(left, dict):
+            left_keys = set(left.keys())
+            right_keys = set(right.keys())
+            for missing in sorted(left_keys - right_keys):
+                differences.append(f"{path}.{missing}: missing from candidate")
+            for added in sorted(right_keys - left_keys):
+                differences.append(f"{path}.{added}: unexpected in candidate")
+            for key in sorted(left_keys & right_keys):
+                _walk(f"{path}.{key}", left[key], right[key])
+            return
+        if isinstance(left, list):
+            if len(left) != len(right):
+                differences.append(f"{path}: length mismatch baseline={len(left)} candidate={len(right)}")
+                return
+            for index, (left_item, right_item) in enumerate(zip(left, right)):
+                _walk(f"{path}[{index}]", left_item, right_item)
+            return
+        if left != right:
+            differences.append(f"{path}: baseline={left!r} candidate={right!r}")
+
+    _walk("acceptance_summary", normalized_baseline, normalized_candidate)
+    return differences
+
+
 def render_verification_report(summary: dict) -> str:
     lines = [
         "# Live Verification Report",

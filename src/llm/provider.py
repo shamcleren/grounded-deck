@@ -476,6 +476,7 @@ class OpenAICompatibleProvider(Provider):
             f"- Slides 2-5 must also keep exact per-slide evidence wiring: {unit_binding_expectations}.\n"
             "- Slide 6 must be titled 'Decision Backbone', use layout_type 'summary', set source_bindings to all source units, and set must_include_checks to [].\n"
             f"- Slide 6 source_bindings must be exactly {decision_backbone_bindings} in that order.\n"
+            "- Treat generated_at_unix as archival metadata only; every other acceptance-summary field must remain structurally identical to the accepted strongest-demo baseline.\n"
             f"- Preserve acceptance-summary comparability: grounded_content_slides must be {grounded_content_slides} of {total_content_slides}, covered_unit_ids must be exactly {covered_unit_ids}, and visual_matched_unit_ids must be exactly {visual_matched_unit_ids}.\n"
             "- Keep the strongest-demo slide titles bilingual exactly where shown above.\n"
         )
@@ -492,6 +493,7 @@ class OpenAICompatibleProvider(Provider):
         return (
             "Strongest-demo accepted live baseline checks:\n"
             f"- Compare the output structurally against the archived acceptance snapshot '{cls.STRONGEST_DEMO_ACCEPTANCE_SNAPSHOT.as_posix()}' before treating it as equivalent to the strongest-demo baseline.\n"
+            "- Treat generated_at_unix as the only tolerated archival delta; all other acceptance-summary fields must match the accepted baseline exactly.\n"
             "- Fail if slide_count is not exactly 6.\n"
             f"- Fail if layout_sequence is not exactly {expected_sequence}.\n"
             f"- Fail if slide 1 is not a summary slide titled '{intro_title}' with source_bindings == [] and must_include_checks == [].\n"

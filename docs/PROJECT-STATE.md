@@ -52,6 +52,8 @@ The strongest deterministic planning demo is now curated back onto `main` as a c
 - refreshed strongest-demo online verification after the acceptance-summary-driven guardrail patch and archived a structurally matching live snapshot under `reports/live-verification-history/strongest-demo-1774370225/`
 - repointed the strongest-demo provider guardrail baseline and deterministic tests to the accepted repository-owned snapshot `reports/live-verification-history/strongest-demo-1774370225/`
 - refreshed strongest-demo online verification after the baseline-pointer alignment and archived another structurally matching live snapshot under `reports/live-verification-history/strongest-demo-1774374429/`
+- integrated the accepted worker patch from `auto/groundeddeck-auto-sprint-b/grading-acceptance-delta-check` so strongest-demo acceptance-summary comparisons are explicit in code and tests while tolerating only `generated_at_unix`
+- refreshed strongest-demo online verification after the acceptance-delta comparison patch and archived another structurally matching live snapshot under `reports/live-verification-history/strongest-demo-1774381550/`
 
 ## Current Next Action
 
