@@ -6,6 +6,8 @@
 
 GroundedDeck still uses the archived strongest-demo acceptance snapshot as the provider-planning baseline, and this curator pass promoted the accepted worker patch from `auto/groundeddeck-auto-sprint-b/grading-acceptance-delta-check`. The rolling live pointer now references a newer passing run at `strongest-demo-1774381550`, and the new comparison helper confirms it remains structurally identical to the accepted `strongest-demo-1774370225` baseline aside from the timestamp.
 
+This follow-up curator review found that `main` already contains that accepted integration, while all remaining ahead-of-`main` worker branches are still unverified strongest-demo prompt variants. No new archived strongest-demo verification beyond `strongest-demo-1774381550` exists, so no additional worker output is currently eligible for promotion.
+
 ## What Was Just Completed
 
 - added [AGENTS.md](../AGENTS.md) as the AI operating contract
@@ -67,6 +69,9 @@ GroundedDeck still uses the archived strongest-demo acceptance snapshot as the p
 - linked `.env.runtime.local` from the canonical repo into this worktree, then ran `make check-live-env`, `make live-status`, `make verify-online`, and `make archive-online-verification` for the acceptance-delta comparison patch
 - observed one transient live grading-format failure while retrying `make verify-online`, then re-ran live verification successfully and archived a passing strongest-demo live snapshot under `reports/live-verification-history/strongest-demo-1774381550/`
 - confirmed `reports/live-verification-history/strongest-demo-1774381550/acceptance-summary.json` matches the accepted strongest-demo baseline structurally aside from the run timestamp
+- recovered this automation worktree from detached `HEAD` onto `curator/groundeddeck-auto-sprint-2c-20260325-r3` before reviewing candidate branches
+- confirmed `main` already points at `f6f72bd` (`Codify strongest-demo acceptance delta checks`), which is the latest accepted curator integration
+- re-reviewed every ahead-of-`main` worker branch and confirmed they remain one-commit strongest-demo prompt variants without a newer archived live verification result to justify promotion
 
 ## Current Status
 
@@ -103,6 +108,7 @@ GroundedDeck still uses the archived strongest-demo acceptance snapshot as the p
 - provider guardrail code, deterministic tests, and canonical next-step docs now point at the same accepted strongest-demo snapshot: `reports/live-verification-history/strongest-demo-1774370225/`
 - the latest rolling live pointer now references `reports/live-verification-history/strongest-demo-1774381550/`, while the accepted strongest-demo baseline remains `reports/live-verification-history/strongest-demo-1774370225/`
 - remaining worker prompt variants: reviewed and currently unverified against a newer archived strongest-demo acceptance delta, so no further worker output is pending integration
+- current curator review result: no promotable verified worker output beyond what `main` already contains
 - renderer implementation: still deferred
 
 ## Immediate Next Action

@@ -8,6 +8,8 @@
 
 GroundedDeck 仍然以已归档的 strongest-demo acceptance snapshot 作为 provider-planning 基线；而这次 curator 轮次已经把 `auto/groundeddeck-auto-sprint-b/grading-acceptance-delta-check` 上被接受的 worker 补丁提升到主线准备分支。当前滚动 live 指针已经刷新到新的通过快照 `strongest-demo-1774381550`，新的 comparison helper 也确认它除时间戳外仍与已接受的 `strongest-demo-1774370225` 基线一致。
 
+这次后续 curator 复核还确认，`main` 已经包含这次被接受的整合结果；其余所有领先 `main` 的 worker 分支仍然只是尚未验证的 strongest-demo prompt 变体。由于目前没有比 `strongest-demo-1774381550` 更新的已归档 strongest-demo 验证结果，因此暂时没有新的 worker 输出可以继续提升。
+
 ## 刚刚完成的内容
 
 - 添加了 [AGENTS.md](../AGENTS.md) 作为 AI 操作契约
@@ -69,6 +71,9 @@ GroundedDeck 仍然以已归档的 strongest-demo acceptance snapshot 作为 pro
 - 将 canonical repo 中的 `.env.runtime.local` 链接到当前 worktree，然后为这次 acceptance-delta comparison 补丁运行了 `make check-live-env`、`make live-status`、`make verify-online` 和 `make archive-online-verification`
 - 第一次重试 `make verify-online` 时遇到一次瞬时的 live grader 格式失败；随后重新执行 live verification，并将通过的 strongest-demo live 快照归档到 `reports/live-verification-history/strongest-demo-1774381550/`
 - 确认 `reports/live-verification-history/strongest-demo-1774381550/acceptance-summary.json` 除运行时间戳外，与已接受 strongest-demo 基线在结构上保持一致
+- 在复核候选分支之前，将这次 automation worktree 从 detached `HEAD` 恢复并挂接到 `curator/groundeddeck-auto-sprint-2c-20260325-r3`
+- 确认 `main` 当前已经指向 `f6f72bd`（`Codify strongest-demo acceptance delta checks`），也就是最新一轮被接受的 curator 整合结果
+- 再次复核所有领先 `main` 的 worker 分支，确认它们仍然都是单提交的 strongest-demo prompt 变体，且没有更新的已归档 live verification 结果可以支持继续提升
 
 ## 当前状态
 
@@ -105,6 +110,7 @@ GroundedDeck 仍然以已归档的 strongest-demo acceptance snapshot 作为 pro
 - provider guardrail 代码、确定性测试和 canonical 下一步文档现在都指向同一个已接受的 strongest-demo 快照：`reports/live-verification-history/strongest-demo-1774370225/`
 - 当前滚动 live 指针现在指向 `reports/live-verification-history/strongest-demo-1774381550/`，而已接受的 strongest-demo 基线仍然是 `reports/live-verification-history/strongest-demo-1774370225/`
 - 剩余 worker prompt 变体：已经复核，但都没有针对更新归档 strongest-demo acceptance delta 的验证结果，因此暂时没有进一步的 worker 输出等待整合
+- 当前这轮 curator 复核结论：除 `main` 已经包含的结果外，暂无新的可提升已验证 worker 输出
 - renderer 实现：仍然延后
 
 ## 立即下一步
