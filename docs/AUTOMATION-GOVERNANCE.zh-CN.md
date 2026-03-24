@@ -54,6 +54,8 @@ curator 职责：
 - 更新 canonical state docs
 - 运行 `make eval`
 - 准备好可进入 `main` 的整合分支
+- 当所有门槛都满足后，以 fast-forward 或其他有意识的方式把已验收 curator 分支合入 `main`
+- 合并成功后，清理已合入的 curator 分支及其专属 worktree
 
 只有 curator 角色才应当常规修改以下文件：
 
@@ -111,6 +113,13 @@ verifier 不得静默用 deterministic 输出冒充 online verification。
 4. worker 输出之间没有遗留未解决冲突
 5. 如果声称完成了 live verification，则 `reports/` 中必须存在归档后的验证工件
 
+当所有门槛都满足时，推荐的 automation 行为是：
+
+1. 将已验收的 curator 分支合入 `main`
+2. 确认 `main` 上的 `make eval` 仍然通过
+3. 删除已合入的 curator 分支
+4. 移除该分支对应的专属 worktree
+
 ## 故障恢复流程
 
 如果 automation 把工作留在不安全状态：
@@ -140,3 +149,4 @@ automation prompt 应明确写出：
 - strongest-demo 的实现工作归 worker 分支负责
 - 已恢复的 strongest-demo 候选工作已经通过 curator 流程整合成 `main` 上的规范工件包
 - 接下来 curator 和 verifier 流程应聚焦于针对 `fixtures/source-packs/strongest-demo-source-pack.json` 的第一次成功 online verification
+- 未来如果 curator 或 verifier 分支满足合并门槛，应自动合入 `main`，并清理自己的分支与 worktree

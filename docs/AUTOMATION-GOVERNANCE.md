@@ -54,6 +54,8 @@ Curator responsibilities:
 - update canonical state docs
 - run `make eval`
 - prepare the branch that is eligible to merge into `main`
+- when all merge gates pass, fast-forward or otherwise intentionally merge the accepted curator branch into `main`
+- after a successful merge, clean up the merged curator branch and its dedicated worktree
 
 The curator is the only automation role that should routinely edit:
 
@@ -111,6 +113,13 @@ Nothing should land on `main` until all of the following are true:
 4. no unresolved conflict remains between worker outputs
 5. if live verification is part of the claimed result, the archived verification artifacts exist in `reports/`
 
+When all gates pass, the preferred automation behavior is:
+
+1. merge the accepted curator branch into `main`
+2. verify `main` still passes `make eval`
+3. delete the merged curator branch
+4. remove the merged branch's dedicated worktree
+
 ## Recovery Procedure
 
 If automation leaves work in an unsafe state:
@@ -140,3 +149,4 @@ Automation prompts should explicitly say:
 - strongest-demo implementation work belongs on worker branches
 - the rescued strongest-demo candidate work has been curated into the canonical bundle on `main`
 - the curator and verifier flow should now focus on the first successful online verification against `fixtures/source-packs/strongest-demo-source-pack.json`
+- once a future curator or verifier branch meets the merge gates, it should merge into `main` and clean up its own branch and worktree automatically
