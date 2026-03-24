@@ -33,7 +33,7 @@ def validate_slide_spec_like(payload: dict) -> None:
 
 
 def validate_quality_report_like(payload: dict) -> None:
-    required_root = {"status", "failures", "coverage"}
+    required_root = {"status", "failures", "coverage", "grounding", "visual_form"}
     missing_root = sorted(required_root - set(payload.keys()))
     if missing_root:
         raise ValueError(f"quality report missing required fields: {', '.join(missing_root)}")
@@ -50,4 +50,22 @@ def validate_quality_report_like(payload: dict) -> None:
     if missing_coverage:
         raise ValueError(
             f"quality report coverage missing required fields: {', '.join(missing_coverage)}"
+        )
+
+    if not isinstance(payload["grounding"], dict):
+        raise ValueError("quality report grounding must be an object")
+    grounding_required = {"total_content_slides", "grounded_slides"}
+    missing_grounding = sorted(grounding_required - set(payload["grounding"].keys()))
+    if missing_grounding:
+        raise ValueError(
+            f"quality report grounding missing required fields: {', '.join(missing_grounding)}"
+        )
+
+    if not isinstance(payload["visual_form"], dict):
+        raise ValueError("quality report visual_form must be an object")
+    visual_required = {"expected_units", "matched_units"}
+    missing_visual = sorted(visual_required - set(payload["visual_form"].keys()))
+    if missing_visual:
+        raise ValueError(
+            f"quality report visual_form missing required fields: {', '.join(missing_visual)}"
         )

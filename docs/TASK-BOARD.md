@@ -4,12 +4,10 @@
 
 ## In Progress
 
-- none
+- run the first successful online verification against the canonical strongest-demo input
 
 ## Ready Next
 
-- define one strongest end-to-end planning demo case
-- write explicit success metrics for coverage, grounding, and visual-form accuracy
 - replace placeholder values in `.env.runtime.local` and run the first successful `make verify-online`
 - capture one successful live verification transcript or artifact shape
 - store the first successful `verification-summary.json` artifact shape in repo memory

@@ -1,0 +1,72 @@
+{
+  "pack_id": "china-ev-market-entry",
+  "language": "zh-CN",
+  "deck_goal": "Recommend a grounded China EV market-entry plan for Europe and Southeast Asia.",
+  "audience": "Regional strategy leaders deciding 2025 market sequencing",
+  "sources": [
+    {
+      "source_id": "src-01",
+      "type": "market-memo",
+      "title": "China EV Export Market Tracking",
+      "language": "zh-CN",
+      "sections": [
+        {
+          "section_id": "sec-01",
+          "heading": "出口时间线",
+          "paragraphs": [
+            "2022 年出口仍以试点市场为主，2023 年开始形成欧洲与东南亚双主线，2024 年渠道建设重心转向分区域深化。"
+          ],
+          "claims": [
+            "2022-2024 年，中国新能源汽车出口节奏已经从单点放量转向分区域深化。"
+          ]
+        },
+        {
+          "section_id": "sec-02",
+          "heading": "欧洲 vs 东南亚对比",
+          "paragraphs": [
+            "欧洲单车收入更高，但认证、关税和售后合规压力更重；东南亚渠道建立更快，本地合作伙伴响应更灵活。"
+          ],
+          "claims": [
+            "欧洲适合追求品牌抬升与高客单价，东南亚更适合追求进入速度与渠道复制。"
+          ]
+        }
+      ]
+    },
+    {
+      "source_id": "src-02",
+      "type": "policy-note",
+      "title": "Cross-border Entry Playbook",
+      "language": "zh-CN",
+      "sections": [
+        {
+          "section_id": "sec-01",
+          "heading": "进入路径",
+          "paragraphs": [
+            "建议先以东南亚市场建立经销、服务和备件响应，再把验证过的运营模型迁移到欧洲重点国家。"
+          ],
+          "claims": [
+            "先在东南亚建立渠道和售后，再择机进入欧洲，是更稳妥的 2025 市场进入路径。"
+          ]
+        }
+      ]
+    },
+    {
+      "source_id": "src-03",
+      "type": "cost-report",
+      "title": "Battery Economics Outlook",
+      "language": "zh-CN",
+      "sections": [
+        {
+          "section_id": "sec-01",
+          "heading": "成本与利润指标",
+          "paragraphs": [
+            "过去 12 个月动力电池包成本下降 18%，为海外定价、渠道补贴和售后投入预留了利润缓冲。"
+          ],
+          "claims": [
+            "18% 的电池成本降幅为价格带竞争和渠道投入提供了缓冲空间。"
+          ]
+        }
+      ]
+    }
+  ]
+}

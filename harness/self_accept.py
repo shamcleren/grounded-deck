@@ -197,6 +197,7 @@ def main() -> int:
         ROOT / "fixtures" / "source-packs",
         ROOT / "fixtures" / "normalized-source-units",
         ROOT / "fixtures" / "slide-spec",
+        ROOT / "fixtures" / "quality-reports",
         ROOT / "src" / "ingest",
         ROOT / "src" / "planner",
         ROOT / "src" / "visual",
@@ -236,6 +237,12 @@ def main() -> int:
         file_contains(
             ROOT / "docs" / "architecture.md",
             ["# Architecture", "## System Layers", "## Data Flow", "## Guardrails"],
+        )
+    )
+    results.append(
+        file_contains(
+            ROOT / "docs" / "STRONGEST-DEMO.md",
+            ["# Strongest Demo", "## Selected Demo Case", "## Artifact Bundle", "## Success Metrics"],
         )
     )
     results.append(

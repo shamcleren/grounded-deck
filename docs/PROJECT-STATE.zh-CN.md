@@ -21,6 +21,8 @@
 - 面向 planner 和 quality 模块的可插拔 provider interface
 - 面向未来 AI 会话的 repository-as-memory 连续性契约
 
+另外，最强确定性 planning demo 现在已经通过 curator 流程整合回 `main`，并作为规范 fixture bundle 与报告路径存在。
+
 ## 已完成内容
 
 - 将项目命名为 `GroundedDeck`
@@ -35,16 +37,19 @@
 - 引入了 provider abstraction，并以 deterministic provider 作为基线
 - 添加了一个面向 fixture 基线执行的 runtime pipeline 入口
 - 接通了 OpenAI-compatible provider 路径，并增加了严格的本地响应校验与 mocked transport 测试
+- 为 worker、curator、verifier 三类 automation 定义了仓库级治理规则
+- 把 detached 的 automation worktree 恢复到了命名救援分支上，避免改动继续匿名漂浮
+- 将 strongest-demo 的救援改动整合成一套规范 fixture bundle、报告路径和确定性指标基线
 
 ## 当前唯一下一步
 
-先产出一个最强的端到端 planning demo，再在不削弱确定性回归覆盖的前提下，留下一次成功的在线验证记录。
+在不削弱确定性回归覆盖的前提下，针对规范 strongest-demo 输入，留下一次成功的在线验证记录。
 
 ## 近期优先级
 
-1. 定义一个最强 demo case，让 grounded source material 稳定产出有说服力的 `slide spec`
-2. 明确 planning quality 的 success metrics，包括 coverage、grounding 和 visual-form 选择质量
-3. 把 `.env.runtime.local` 里的占位值替换成真实 provider 配置，并留下一次成功的在线验证工件
+1. 把 `.env.runtime.local` 里的占位值替换成真实 provider 配置
+2. 运行 `make check-live-env`、`make live-status`、`make verify-online` 和 `make archive-online-verification`
+3. 把第一次成功的在线验证工件沉淀进仓库记忆
 
 这次吸收外部评价，只调整优先级，不调整架构边界。环境变量配置约定已经写入 `docs/runtime-config.md`，而且 live 预检现在会拦截占位值。接下来要做的是在保留确定性基线的前提下，用一个最强 demo 证明产品价值。
 
@@ -56,6 +61,7 @@
 - 架构必须保持 source-grounded 且可审计
 - 仓库文档必须足以支持 AI 跨会话继续工作
 - 可以因为外部反馈调整优先级和 demo 策略，但不能无记录地改动架构边界
+- 定时或无人值守的 AI 工作必须通过 automation governance 流程进入主线，不能直接写 `main`
 
 ## 第一阶段完成定义
 

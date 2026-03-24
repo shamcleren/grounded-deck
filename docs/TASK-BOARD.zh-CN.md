@@ -6,12 +6,10 @@
 
 ## 进行中
 
-- 无
+- 针对规范 strongest-demo 输入完成第一次成功 online verification
 
 ## 下一批待做
 
-- 定义一个最强的端到端 planning demo case
-- 写清 coverage、grounding、visual-form accuracy 的 success metrics
 - 把 `.env.runtime.local` 中的占位值替换为真实配置，并跑通第一次 `make verify-online`
 - 留下一次成功 live verification 的记录或工件形态
 - 把第一次成功的 `verification-summary.json` 工件形态沉淀进仓库记忆

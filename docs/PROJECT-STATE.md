@@ -19,6 +19,8 @@ Foundation complete. A deterministic baseline pipeline and provider abstraction 
 - a pluggable provider interface for planner and quality modules
 - a repository-as-memory continuity contract for future AI sessions
 
+The strongest deterministic planning demo is now curated back onto `main` as a canonical fixture bundle and report path.
+
 ## Completed So Far
 
 - named the project `GroundedDeck`
@@ -33,16 +35,19 @@ Foundation complete. A deterministic baseline pipeline and provider abstraction 
 - introduced a provider abstraction with a deterministic provider baseline
 - added a runtime pipeline entrypoint for fixture-backed execution
 - wired an OpenAI-compatible provider path with strict local response validation and mocked transport tests
+- defined repository automation governance for worker, curator, and verifier flows
+- recovered detached automation worktrees onto named rescue branches so their changes are trackable
+- curated the rescued strongest-demo work into one canonical strongest-demo fixture bundle, report path, and deterministic metric baseline
 
 ## Current Next Action
 
-Produce one strongest end-to-end planning demo, then capture one successful online verification run without weakening deterministic regression coverage.
+Capture the first successful online verification run against the canonical strongest-demo input without weakening deterministic regression coverage.
 
 ## Immediate Priorities
 
-1. define one strongest demo case that takes grounded source material to a convincing `slide spec`
-2. make planning quality explicit with coverage, grounding, and visual-form success metrics
-3. replace placeholder values in `.env.runtime.local` with real provider settings and capture one successful online verification artifact
+1. replace placeholder values in `.env.runtime.local` with real provider settings
+2. run `make check-live-env`, `make live-status`, `make verify-online`, and `make archive-online-verification`
+3. store the first successful online verification artifact in repository memory
 
 External feedback has been absorbed as a prioritization change, not an architecture change. The environment-variable configuration contract is documented in `docs/runtime-config.md`, placeholder values are rejected during live preflight, and the next work is to prove product value with a strongest demo while preserving the deterministic baseline.
 
@@ -54,6 +59,7 @@ External feedback has been absorbed as a prioritization change, not an architect
 - architecture must remain source-grounded and auditable
 - repository docs must stay sufficient for AI continuation
 - feedback may change priorities and demo strategy, but must not silently change architecture boundaries
+- scheduled or unattended AI work must land through the automation governance flow instead of writing directly to `main`
 
 ## Definition of Done for Phase One
 

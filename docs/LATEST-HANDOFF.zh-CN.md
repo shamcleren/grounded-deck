@@ -6,7 +6,7 @@
 
 ## 会话摘要
 
-GroundedDeck 现在除了连续性仓库结构之外，还包含一条由 fixture 驱动的确定性流水线切片。
+GroundedDeck 现在除了由 fixture 驱动的确定性流水线、连续性仓库结构和显式 automation governance 之外，还拥有一套规范的 strongest-demo 工件包。
 
 ## 刚刚完成的内容
 
@@ -26,6 +26,9 @@ GroundedDeck 现在除了连续性仓库结构之外，还包含一条由 fixtur
 - 为运行时执行增加了自动生成的 verification-summary 工件
 - 收紧了 live env 检查，`REPLACE_ME` 这类占位值现在会被视为无效配置
 - 吸收了一轮外部产品反馈，把近期重点收敛到最强 demo 和 planning-quality 证明点，但没有改动架构边界
+- 添加了 `docs/AUTOMATION-GOVERNANCE.md`，并把 automation 处理规则纳入启动必读
+- 将 4 个 detached automation worktree 恢复到命名救援分支上，避免有效工作继续丢在匿名状态
+- 验收 strongest-demo 的救援工作，落下一套规范 fixture bundle、确定性质量指标和 `make strongest-demo`
 
 ## 当前状态
 
@@ -39,19 +42,22 @@ GroundedDeck 现在除了连续性仓库结构之外，还包含一条由 fixtur
 - placeholder env detection：已具备
 - live status 已能把占位配置识别为未就绪
 - live 凭证 / 真实后端：尚未配置
-- 近期重点：最强端到端 planning demo，以及显式 planning-quality metrics
+- strongest-demo 规范工件包：已存在
+- worker / curator / verifier 流程的 automation governance：已具备
+- 近期重点：针对规范 strongest-demo 输入完成第一次成功 online verification
 - renderer 实现：仍然延后
 
 ## 立即下一步
 
-在保留确定性 fixture pipeline 的前提下，先做一个最强端到端 planning demo，再留下一次成功的在线验证记录。
+针对规范 strongest-demo 输入跑通第一次成功 online verification，并归档 verification summary。
 
 ## 第一批具体任务
 
-1. 选一个最强 demo 输入包，并定义“有说服力输出”的标准
-2. 写清楚 coverage、grounding、visual-form selection 的 planning-quality success metrics
-3. 把 `.env.runtime.local` 里的占位值替换成真实 provider 配置
-4. 运行 `make check-live-env`、`make live-status`、`make verify-online`，并归档生成的 `verification-summary.json`
+1. 把 `.env.runtime.local` 里的占位值替换成真实 provider 配置
+2. 运行 `make check-live-env`
+3. 运行 `make live-status`
+4. 运行 `make verify-online`
+5. 运行 `make archive-online-verification`，并确认 `reports/` 下已生成归档报告
 
 ## 不要漂移
 
@@ -59,6 +65,8 @@ GroundedDeck 现在除了连续性仓库结构之外，还包含一条由 fixtur
 - 不要把项目压扁成单 prompt 流水线
 - 不要跳过中间层 `slide spec`
 - 不要让状态变化缺少文档记录
+- 不要让 worker automation 修改 canonical state docs，也不要让它们直接写 `main`
+- 不要在第一次声称成功的 online verification 中回退到旧的 example fixture
 
 ## 恢复提示
 

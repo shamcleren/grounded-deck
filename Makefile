@@ -1,6 +1,6 @@
 PYTHON ?= python3
 
-.PHONY: eval report context handoff test example-pipeline verify-online archive-online-verification check-live-env prepare-live-verification report-live-verification live-status init-live-env
+.PHONY: eval report context handoff test example-pipeline strongest-demo verify-online archive-online-verification check-live-env prepare-live-verification report-live-verification live-status init-live-env
 
 eval:
 	$(PYTHON) harness/self_accept.py
@@ -13,9 +13,12 @@ example-pipeline:
 		--input fixtures/source-packs/example-source-pack.json \
 		--output-dir /tmp/grounded-deck-example
 
+strongest-demo:
+	$(PYTHON) -c "from pathlib import Path; from src.runtime.demo import write_strongest_demo_bundle; result = write_strongest_demo_bundle(input_path=Path('fixtures/source-packs/strongest-demo-source-pack.json'), output_dir=Path('reports/strongest-demo')); print(result['report_path'])"
+
 verify-online:
 	$(PYTHON) -m src.runtime.cli \
-		--input fixtures/source-packs/example-source-pack.json \
+		--input fixtures/source-packs/strongest-demo-source-pack.json \
 		--output-dir /tmp/grounded-deck-online \
 		--require-live-provider
 

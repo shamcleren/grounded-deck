@@ -15,6 +15,7 @@ Before making changes, read these files in order:
 5. [docs/ARCHITECTURE-DECISIONS.md](docs/ARCHITECTURE-DECISIONS.md)
 6. [docs/architecture.md](docs/architecture.md)
 7. [docs/evaluation-plan.md](docs/evaluation-plan.md)
+8. [docs/AUTOMATION-GOVERNANCE.md](docs/AUTOMATION-GOVERNANCE.md) when the task involves scheduled runs, worktrees, or unattended AI work
 
 ## Operating Contract
 
@@ -26,6 +27,7 @@ Before making changes, read these files in order:
 - Do not leave an in-progress task without updating [docs/LATEST-HANDOFF.md](docs/LATEST-HANDOFF.md) and [docs/TASK-BOARD.md](docs/TASK-BOARD.md).
 - Keep the current next action explicit and singular.
 - Preserve the `slide spec` intermediate representation as the stable contract between planning, rendering, and grading.
+- Follow [docs/AUTOMATION-GOVERNANCE.md](docs/AUTOMATION-GOVERNANCE.md) for any scheduled, background, or multi-worktree AI workflow.
 - Run `make eval` before considering a task complete.
 
 ## Anti-Drift Rules
@@ -35,6 +37,7 @@ Before making changes, read these files in order:
 - No final artifact generation without auditable intermediate state.
 - No silent removal of coverage, grounding, or editability requirements.
 - No scope expansion without recording the decision and why it was accepted.
+- No anonymous automation changes left on detached worktrees.
 
 ## Completion Protocol
 

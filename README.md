@@ -38,9 +38,13 @@ This repository currently contains the foundation scaffold:
 - open-source repository documents
 - a deterministic fixture-backed `ingest -> normalized source units -> slide spec -> quality checks` baseline
 
-The next milestone is to introduce a pluggable LLM-backed planning path on top of the current deterministic baseline before adding a full renderer.
+The current codebase now includes:
 
-The current codebase now includes a provider abstraction for planner and quality modules, with a deterministic provider acting as the regression baseline.
+- a provider abstraction for planner and quality modules, with a deterministic provider acting as the regression baseline
+- a canonical strongest-demo fixture bundle with explicit coverage, grounding, and visual-form metrics
+- a `make strongest-demo` path that regenerates the strongest-demo artifact bundle locally
+
+The next milestone is to capture the first successful online verification run against that canonical strongest-demo input before adding a full renderer.
 
 ## AI Continuity
 
@@ -144,8 +148,8 @@ Latest report path:
 
 ## Roadmap
 
-1. Build a minimal `ingest -> slide spec` pipeline.
-2. Add coverage and grounding graders for source completeness.
+1. Capture the first successful online verification run against the canonical strongest-demo input.
+2. Preserve deterministic regression coverage while expanding provider-backed planning.
 3. Introduce editable PPTX rendering with Chinese-safe defaults.
 4. Add artifact-level grading for layout type selection and output editability.
 

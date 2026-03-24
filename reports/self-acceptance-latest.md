@@ -1,7 +1,7 @@
 # Self-Acceptance Report
 
 - Status: **PASS**
-- Passed: **32/32**
+- Passed: **34/34**
 
 ## Checks
 
@@ -15,6 +15,7 @@
 - PASS `source-packs`: present
 - PASS `normalized-source-units`: present
 - PASS `slide-spec`: present
+- PASS `quality-reports`: present
 - PASS `ingest`: present
 - PASS `planner`: present
 - PASS `visual`: present
@@ -27,6 +28,7 @@
 - PASS `AGENTS.md`: required fragments present
 - PASS `vision.md`: required fragments present
 - PASS `architecture.md`: required fragments present
+- PASS `STRONGEST-DEMO.md`: required fragments present
 - PASS `evaluation-plan.md`: required fragments present
 - PASS `PROJECT-STATE.md`: required fragments present
 - PASS `LATEST-HANDOFF.md`: required fragments present

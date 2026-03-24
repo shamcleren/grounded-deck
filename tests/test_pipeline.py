@@ -15,6 +15,7 @@ from src.llm.provider import (
 from src.planner.draft import draft_slide_spec
 from src.quality.checks import grade_slide_spec
 from src.runtime.cli import write_pipeline_outputs, write_verification_summary
+from src.runtime.demo import write_strongest_demo_bundle
 from src.runtime.pipeline import run_pipeline
 
 
@@ -22,6 +23,12 @@ ROOT = Path(__file__).resolve().parent.parent
 RAW_FIXTURE = ROOT / "fixtures" / "source-packs" / "example-source-pack.json"
 NORMALIZED_FIXTURE = ROOT / "fixtures" / "normalized-source-units" / "example-normalized-source-units.json"
 SLIDE_SPEC_FIXTURE = ROOT / "fixtures" / "slide-spec" / "example-slide-spec.json"
+STRONGEST_DEMO_RAW_FIXTURE = ROOT / "fixtures" / "source-packs" / "strongest-demo-source-pack.json"
+STRONGEST_DEMO_NORMALIZED_FIXTURE = (
+    ROOT / "fixtures" / "normalized-source-units" / "strongest-demo-normalized-source-units.json"
+)
+STRONGEST_DEMO_SLIDE_SPEC_FIXTURE = ROOT / "fixtures" / "slide-spec" / "strongest-demo-slide-spec.json"
+STRONGEST_DEMO_QUALITY_FIXTURE = ROOT / "fixtures" / "quality-reports" / "strongest-demo-quality-report.json"
 SLIDE_SCHEMA = ROOT / "schemas" / "slide-spec.schema.json"
 
 
@@ -34,6 +41,10 @@ class PipelineFixtureTests(unittest.TestCase):
         self.assertTrue(RAW_FIXTURE.exists(), RAW_FIXTURE)
         self.assertTrue(NORMALIZED_FIXTURE.exists(), NORMALIZED_FIXTURE)
         self.assertTrue(SLIDE_SPEC_FIXTURE.exists(), SLIDE_SPEC_FIXTURE)
+        self.assertTrue(STRONGEST_DEMO_RAW_FIXTURE.exists(), STRONGEST_DEMO_RAW_FIXTURE)
+        self.assertTrue(STRONGEST_DEMO_NORMALIZED_FIXTURE.exists(), STRONGEST_DEMO_NORMALIZED_FIXTURE)
+        self.assertTrue(STRONGEST_DEMO_SLIDE_SPEC_FIXTURE.exists(), STRONGEST_DEMO_SLIDE_SPEC_FIXTURE)
+        self.assertTrue(STRONGEST_DEMO_QUALITY_FIXTURE.exists(), STRONGEST_DEMO_QUALITY_FIXTURE)
 
     def test_normalize_source_pack_matches_fixture(self) -> None:
         raw_pack = load_json(RAW_FIXTURE)
@@ -53,6 +64,8 @@ class PipelineFixtureTests(unittest.TestCase):
         report = grade_slide_spec(normalized, slide_spec)
         self.assertEqual(report["status"], "pass")
         self.assertFalse(report["failures"])
+        self.assertEqual(report["grounding"]["grounding_ratio"], 1.0)
+        self.assertEqual(report["visual_form"]["match_ratio"], 1.0)
 
     def test_explicit_deterministic_provider_keeps_fixture_output_stable(self) -> None:
         normalized = load_json(NORMALIZED_FIXTURE)
@@ -64,6 +77,30 @@ class PipelineFixtureTests(unittest.TestCase):
         self.assertEqual(slide_spec, load_json(SLIDE_SPEC_FIXTURE))
         self.assertEqual(report["status"], "pass")
         self.assertEqual(report["provider"], "deterministic")
+
+    def test_strongest_demo_normalize_source_pack_matches_fixture(self) -> None:
+        raw_pack = load_json(STRONGEST_DEMO_RAW_FIXTURE)
+        normalized = normalize_source_pack(raw_pack)
+        expected = load_json(STRONGEST_DEMO_NORMALIZED_FIXTURE)
+        self.assertEqual(normalized, expected)
+
+    def test_strongest_demo_draft_slide_spec_matches_fixture(self) -> None:
+        normalized = load_json(STRONGEST_DEMO_NORMALIZED_FIXTURE)
+        slide_spec = draft_slide_spec(normalized)
+        expected = load_json(STRONGEST_DEMO_SLIDE_SPEC_FIXTURE)
+        self.assertEqual(slide_spec, expected)
+
+    def test_strongest_demo_quality_report_matches_fixture(self) -> None:
+        normalized = load_json(STRONGEST_DEMO_NORMALIZED_FIXTURE)
+        slide_spec = load_json(STRONGEST_DEMO_SLIDE_SPEC_FIXTURE)
+        report = grade_slide_spec(normalized, slide_spec)
+        expected = load_json(STRONGEST_DEMO_QUALITY_FIXTURE)
+        self.assertEqual(report, expected)
+
+    def test_strongest_demo_uses_diverse_visual_forms(self) -> None:
+        slide_spec = load_json(STRONGEST_DEMO_SLIDE_SPEC_FIXTURE)
+        layout_types = {slide["layout_type"] for slide in slide_spec["slides"]}
+        self.assertTrue({"timeline", "comparison", "process", "chart"}.issubset(layout_types))
 
     def test_build_provider_from_env_defaults_to_deterministic(self) -> None:
         provider = build_provider_from_env({})
@@ -146,7 +183,7 @@ class PipelineFixtureTests(unittest.TestCase):
                 "choices": [
                     {
                         "message": {
-                            "content": '{"status":"pass","failures":[],"coverage":{"required_units":3,"covered_units":3}}'
+                            "content": '{"status":"pass","failures":[],"coverage":{"required_units":3,"covered_units":3},"grounding":{"total_content_slides":2,"grounded_slides":2},"visual_form":{"expected_units":3,"matched_units":3}}'
                         }
                     }
                 ]
@@ -217,6 +254,8 @@ class PipelineFixtureTests(unittest.TestCase):
             "status": "pass",
             "failures": [],
             "coverage": {"required_units": 3, "covered_units": 3},
+            "grounding": {"total_content_slides": 2, "grounded_slides": 2},
+            "visual_form": {"expected_units": 3, "matched_units": 3},
             "provider": "openai-compatible",
             "model": "gpt-4.1-mini",
         }
@@ -256,7 +295,7 @@ class PipelineFixtureTests(unittest.TestCase):
                 "choices": [
                     {
                         "message": {
-                            "content": json.dumps({"status": "pass"}, ensure_ascii=False)
+                            "content": json.dumps({"status": "pass", "failures": [], "coverage": {}}, ensure_ascii=False)
                         }
                     }
                 ]
@@ -324,6 +363,23 @@ class PipelineFixtureTests(unittest.TestCase):
             self.assertEqual(summary["mode"], "offline-example")
             self.assertEqual(summary["provider"], "deterministic")
             self.assertEqual(summary["artifacts"]["slide_spec"], str(output_dir / "slide-spec.json"))
+
+    def test_write_strongest_demo_bundle_writes_report_and_artifacts(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            output_dir = Path(tmpdir) / "strongest-demo"
+            bundle = write_strongest_demo_bundle(
+                input_path=STRONGEST_DEMO_RAW_FIXTURE,
+                output_dir=output_dir,
+                provider=DeterministicProvider(),
+            )
+
+            self.assertTrue((output_dir / "normalized-pack.json").exists())
+            self.assertTrue((output_dir / "slide-spec.json").exists())
+            self.assertTrue((output_dir / "quality-report.json").exists())
+            self.assertTrue((output_dir / "verification-summary.json").exists())
+            self.assertTrue((output_dir / "strongest-demo-report.md").exists())
+            self.assertEqual(bundle["result"]["quality_report"]["status"], "pass")
+            self.assertIn("Success Metrics", bundle["report_path"].read_text(encoding="utf-8"))
 
 
 if __name__ == "__main__":

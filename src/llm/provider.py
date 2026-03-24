@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 from dataclasses import dataclass
 from typing import Callable
 from urllib import request
@@ -34,11 +35,91 @@ class Provider:
 
 
 class DeterministicProvider(Provider):
+    @staticmethod
+    def unique_preserving_order(values: list[str]) -> list[str]:
+        seen: set[str] = set()
+        ordered: list[str] = []
+        for value in values:
+            if value in seen:
+                continue
+            seen.add(value)
+            ordered.append(value)
+        return ordered
+
+    @staticmethod
+    def infer_layout_type(unit: dict) -> str:
+        text = f'{unit["section_heading"]} {unit["text"]}'.lower()
+
+        if "vs" in text or "对比" in text or "差异" in text:
+            return "comparison"
+        if "路径" in text or "步骤" in text or "进入" in text or "落地" in text:
+            return "process"
+        if "时间线" in text or "阶段" in text or re.search(r"\b20\d{2}\b", text):
+            return "timeline"
+        if (
+            "成本" in text
+            or "利润" in text
+            or "指标" in text
+            or "份额" in text
+            or "%" in text
+            or re.search(r"\d", text)
+        ):
+            return "chart"
+        return "summary"
+
+    @staticmethod
+    def build_visual_elements(layout_type: str, unit: dict) -> list[dict]:
+        if layout_type == "timeline":
+            milestones = DeterministicProvider.unique_preserving_order(
+                re.findall(r"\b(20\d{2})\b", unit["text"])
+            )
+            return [{"type": "timeline", "milestones": milestones[:4]}]
+        if layout_type == "comparison":
+            columns = []
+            for label in ("欧洲", "东南亚"):
+                if label in unit["text"] and label not in columns:
+                    columns.append(label)
+            return [{"type": "comparison-columns", "columns": columns or ["Option A", "Option B"]}]
+        if layout_type == "process":
+            return [{"type": "process-flow", "steps": max(1, len(unit.get("claims", [])))}]
+        if layout_type == "chart":
+            metrics = DeterministicProvider.unique_preserving_order(
+                re.findall(r"\d+%|\d+\.\d+%|\d+", unit["text"])
+            )
+            return [{"type": "metric-cards", "metrics": metrics[:4]}]
+        return [{"type": "bullet-list"}]
+
+    @classmethod
+    def build_unit_slide(cls, unit: dict) -> dict:
+        layout_type = cls.infer_layout_type(unit)
+        claim_points = unit.get("claims", []) or [unit["text"]]
+        goals = {
+            "timeline": "Show how the grounded evidence changes over time.",
+            "comparison": "Contrast grounded market options without losing source traceability.",
+            "process": "Turn grounded evidence into an ordered action path.",
+            "chart": "Surface the grounded numeric signal that should shape the decision.",
+            "summary": "Retain the grounded claim in a compact, editable form.",
+        }
+
+        return {
+            "slide_id": f'slide-{unit["source_id"]}-{unit["section_id"]}',
+            "title": unit["section_heading"],
+            "goal": goals[layout_type],
+            "layout_type": layout_type,
+            "key_points": claim_points[:3],
+            "visual_elements": cls.build_visual_elements(layout_type, unit),
+            "source_bindings": [unit["source_binding"]],
+            "must_include_checks": [unit["unit_id"]],
+            "speaker_notes": f'Ground this slide in {unit["source_binding"]} and keep the structure editable.',
+        }
+
     def draft_slide_spec(self, normalized_pack: dict) -> dict:
         source_units = normalized_pack["source_units"]
         summary_points: list[str] = []
         for unit in source_units:
             summary_points.extend(unit.get("claims", []))
+
+        content_slides = [self.build_unit_slide(unit) for unit in source_units]
 
         return {
             "deck_goal": normalized_pack["deck_goal"],
@@ -63,8 +144,8 @@ class DeterministicProvider(Provider):
                 },
                 {
                     "slide_id": "s2-summary",
-                    "title": "Key Takeaways",
-                    "goal": "Summarize the main grounded claims that must be carried into the deck.",
+                    "title": "Decision Backbone",
+                    "goal": "Compress the source pack into the minimum grounded claims the deck must preserve.",
                     "layout_type": "summary",
                     "key_points": summary_points[:3],
                     "visual_elements": [
@@ -74,7 +155,8 @@ class DeterministicProvider(Provider):
                     "must_include_checks": [unit["unit_id"] for unit in source_units],
                     "speaker_notes": "This slide compresses the source pack into the minimum set of claims the deck must retain.",
                 },
-            ],
+            ]
+            + content_slides,
         }
 
     def grade_slide_spec(self, normalized_pack: dict, slide_spec: dict) -> dict:
@@ -84,6 +166,8 @@ class DeterministicProvider(Provider):
         required_units = {unit["unit_id"] for unit in normalized_pack["source_units"]}
 
         covered_units = set()
+        grounded_slide_ids: list[str] = []
+        ungrounded_slide_ids: list[str] = []
         for slide in slide_spec["slides"]:
             for binding in slide.get("source_bindings", []):
                 if binding not in available_bindings:
@@ -91,9 +175,66 @@ class DeterministicProvider(Provider):
 
             covered_units.update(slide.get("must_include_checks", []))
 
+            if slide["layout_type"] == "cover":
+                continue
+
+            if slide.get("source_bindings"):
+                grounded_slide_ids.append(slide["slide_id"])
+            else:
+                ungrounded_slide_ids.append(slide["slide_id"])
+
         missing_units = sorted(required_units - covered_units)
         if missing_units:
             failures.append(f"uncovered source units: {', '.join(missing_units)}")
+
+        if ungrounded_slide_ids:
+            failures.append(f"ungrounded slides: {', '.join(ungrounded_slide_ids)}")
+
+        layout_mismatches: list[dict] = []
+        matched_units = 0
+        for unit in normalized_pack["source_units"]:
+            expected_layout = self.infer_layout_type(unit)
+            matching_slide = next(
+                (
+                    slide
+                    for slide in slide_spec["slides"]
+                    if slide.get("must_include_checks") == [unit["unit_id"]]
+                ),
+                None,
+            )
+
+            if matching_slide is None:
+                layout_mismatches.append(
+                    {
+                        "unit_id": unit["unit_id"],
+                        "expected_layout": expected_layout,
+                        "actual_layout": None,
+                    }
+                )
+                continue
+
+            actual_layout = matching_slide["layout_type"]
+            if actual_layout == expected_layout:
+                matched_units += 1
+            else:
+                layout_mismatches.append(
+                    {
+                        "unit_id": unit["unit_id"],
+                        "expected_layout": expected_layout,
+                        "actual_layout": actual_layout,
+                    }
+                )
+
+        if layout_mismatches:
+            failures.append(
+                "visual-form mismatches: "
+                + ", ".join(
+                    f'{item["unit_id"]} expected {item["expected_layout"]} got {item["actual_layout"] or "missing"}'
+                    for item in layout_mismatches
+                )
+            )
+
+        total_content_slides = len(slide_spec["slides"]) - 1 if slide_spec["slides"] else 0
 
         return {
             "status": "pass" if not failures else "fail",
@@ -101,6 +242,19 @@ class DeterministicProvider(Provider):
             "coverage": {
                 "required_units": len(required_units),
                 "covered_units": len(required_units & covered_units),
+                "coverage_ratio": round(len(required_units & covered_units) / max(1, len(required_units)), 2),
+            },
+            "grounding": {
+                "total_content_slides": total_content_slides,
+                "grounded_slides": len(grounded_slide_ids),
+                "ungrounded_slide_ids": ungrounded_slide_ids,
+                "grounding_ratio": round(len(grounded_slide_ids) / max(1, total_content_slides), 2),
+            },
+            "visual_form": {
+                "expected_units": len(required_units),
+                "matched_units": matched_units,
+                "mismatches": layout_mismatches,
+                "match_ratio": round(matched_units / max(1, len(required_units)), 2),
             },
             "provider": self.name,
             "model": self.config.model,
@@ -182,9 +336,11 @@ class OpenAICompatibleProvider(Provider):
         request_payload = self.build_chat_request(
             system_prompt=(
                 "You are GroundedDeck's quality grader. "
-                "Return only valid JSON with status, failures, coverage, provider, and model. "
-                "Required fields: status, failures, coverage. "
-                "Coverage must include required_units and covered_units."
+                "Return only valid JSON with status, failures, coverage, grounding, visual_form, provider, and model. "
+                "Required fields: status, failures, coverage, grounding, visual_form. "
+                "Coverage must include required_units and covered_units. "
+                "Grounding must include total_content_slides and grounded_slides. "
+                "Visual_form must include expected_units and matched_units."
             ),
             user_prompt=(
                 "Grade this slide_spec against the normalized source pack.\n"

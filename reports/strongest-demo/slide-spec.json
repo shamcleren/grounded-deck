@@ -1,15 +1,15 @@
 {
-  "deck_goal": "Summarize the policy and market implications of China's EV export growth.",
-  "audience": "Strategy leaders evaluating cross-border EV expansion",
+  "deck_goal": "Recommend a grounded China EV market-entry plan for Europe and Southeast Asia.",
+  "audience": "Regional strategy leaders deciding 2025 market sequencing",
   "slides": [
     {
       "slide_id": "s1-cover",
-      "title": "Summarize the policy and market implications of China's EV export growth.",
+      "title": "Recommend a grounded China EV market-entry plan for Europe and Southeast Asia.",
       "goal": "Orient the audience to the presentation goal and source scope.",
       "layout_type": "cover",
       "key_points": [
-        "Strategy leaders evaluating cross-border EV expansion",
-        "3 grounded source units"
+        "Regional strategy leaders deciding 2025 market sequencing",
+        "4 grounded source units"
       ],
       "visual_elements": [
         {
@@ -17,18 +17,20 @@
         },
         {
           "type": "source-count",
-          "value": 3
+          "value": 4
         }
       ],
       "source_bindings": [
         "src-01:sec-01",
         "src-01:sec-02",
-        "src-02:sec-01"
+        "src-02:sec-01",
+        "src-03:sec-01"
       ],
       "must_include_checks": [
         "src-01:sec-01",
         "src-01:sec-02",
-        "src-02:sec-01"
+        "src-02:sec-01",
+        "src-03:sec-01"
       ],
       "speaker_notes": "Introduce the deck goal and emphasize that claims stay grounded to source material."
     },
@@ -38,9 +40,9 @@
       "goal": "Compress the source pack into the minimum grounded claims the deck must preserve.",
       "layout_type": "summary",
       "key_points": [
-        "中国新能源汽车出口增长正在扩大海外市场覆盖。",
-        "政策约束已经成为出海节奏的核心变量。",
-        "电池成本优势仍是中国品牌国际定价能力的重要基础。"
+        "2022-2024 年，中国新能源汽车出口节奏已经从单点放量转向分区域深化。",
+        "欧洲适合追求品牌抬升与高客单价，东南亚更适合追求进入速度与渠道复制。",
+        "先在东南亚建立渠道和售后，再择机进入欧洲，是更稳妥的 2025 市场进入路径。"
       ],
       "visual_elements": [
         {
@@ -50,27 +52,31 @@
       "source_bindings": [
         "src-01:sec-01",
         "src-01:sec-02",
-        "src-02:sec-01"
+        "src-02:sec-01",
+        "src-03:sec-01"
       ],
       "must_include_checks": [
         "src-01:sec-01",
         "src-01:sec-02",
-        "src-02:sec-01"
+        "src-02:sec-01",
+        "src-03:sec-01"
       ],
       "speaker_notes": "This slide compresses the source pack into the minimum set of claims the deck must retain."
     },
     {
       "slide_id": "slide-src-01-sec-01",
-      "title": "出口增长",
+      "title": "出口时间线",
       "goal": "Show how the grounded evidence changes over time.",
       "layout_type": "timeline",
       "key_points": [
-        "中国新能源汽车出口增长正在扩大海外市场覆盖。"
+        "2022-2024 年，中国新能源汽车出口节奏已经从单点放量转向分区域深化。"
       ],
       "visual_elements": [
         {
           "type": "timeline",
           "milestones": [
+            "2022",
+            "2023",
             "2024"
           ]
         }
@@ -85,16 +91,19 @@
     },
     {
       "slide_id": "slide-src-01-sec-02",
-      "title": "政策影响",
-      "goal": "Turn grounded evidence into an ordered action path.",
-      "layout_type": "process",
+      "title": "欧洲 vs 东南亚对比",
+      "goal": "Contrast grounded market options without losing source traceability.",
+      "layout_type": "comparison",
       "key_points": [
-        "政策约束已经成为出海节奏的核心变量。"
+        "欧洲适合追求品牌抬升与高客单价，东南亚更适合追求进入速度与渠道复制。"
       ],
       "visual_elements": [
         {
-          "type": "process-flow",
-          "steps": 1
+          "type": "comparison-columns",
+          "columns": [
+            "欧洲",
+            "东南亚"
+          ]
         }
       ],
       "source_bindings": [
@@ -107,16 +116,16 @@
     },
     {
       "slide_id": "slide-src-02-sec-01",
-      "title": "成本优势",
-      "goal": "Surface the grounded numeric signal that should shape the decision.",
-      "layout_type": "chart",
+      "title": "进入路径",
+      "goal": "Turn grounded evidence into an ordered action path.",
+      "layout_type": "process",
       "key_points": [
-        "电池成本优势仍是中国品牌国际定价能力的重要基础。"
+        "先在东南亚建立渠道和售后，再择机进入欧洲，是更稳妥的 2025 市场进入路径。"
       ],
       "visual_elements": [
         {
-          "type": "metric-cards",
-          "metrics": []
+          "type": "process-flow",
+          "steps": 1
         }
       ],
       "source_bindings": [
@@ -126,6 +135,31 @@
         "src-02:sec-01"
       ],
       "speaker_notes": "Ground this slide in src-02:sec-01 and keep the structure editable."
+    },
+    {
+      "slide_id": "slide-src-03-sec-01",
+      "title": "成本与利润指标",
+      "goal": "Surface the grounded numeric signal that should shape the decision.",
+      "layout_type": "chart",
+      "key_points": [
+        "18% 的电池成本降幅为价格带竞争和渠道投入提供了缓冲空间。"
+      ],
+      "visual_elements": [
+        {
+          "type": "metric-cards",
+          "metrics": [
+            "12",
+            "18%"
+          ]
+        }
+      ],
+      "source_bindings": [
+        "src-03:sec-01"
+      ],
+      "must_include_checks": [
+        "src-03:sec-01"
+      ],
+      "speaker_notes": "Ground this slide in src-03:sec-01 and keep the structure editable."
     }
   ]
 }

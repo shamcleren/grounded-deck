@@ -15,6 +15,7 @@
 5. [docs/ARCHITECTURE-DECISIONS.zh-CN.md](docs/ARCHITECTURE-DECISIONS.zh-CN.md)
 6. [docs/architecture.zh-CN.md](docs/architecture.zh-CN.md)
 7. [docs/evaluation-plan.zh-CN.md](docs/evaluation-plan.zh-CN.md)
+8. 如果任务涉及定时任务、worktree 或无人值守 AI 工作，再阅读 [docs/AUTOMATION-GOVERNANCE.zh-CN.md](docs/AUTOMATION-GOVERNANCE.zh-CN.md)
 
 ## 操作契约
 
@@ -26,6 +27,7 @@
 - 如果留下未完成任务，不要在未更新 [docs/LATEST-HANDOFF.zh-CN.md](docs/LATEST-HANDOFF.zh-CN.md) 和 [docs/TASK-BOARD.zh-CN.md](docs/TASK-BOARD.zh-CN.md) 的情况下离开。
 - 始终保持当前下一步唯一且明确。
 - 保留 `slide spec` 作为 planning、rendering 和 grading 之间的稳定契约。
+- 任何定时、后台或多 worktree 的 AI 工作，都遵循 [docs/AUTOMATION-GOVERNANCE.zh-CN.md](docs/AUTOMATION-GOVERNANCE.zh-CN.md)。
 - 在认为任务完成之前运行 `make eval`。
 
 ## 防漂移规则
@@ -35,6 +37,7 @@
 - 没有可审计的中间状态时，不允许生成最终工件。
 - 不允许静默删除 coverage、grounding 或可编辑性要求。
 - 没有记录决策及其原因时，不允许扩张 scope。
+- 不允许把 automation 的匿名改动遗留在 detached worktree 上。
 
 ## 完成协议
 

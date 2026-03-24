@@ -1,0 +1,23 @@
+{
+  "status": "pass",
+  "failures": [],
+  "coverage": {
+    "required_units": 4,
+    "covered_units": 4,
+    "coverage_ratio": 1.0
+  },
+  "grounding": {
+    "total_content_slides": 5,
+    "grounded_slides": 5,
+    "ungrounded_slide_ids": [],
+    "grounding_ratio": 1.0
+  },
+  "visual_form": {
+    "expected_units": 4,
+    "matched_units": 4,
+    "mismatches": [],
+    "match_ratio": 1.0
+  },
+  "provider": "deterministic",
+  "model": "baseline-fixture"
+}
