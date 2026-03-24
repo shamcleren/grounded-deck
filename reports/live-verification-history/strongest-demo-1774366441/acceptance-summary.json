@@ -1,0 +1,59 @@
+{
+  "mode": "online-verification",
+  "provider": "openai-compatible",
+  "model": "MiniMax-M2.7",
+  "input_path": "fixtures/source-packs/strongest-demo-source-pack.json",
+  "generated_at_unix": 1774366441,
+  "quality_status": "pass",
+  "slide_count": 6,
+  "layout_sequence": [
+    "summary",
+    "timeline",
+    "comparison",
+    "process",
+    "chart",
+    "summary"
+  ],
+  "intro_slide": {
+    "title": "China EV Market Entry: Europe & Southeast Asia Strategy",
+    "layout_type": "summary",
+    "source_bindings": [],
+    "must_include_checks": []
+  },
+  "unit_layouts": {
+    "src-01:sec-01": "timeline",
+    "src-01:sec-02": "comparison",
+    "src-02:sec-01": "process",
+    "src-03:sec-01": "chart"
+  },
+  "unit_slide_titles": {
+    "src-01:sec-01": "出口时间线 (Export Timeline)",
+    "src-01:sec-02": "欧洲 vs 东南亚对比 (Europe vs Southeast Asia Comparison)",
+    "src-02:sec-01": "进入路径 (Entry Path)",
+    "src-03:sec-01": "成本与利润指标 (Cost & Margin Indicators)"
+  },
+  "decision_backbone": {
+    "title": "Decision Backbone",
+    "layout_type": "summary",
+    "source_bindings": [
+      "src-01:sec-01",
+      "src-01:sec-02",
+      "src-02:sec-01",
+      "src-03:sec-01"
+    ]
+  },
+  "covered_unit_ids": [
+    "src-01:sec-01",
+    "src-01:sec-02",
+    "src-02:sec-01",
+    "src-03:sec-01"
+  ],
+  "grounded_content_slides": 5,
+  "total_content_slides": 5,
+  "visual_matched_unit_ids": [
+    "src-01:sec-01",
+    "src-01:sec-02",
+    "src-02:sec-01",
+    "src-03:sec-01"
+  ]
+}

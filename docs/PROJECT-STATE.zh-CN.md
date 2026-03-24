@@ -44,9 +44,11 @@
 - 强化了 OpenAI-compatible provider 路径，使其能够拆分 MiniMax 的推理输出，并兼容 `<think>` 包裹的 JSON 响应
 - 增加了带角色锁的 automation 支持，让更高频的 worker / curator 调度不会发生不安全重叠
 - 整合了已接受的 worker 补丁，围绕 strongest-demo 基线收紧 provider planner 与 grader prompt
+- 整合了 `auto/groundeddeck-auto-sprint-b/provider-planning-acceptance-alignment` 上被接受的 worker 补丁，让 provider prompt 和 mocked transport 测试直接编码已归档 strongest-demo acceptance summary
 - 补回了 `src/visual` 与 `src/renderer` 包脚手架，使当前仓库树上的 `make eval` 继续保持通过
 - 针对收紧后的 prompt 基线重新执行了 strongest-demo 在线验证，并重新归档了通过的 live 结果
 - 将刷新后的 strongest-demo live run 提升为仓库内持久化的历史快照，并补上了结构化 acceptance summary
+- 在 acceptance-alignment 补丁落地后再次刷新 strongest-demo 在线验证，并将一致的 live 快照归档到 `reports/live-verification-history/strongest-demo-1774366441/`
 
 ## 当前唯一下一步
 
@@ -56,7 +58,7 @@
 
 1. 保留仓库内 strongest-demo live acceptance snapshot，同时继续让 `reports/live-verification-latest.*` 充当滚动指针
 2. 让后续 strongest-demo live refresh 与已归档 acceptance summary 做对比，而不是把每次通过都视为可互换
-3. 在不削弱确定性回归覆盖的前提下，继续推进 provider-backed planning 改进并保持 `make verify-online` 健康
+3. 在不削弱确定性回归覆盖的前提下，继续推进 provider-backed planning、与 acceptance summary 对齐的 prompt guardrail，并保持 `make verify-online` 健康
 
 这次吸收外部评价，只调整优先级，不调整架构边界。环境变量配置约定已经写入 `docs/runtime-config.md`，而且 live 预检现在会拦截占位值。现在 strongest-demo 已经在真实 provider 上跑通一次，接下来要做的是在保留确定性基线的前提下继续扩展 provider-backed planning。
 

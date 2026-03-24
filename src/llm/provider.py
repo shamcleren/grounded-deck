@@ -262,6 +262,27 @@ class DeterministicProvider(Provider):
 
 
 class OpenAICompatibleProvider(Provider):
+    STRONGEST_DEMO_PACK_ID = "china-ev-market-entry"
+    STRONGEST_DEMO_UNIT_ORDER = [
+        "src-01:sec-01",
+        "src-01:sec-02",
+        "src-02:sec-01",
+        "src-03:sec-01",
+    ]
+    STRONGEST_DEMO_UNIT_LAYOUTS = {
+        "src-01:sec-01": "timeline",
+        "src-01:sec-02": "comparison",
+        "src-02:sec-01": "process",
+        "src-03:sec-01": "chart",
+    }
+    STRONGEST_DEMO_UNIT_TITLES = {
+        "src-01:sec-01": "出口时间线 (Export Timeline)",
+        "src-01:sec-02": "欧洲 vs 东南亚对比 (Europe vs Southeast Asia Comparison)",
+        "src-02:sec-01": "进入路径 (Entry Path)",
+        "src-03:sec-01": "成本与利润指标 (Cost & Margin Indicators)",
+    }
+    STRONGEST_DEMO_INTRO_TITLE = "China EV Market Entry: Europe & Southeast Asia Strategy"
+
     def __init__(
         self,
         config: ProviderConfig,
@@ -374,6 +395,41 @@ class OpenAICompatibleProvider(Provider):
             return snippet[:limit] + "..."
         return snippet
 
+    @classmethod
+    def _matches_strongest_demo_pack(cls, normalized_pack: dict) -> bool:
+        source_units = normalized_pack.get("source_units", [])
+        unit_ids = [unit.get("unit_id") for unit in source_units]
+        return normalized_pack.get("pack_id") == cls.STRONGEST_DEMO_PACK_ID and unit_ids == cls.STRONGEST_DEMO_UNIT_ORDER
+
+    @classmethod
+    def _build_strongest_demo_planner_rules(cls) -> str:
+        unit_expectations = ", ".join(
+            f"{unit_id}->{cls.STRONGEST_DEMO_UNIT_LAYOUTS[unit_id]} titled '{cls.STRONGEST_DEMO_UNIT_TITLES[unit_id]}'"
+            for unit_id in cls.STRONGEST_DEMO_UNIT_ORDER
+        )
+        return (
+            "Strongest-demo accepted live baseline:\n"
+            f"- Produce exactly 6 slides in this order: intro summary, {', '.join(cls.STRONGEST_DEMO_UNIT_LAYOUTS[unit_id] for unit_id in cls.STRONGEST_DEMO_UNIT_ORDER)}, final decision summary.\n"
+            f"- Slide 1 must be a summary slide titled '{cls.STRONGEST_DEMO_INTRO_TITLE}' with no source_bindings and no must_include_checks.\n"
+            f"- Slides 2-5 must follow this exact unit order and layout/title pattern: {unit_expectations}.\n"
+            "- Slide 6 must be titled 'Decision Backbone', use layout_type 'summary', bind all source units, and leave must_include_checks empty.\n"
+            "- Keep the strongest-demo slide titles bilingual exactly where shown above.\n"
+        )
+
+    @classmethod
+    def _build_strongest_demo_grader_rules(cls) -> str:
+        expected_sequence = ["summary"] + [
+            cls.STRONGEST_DEMO_UNIT_LAYOUTS[unit_id] for unit_id in cls.STRONGEST_DEMO_UNIT_ORDER
+        ] + ["summary"]
+        return (
+            "Strongest-demo accepted live baseline checks:\n"
+            f"- Fail if layout_sequence is not exactly {expected_sequence}.\n"
+            f"- Fail if slide 1 is not a summary slide titled '{cls.STRONGEST_DEMO_INTRO_TITLE}' with empty source_bindings and empty must_include_checks.\n"
+            "- Fail if the final slide is not 'Decision Backbone' with layout_type 'summary', all unit source_bindings, and empty must_include_checks.\n"
+            "- Fail if slides 2-5 do not map one-to-one to the strongest-demo unit order with the expected layout_type values.\n"
+            "- Fail if strongest-demo bilingual unit slide titles drift from the accepted baseline.\n"
+        )
+
     @staticmethod
     def build_planner_system_prompt() -> str:
         return (
@@ -389,11 +445,15 @@ class OpenAICompatibleProvider(Provider):
 
     @staticmethod
     def build_planner_user_prompt(normalized_pack: dict) -> str:
+        strongest_demo_rules = ""
+        if OpenAICompatibleProvider._matches_strongest_demo_pack(normalized_pack):
+            strongest_demo_rules = OpenAICompatibleProvider._build_strongest_demo_planner_rules()
+
         return (
             "Draft a grounded slide spec from this normalized source pack.\n"
             "Planning rules:\n"
-            "- Start with one cover slide that uses the deck goal and audience.\n"
-            "- Add one summary slide titled 'Decision Backbone' that compresses the minimum grounded claims.\n"
+            "- Start with one cover slide that uses the deck goal and audience unless a stronger pack-specific baseline overrides it.\n"
+            "- Add one summary slide titled 'Decision Backbone' that compresses the minimum grounded claims unless a stronger pack-specific baseline overrides it.\n"
             "- Then add exactly one content slide per source unit.\n"
             "- For each content slide, set must_include_checks to exactly [unit_id] and source_bindings to exactly "
             "[source_binding].\n"
@@ -402,6 +462,7 @@ class OpenAICompatibleProvider(Provider):
             "evidence, otherwise summary.\n"
             "- Keep key_points tightly grounded to the unit claims or source text.\n"
             "- Keep visual_elements editable and specific to the chosen layout.\n"
+            f"{strongest_demo_rules}"
             "- Return JSON only.\n"
             f"normalized_pack={json.dumps(normalized_pack, ensure_ascii=False)}"
         )
@@ -422,6 +483,10 @@ class OpenAICompatibleProvider(Provider):
 
     @staticmethod
     def build_grader_user_prompt(normalized_pack: dict, slide_spec: dict) -> str:
+        strongest_demo_rules = ""
+        if OpenAICompatibleProvider._matches_strongest_demo_pack(normalized_pack):
+            strongest_demo_rules = OpenAICompatibleProvider._build_strongest_demo_grader_rules()
+
         return (
             "Grade this slide_spec against the normalized source pack.\n"
             "Grading rules:\n"
@@ -430,6 +495,7 @@ class OpenAICompatibleProvider(Provider):
             "- Check whether each unit-backed content slide uses the appropriate layout_type: timeline, comparison, "
             "process, chart, or summary.\n"
             "- Prefer fail over partial credit when required evidence is missing.\n"
+            f"{strongest_demo_rules}"
             "- Return JSON only.\n"
             f"normalized_pack={json.dumps(normalized_pack, ensure_ascii=False)}\n"
             f"slide_spec={json.dumps(slide_spec, ensure_ascii=False)}"

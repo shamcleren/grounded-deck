@@ -239,6 +239,29 @@ class PipelineFixtureTests(unittest.TestCase):
         self.assertEqual(parsed["status"], "pass")
         self.assertEqual(parsed["visual_form"]["matched_units"], 3)
 
+    def test_strongest_demo_planner_prompt_includes_archived_acceptance_guardrails(self) -> None:
+        normalized = load_json(STRONGEST_DEMO_NORMALIZED_FIXTURE)
+
+        prompt = OpenAICompatibleProvider.build_planner_user_prompt(normalized)
+
+        self.assertIn("Strongest-demo accepted live baseline:", prompt)
+        self.assertIn("Produce exactly 6 slides in this order", prompt)
+        self.assertIn("China EV Market Entry: Europe & Southeast Asia Strategy", prompt)
+        self.assertIn("src-01:sec-01->timeline", prompt)
+        self.assertIn("Decision Backbone', use layout_type 'summary', bind all source units", prompt)
+
+    def test_strongest_demo_grader_prompt_includes_archived_acceptance_checks(self) -> None:
+        normalized = load_json(STRONGEST_DEMO_NORMALIZED_FIXTURE)
+        slide_spec = load_json(STRONGEST_DEMO_SLIDE_SPEC_FIXTURE)
+
+        prompt = OpenAICompatibleProvider.build_grader_user_prompt(normalized, slide_spec)
+
+        self.assertIn("Strongest-demo accepted live baseline checks:", prompt)
+        self.assertIn("Fail if layout_sequence is not exactly", prompt)
+        self.assertIn("China EV Market Entry: Europe & Southeast Asia Strategy", prompt)
+        self.assertIn("Fail if the final slide is not 'Decision Backbone'", prompt)
+        self.assertIn("Fail if strongest-demo bilingual unit slide titles drift", prompt)
+
     def test_openai_compatible_provider_parses_text_content_list(self) -> None:
         provider = OpenAICompatibleProvider(
             ProviderConfig(

@@ -6,7 +6,7 @@
 
 ## 会话摘要
 
-GroundedDeck 当前在 curator 分支上已经带着被接受的 provider prompt 收紧补丁，当前仓库树上的 `make eval` 保持通过；而且 strongest-demo 在线验证的刷新结果现在不再只是一个滚动 `latest` 指针，而是已经以仓库内历史快照和 acceptance summary 的形式持久化保存。
+GroundedDeck 当前在 curator 分支上已经带着被接受的 acceptance-alignment provider 补丁，当前仓库树上的 `make eval` 保持通过；而且最新一次 strongest-demo 在线验证重新归档后，其 acceptance summary 仍与既有 live 基线结构一致。
 
 ## 刚刚完成的内容
 
@@ -42,6 +42,11 @@ GroundedDeck 当前在 curator 分支上已经带着被接受的 provider prompt
 - 更新了 `make archive-online-verification`，让归档后的 live summary 现在指向 `reports/live-verification-history/` 下的仓库内副本
 - 将刷新后的 strongest-demo live artifacts 和结构化 acceptance summary 固化到 `reports/live-verification-history/strongest-demo-1774362852/`
 - 增加了确定性测试，校验 strongest-demo 的已归档 acceptance summary 仍然和提交进仓库的 live slide spec / quality report 一致
+- 整合了 `auto/groundeddeck-auto-sprint-b/provider-planning-acceptance-alignment` 上被接受的 worker 补丁
+- 让 OpenAI-compatible provider 的 planner / grader prompt 以及 mocked transport 测试直接编码已归档 strongest-demo acceptance summary
+- 在 acceptance-alignment 补丁落地后重新运行了 `make eval`、`make check-live-env`、`make live-status`、`make verify-online` 和 `make archive-online-verification`
+- 再次刷新 `reports/live-verification-latest.{json,md}`，并将一致的 strongest-demo live 快照归档到 `reports/live-verification-history/strongest-demo-1774366441/`
+- 确认 `reports/live-verification-history/strongest-demo-1774366441/acceptance-summary.json` 与此前接受的 strongest-demo 基线在结构上保持一致
 
 ## 当前状态
 
@@ -61,10 +66,13 @@ GroundedDeck 当前在 curator 分支上已经带着被接受的 provider prompt
 - 第一次 strongest-demo 成功 online verification：已归档到 `reports/live-verification-latest.json` 和 `reports/live-verification-latest.md`
 - 近期重点：以已验证的 strongest-demo 基线继续扩展 provider-backed planning，同时不削弱确定性 eval
 - strongest-demo 的 provider prompt 收紧：已整合到当前 curator 分支
+- strongest-demo 的 acceptance-aligned provider prompt guardrail：已整合到当前 curator 分支
 - prompt 收紧后的 self-acceptance：通过
 - prompt 收紧后的 strongest-demo online verification：通过且已重新归档
 - live verification archive 现在会保留已验证工件的仓库内副本，而不再只记录 `/tmp` 路径
 - 刷新后的 strongest-demo live acceptance snapshot：已提交到 `reports/live-verification-history/strongest-demo-1774362852/`
+- acceptance alignment 之后再次刷新的 strongest-demo live acceptance snapshot：已存在于 `reports/live-verification-history/strongest-demo-1774366441/`
+- 最新归档 strongest-demo acceptance snapshot 与此前接受的基线在结构上保持一致
 - renderer 实现：仍然延后
 
 ## 立即下一步
@@ -74,9 +82,9 @@ GroundedDeck 当前在 curator 分支上已经带着被接受的 provider prompt
 ## 第一批具体任务
 
 1. 将 `reports/live-verification-latest.json` 和 `reports/live-verification-latest.md` 视为指向最新 live 历史快照的滚动指针
-2. 让后续 strongest-demo 在线刷新结果与 `reports/live-verification-history/strongest-demo-1774362852/acceptance-summary.json` 做对比
+2. 让后续 strongest-demo 在线刷新结果与 `reports/live-verification-history/strongest-demo-1774366441/acceptance-summary.json` 做对比
 3. 在保留 `make eval` 稳定性的前提下，让 `make verify-online` 在真实 provider 路径上持续可用
-4. 后续如果再出现 provider 兼容性细节，必须记录进仓库文档，而不是留在隐式上下文里
+4. 后续如果再出现 provider 兼容性细节或 acceptance 基线决策，必须记录进仓库文档，而不是留在隐式上下文里
 
 ## 不要漂移
 

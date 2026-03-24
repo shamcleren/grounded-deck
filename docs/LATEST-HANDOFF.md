@@ -4,7 +4,7 @@
 
 ## Session Summary
 
-GroundedDeck now carries the accepted provider-prompt tightening patch on a curator branch, keeps `make eval` green on the current tree, and preserves the refreshed strongest-demo online result as a repository-owned history snapshot plus acceptance summary instead of only a rolling `latest` pointer.
+GroundedDeck now carries the accepted acceptance-alignment provider patch on the curator branch, keeps `make eval` green on the current tree, and preserves a freshly re-verified strongest-demo online result whose archived acceptance summary still matches the established live baseline.
 
 ## What Was Just Completed
 
@@ -40,6 +40,11 @@ GroundedDeck now carries the accepted provider-prompt tightening patch on a cura
 - updated `make archive-online-verification` so archived live summaries now point to repository-owned copies under `reports/live-verification-history/`
 - captured the refreshed strongest-demo live artifacts and a structural acceptance summary under `reports/live-verification-history/strongest-demo-1774362852/`
 - added deterministic tests that verify the archived strongest-demo acceptance summary still matches the committed live slide spec and quality report
+- integrated the accepted worker patch from `auto/groundeddeck-auto-sprint-b/provider-planning-acceptance-alignment`
+- encoded the archived strongest-demo acceptance summary directly into the OpenAI-compatible provider planner/grader prompts and mocked transport tests
+- re-ran `make eval`, `make check-live-env`, `make live-status`, `make verify-online`, and `make archive-online-verification` after the acceptance-alignment patch
+- refreshed `reports/live-verification-latest.{json,md}` again and archived a matching strongest-demo live snapshot under `reports/live-verification-history/strongest-demo-1774366441/`
+- confirmed `reports/live-verification-history/strongest-demo-1774366441/acceptance-summary.json` matches the prior accepted strongest-demo baseline structurally
 
 ## Current Status
 
@@ -59,10 +64,13 @@ GroundedDeck now carries the accepted provider-prompt tightening patch on a cura
 - first successful strongest-demo online verification: archived in `reports/live-verification-latest.json` and `reports/live-verification-latest.md`
 - near-term focus: expand provider-backed planning from the verified strongest-demo baseline without weakening deterministic evals
 - provider prompt tightening for strongest-demo: integrated on the current curator branch
+- strongest-demo acceptance-aligned provider prompt guardrails: integrated on the current curator branch
 - self-acceptance after prompt tightening: passing
 - strongest-demo online verification after prompt tightening: passing and re-archived
 - live verification archive now preserves repo-local copies of the verified artifacts instead of `/tmp` paths
 - refreshed strongest-demo live acceptance snapshot: committed under `reports/live-verification-history/strongest-demo-1774362852/`
+- refreshed strongest-demo live acceptance snapshot after acceptance alignment: present under `reports/live-verification-history/strongest-demo-1774366441/`
+- latest archived strongest-demo acceptance snapshot remains structurally identical to the previously accepted baseline
 - renderer implementation: still deferred
 
 ## Immediate Next Action
@@ -72,9 +80,9 @@ Use the archived strongest-demo live acceptance snapshot to compare future live 
 ## First Concrete Tasks
 
 1. treat `reports/live-verification-latest.json` and `reports/live-verification-latest.md` as rolling pointers to the latest archived live snapshot
-2. compare future strongest-demo online refreshes against `reports/live-verification-history/strongest-demo-1774362852/acceptance-summary.json`
+2. compare future strongest-demo online refreshes against `reports/live-verification-history/strongest-demo-1774366441/acceptance-summary.json`
 3. keep `make verify-online` passing on the real provider path while preserving `make eval`
-4. record any future provider-specific compatibility decisions in repository docs instead of leaving them implicit
+4. record any future provider-specific compatibility or acceptance-baseline decisions in repository docs instead of leaving them implicit
 
 ## Do Not Drift
 

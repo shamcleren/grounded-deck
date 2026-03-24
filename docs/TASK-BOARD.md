@@ -4,12 +4,12 @@
 
 ## In Progress
 
-- compare future strongest-demo live refreshes against the archived acceptance snapshot before promoting more provider-backed planning changes
+- keep strongest-demo provider prompts aligned to the archived acceptance snapshot and compare future live refreshes against it before promoting more provider-backed planning changes
 
 ## Ready Next
 
 - continue improving provider-backed planning and grading against the strongest-demo path without weakening deterministic coverage
-- decide whether any additional strongest-demo live structure should be promoted beyond the current acceptance summary
+- review whether any remaining worker prompt variants add value beyond the current acceptance-aligned strongest-demo baseline
 - keep canonical docs bilingual via separate language files and switch links
 
 ## Later
