@@ -1,0 +1,46 @@
+{
+  "status": "pass",
+  "failures": [],
+  "coverage": {
+    "required_units": 4,
+    "covered_units": 4,
+    "missing_units": [],
+    "required_units_ids": [
+      "src-01:sec-01",
+      "src-01:sec-02",
+      "src-02:sec-01",
+      "src-03:sec-01"
+    ],
+    "covered_units_ids": [
+      "src-01:sec-01",
+      "src-01:sec-02",
+      "src-02:sec-01",
+      "src-03:sec-01"
+    ]
+  },
+  "grounding": {
+    "total_content_slides": 5,
+    "grounded_slides": 5,
+    "ungrounded_slides": [],
+    "binding_violations": []
+  },
+  "visual_form": {
+    "expected_units": 4,
+    "matched_units": 4,
+    "layout_mismatches": [],
+    "expected_units_ids": [
+      "src-01:sec-01",
+      "src-01:sec-02",
+      "src-02:sec-01",
+      "src-03:sec-01"
+    ],
+    "matched_units_ids": [
+      "src-01:sec-01",
+      "src-01:sec-02",
+      "src-02:sec-01",
+      "src-03:sec-01"
+    ]
+  },
+  "provider": "grounded-deck",
+  "model": "quality-grader-v1"
+}

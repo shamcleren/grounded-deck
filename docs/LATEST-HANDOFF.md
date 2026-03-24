@@ -4,7 +4,7 @@
 
 ## Session Summary
 
-GroundedDeck still uses the archived strongest-demo acceptance snapshot as the provider-planning baseline, and this curator pass confirmed there is no newer verified worker output to promote beyond the accepted `strongest-demo-1774370225` live snapshot.
+GroundedDeck still uses the archived strongest-demo acceptance snapshot as the provider-planning baseline, and this curator pass confirmed there is no newer verified worker output to promote beyond the accepted `strongest-demo-1774370225` live snapshot. The rolling live pointer has now been refreshed to a newer passing run at `strongest-demo-1774374429`, which remains structurally identical to the accepted baseline aside from the timestamp.
 
 ## What Was Just Completed
 
@@ -58,6 +58,10 @@ GroundedDeck still uses the archived strongest-demo acceptance snapshot as the p
 - confirmed the new `strongest-demo-1774370225` acceptance summary matches the accepted strongest-demo baseline structurally aside from the run timestamp
 - corrected `docs/STRONGEST-DEMO.{md,zh-CN.md}` so canonical strongest-demo references now point to the repository-owned accepted snapshot under `reports/live-verification-history/strongest-demo-1774370225/` instead of an obsolete worktree path
 - reviewed `auto/groundeddeck-auto-sprint/provider-grading-prompt-tightening`, `auto/groundeddeck-auto-sprint-b/acceptance-comparison-tightening`, and `auto/groundeddeck-auto-sprint-c/strongest-demo-slide-id-guardrails`, and confirmed they are still unverified prompt variants with no newer archived strongest-demo verification to justify promotion
+- repointed the strongest-demo provider guardrail baseline, deterministic tests, and canonical next-step docs from `strongest-demo-1774366441` to the currently accepted repository-owned snapshot `strongest-demo-1774370225`
+- linked `.env.runtime.local` from the canonical repo into this worktree, then ran `make check-live-env`, `make live-status`, `make verify-online`, and `make archive-online-verification` for the baseline-pointer alignment change
+- observed one failed live refresh under `reports/live-verification-history/strongest-demo-1774374274/`, then re-ran live verification and archived a passing strongest-demo live snapshot under `reports/live-verification-history/strongest-demo-1774374429/`
+- confirmed `reports/live-verification-history/strongest-demo-1774374429/acceptance-summary.json` matches the accepted strongest-demo baseline structurally aside from the run timestamp
 
 ## Current Status
 
@@ -86,9 +90,12 @@ GroundedDeck still uses the archived strongest-demo acceptance snapshot as the p
 - strongest-demo prompt guardrails now load their baseline from the archived acceptance summary instead of duplicating constants in code
 - strongest-demo summary-slide prompt rules now require explicit empty evidence arrays, which restored live provider compliance with the slide-spec validator
 - refreshed strongest-demo live acceptance snapshot after the acceptance-summary-driven guardrail patch: present under `reports/live-verification-history/strongest-demo-1774370225/`
+- most recent passing strongest-demo live refresh after the baseline-pointer alignment: present under `reports/live-verification-history/strongest-demo-1774374429/`
 - latest archived strongest-demo live refresh remains structurally aligned with the accepted baseline; only the run timestamp changed
 - latest archived strongest-demo acceptance snapshot remains structurally identical to the previously accepted baseline
 - canonical strongest-demo docs now reference the repository-owned accepted live snapshot at `reports/live-verification-history/strongest-demo-1774370225/`
+- provider guardrail code, deterministic tests, and canonical next-step docs now point at the same accepted strongest-demo snapshot: `reports/live-verification-history/strongest-demo-1774370225/`
+- the latest rolling live pointer now references `reports/live-verification-history/strongest-demo-1774374429/`, while the accepted strongest-demo baseline remains `reports/live-verification-history/strongest-demo-1774370225/`
 - remaining worker prompt variants: reviewed and currently superseded by the accepted strongest-demo live baseline, so no new verified worker output is pending integration
 - renderer implementation: still deferred
 
@@ -99,7 +106,7 @@ Use the archived strongest-demo live acceptance snapshot to compare future live 
 ## First Concrete Tasks
 
 1. treat `reports/live-verification-latest.json` and `reports/live-verification-latest.md` as rolling pointers to the latest archived live snapshot
-2. compare future strongest-demo online refreshes against `reports/live-verification-history/strongest-demo-1774366441/acceptance-summary.json`
+2. compare future strongest-demo online refreshes against `reports/live-verification-history/strongest-demo-1774370225/acceptance-summary.json`
 3. keep `make verify-online` passing on the real provider path while preserving `make eval`
 4. wait for a new verified worker patch or a live refresh delta before promoting another provider prompt change
 

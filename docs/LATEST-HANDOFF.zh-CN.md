@@ -6,7 +6,7 @@
 
 ## 会话摘要
 
-GroundedDeck 仍然以已归档的 strongest-demo acceptance snapshot 作为 provider-planning 基线；而这次 curator 轮次确认，除了已接受的 `strongest-demo-1774370225` live 快照之外，并没有更新且已验证的 worker 输出可以继续提升到主线。
+GroundedDeck 仍然以已归档的 strongest-demo acceptance snapshot 作为 provider-planning 基线；而这次 curator 轮次确认，除了已接受的 `strongest-demo-1774370225` live 快照之外，并没有更新且已验证的 worker 输出可以继续提升到主线。当前滚动 live 指针已经刷新到新的通过快照 `strongest-demo-1774374429`，其结构除时间戳外仍与已接受基线一致。
 
 ## 刚刚完成的内容
 
@@ -60,6 +60,10 @@ GroundedDeck 仍然以已归档的 strongest-demo acceptance snapshot 作为 pro
 - 确认新的 `strongest-demo-1774370225` acceptance summary 除运行时间戳外，与已接受 strongest-demo 基线在结构上保持一致
 - 修正了 `docs/STRONGEST-DEMO.{md,zh-CN.md}`，让 strongest-demo 的 canonical 引用改为指向仓库内已接受的 `reports/live-verification-history/strongest-demo-1774370225/`，不再引用过时的 worktree 路径
 - 复核了 `auto/groundeddeck-auto-sprint/provider-grading-prompt-tightening`、`auto/groundeddeck-auto-sprint-b/acceptance-comparison-tightening` 和 `auto/groundeddeck-auto-sprint-c/strongest-demo-slide-id-guardrails`，确认它们仍是未经过更新归档验证的 prompt 变体，暂时没有足够依据继续上升
+- 将 strongest-demo provider guardrail 基线、确定性测试和 canonical 下一步文档里的引用统一从 `strongest-demo-1774366441` 切换到当前已接受的仓库内快照 `strongest-demo-1774370225`
+- 将 canonical repo 中的 `.env.runtime.local` 链接到当前 worktree，然后为这次基线指针统一改动运行了 `make check-live-env`、`make live-status`、`make verify-online` 和 `make archive-online-verification`
+- 记录了一次失败的 live refresh：`reports/live-verification-history/strongest-demo-1774374274/`；随后重新执行 live verification，并将通过的 strongest-demo live 快照归档到 `reports/live-verification-history/strongest-demo-1774374429/`
+- 确认 `reports/live-verification-history/strongest-demo-1774374429/acceptance-summary.json` 除运行时间戳外，与已接受 strongest-demo 基线在结构上保持一致
 
 ## 当前状态
 
@@ -88,9 +92,12 @@ GroundedDeck 仍然以已归档的 strongest-demo acceptance snapshot 作为 pro
 - strongest-demo prompt guardrail 现在直接从已归档 acceptance summary 加载，而不是在代码里重复维护常量
 - strongest-demo 的 summary-slide prompt 现在会显式要求空 evidence 数组，从而恢复 live provider 对 slide-spec 校验的满足
 - acceptance-summary 驱动 guardrail 补丁落地后的 strongest-demo live acceptance snapshot：已存在于 `reports/live-verification-history/strongest-demo-1774370225/`
+- 基线指针统一之后最近一次通过的 strongest-demo live refresh：已存在于 `reports/live-verification-history/strongest-demo-1774374429/`
 - 最新归档 strongest-demo live refresh 与已接受基线在结构上仍然对齐，变化只有运行时间戳
 - 最新归档 strongest-demo acceptance snapshot 与此前接受的基线在结构上保持一致
 - strongest-demo 的 canonical 文档引用现在已经固定到仓库内已接受的 live 快照 `reports/live-verification-history/strongest-demo-1774370225/`
+- provider guardrail 代码、确定性测试和 canonical 下一步文档现在都指向同一个已接受的 strongest-demo 快照：`reports/live-verification-history/strongest-demo-1774370225/`
+- 当前滚动 live 指针现在指向 `reports/live-verification-history/strongest-demo-1774374429/`，而已接受的 strongest-demo 基线仍然是 `reports/live-verification-history/strongest-demo-1774370225/`
 - 剩余 worker prompt 变体：已经复核，当前都被已接受 strongest-demo live 基线覆盖，因此没有新的已验证 worker 输出等待整合
 - renderer 实现：仍然延后
 
@@ -101,7 +108,7 @@ GroundedDeck 仍然以已归档的 strongest-demo acceptance snapshot 作为 pro
 ## 第一批具体任务
 
 1. 将 `reports/live-verification-latest.json` 和 `reports/live-verification-latest.md` 视为指向最新 live 历史快照的滚动指针
-2. 让后续 strongest-demo 在线刷新结果与 `reports/live-verification-history/strongest-demo-1774366441/acceptance-summary.json` 做对比
+2. 让后续 strongest-demo 在线刷新结果与 `reports/live-verification-history/strongest-demo-1774370225/acceptance-summary.json` 做对比
 3. 在保留 `make eval` 稳定性的前提下，让 `make verify-online` 在真实 provider 路径上持续可用
 4. 在出现新的已验证 worker 补丁或 live refresh 差异之前，不要继续上升新的 provider prompt 改动
 

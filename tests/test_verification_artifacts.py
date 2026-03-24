@@ -330,7 +330,7 @@ class VerificationArtifactTests(unittest.TestCase):
                 archive_verification_summary(Path(tmpdir) / "missing.json", output_dir)
 
     def test_committed_strongest_demo_acceptance_summary_matches_archived_artifacts(self) -> None:
-        history_dir = ROOT / "reports" / "live-verification-history" / "strongest-demo-1774366441"
+        history_dir = ROOT / "reports" / "live-verification-history" / "strongest-demo-1774370225"
         archived_summary = json.loads((history_dir / "verification-summary.json").read_text(encoding="utf-8"))
         expected = json.loads((history_dir / "acceptance-summary.json").read_text(encoding="utf-8"))
 

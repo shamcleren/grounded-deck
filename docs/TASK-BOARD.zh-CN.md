@@ -11,7 +11,7 @@
 ## 下一批待做
 
 - 在不削弱确定性回归覆盖的前提下，继续改进 strongest-demo 路径上的 provider-backed planning 与 grading
-- 在接受新的 prompt 改动之前，先让后续 strongest-demo live refresh 与 `reports/live-verification-history/strongest-demo-1774366441/acceptance-summary.json` 做对比
+- 在接受新的 prompt 改动之前，先让后续 strongest-demo live refresh 与 `reports/live-verification-history/strongest-demo-1774370225/acceptance-summary.json` 做对比
 - 在出现新的已验证 worker 补丁或 strongest-demo live refresh 差异之前，不要继续上升新的 prompt 改动
 - 在有新的已验证快照被接受之前，保持 strongest-demo canonical 文档固定引用当前仓库内已接受的 live snapshot
 - 后续新增 canonical docs 时，保持中英双语并采用独立语言文件

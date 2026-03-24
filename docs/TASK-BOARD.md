@@ -9,7 +9,7 @@
 ## Ready Next
 
 - continue improving provider-backed planning and grading against the strongest-demo path without weakening deterministic coverage
-- compare future strongest-demo live refreshes against `reports/live-verification-history/strongest-demo-1774366441/acceptance-summary.json` before accepting another prompt change
+- compare future strongest-demo live refreshes against `reports/live-verification-history/strongest-demo-1774370225/acceptance-summary.json` before accepting another prompt change
 - wait for a new verified worker patch or a strongest-demo live-refresh delta before promoting another prompt change
 - keep strongest-demo canonical docs pinned to the current accepted repository-owned snapshot until a newer verified snapshot is accepted
 - keep canonical docs bilingual via separate language files and switch links

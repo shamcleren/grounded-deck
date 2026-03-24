@@ -1,0 +1,60 @@
+{
+  "status": "fail",
+  "failures": [
+    "grounded_content_slides is 4, but acceptance criteria requires exactly 5",
+    "total_content_slides is 6, but acceptance criteria requires exactly 5",
+    "Spec is missing the 5th content slide required by strongest-demo baseline"
+  ],
+  "coverage": {
+    "required_units": 4,
+    "covered_units": 4,
+    "must_include_checks_coverage": {
+      "src-01:sec-01": "covered by slide-02 must_include_checks",
+      "src-01:sec-02": "covered by slide-03 must_include_checks",
+      "src-02:sec-01": "covered by slide-04 must_include_checks",
+      "src-03:sec-01": "covered by slide-05 must_include_checks"
+    },
+    "required_units_ids": [
+      "src-01:sec-01",
+      "src-01:sec-02",
+      "src-02:sec-01",
+      "src-03:sec-01"
+    ],
+    "covered_units_ids": [
+      "src-01:sec-01",
+      "src-01:sec-02",
+      "src-02:sec-01",
+      "src-03:sec-01"
+    ]
+  },
+  "grounding": {
+    "total_content_slides": 6,
+    "grounded_slides": 4,
+    "ungrounded_content_slides": [],
+    "detail": "Slides 2-5 are each grounded to exactly one source unit with matching source_bindings and must_include_checks. Slide 6 is grounded to all four units. Slide 1 is a summary introduction with no source bindings."
+  },
+  "visual_form": {
+    "expected_units": 4,
+    "matched_units": 4,
+    "layout_type_fits": {
+      "src-01:sec-01": "timeline - correct (export timeline)",
+      "src-01:sec-02": "comparison - correct (Europe vs SE Asia)",
+      "src-02:sec-01": "process - correct (entry path steps)",
+      "src-03:sec-01": "chart - correct (cost reduction metric)"
+    },
+    "expected_units_ids": [
+      "src-01:sec-01",
+      "src-01:sec-02",
+      "src-02:sec-01",
+      "src-03:sec-01"
+    ],
+    "matched_units_ids": [
+      "src-01:sec-01",
+      "src-01:sec-02",
+      "src-02:sec-01",
+      "src-03:sec-01"
+    ]
+  },
+  "provider": "grounded-deck-grader",
+  "model": "structural-acceptance-check"
+}

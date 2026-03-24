@@ -1,0 +1,13 @@
+{
+  "mode": "online-verification",
+  "provider": "openai-compatible",
+  "model": "MiniMax-M2.7",
+  "input_path": "fixtures/source-packs/strongest-demo-source-pack.json",
+  "generated_at_unix": 1774374274,
+  "artifacts": {
+    "normalized_pack": "reports/live-verification-history/strongest-demo-1774374274/normalized-pack.json",
+    "slide_spec": "reports/live-verification-history/strongest-demo-1774374274/slide-spec.json",
+    "quality_report": "reports/live-verification-history/strongest-demo-1774374274/quality-report.json"
+  },
+  "quality_status": "fail"
+}

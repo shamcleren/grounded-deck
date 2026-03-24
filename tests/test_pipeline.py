@@ -264,7 +264,7 @@ class PipelineFixtureTests(unittest.TestCase):
 
         self.assertIn("Strongest-demo accepted live baseline checks:", prompt)
         self.assertIn("Compare the output structurally against the archived acceptance snapshot", prompt)
-        self.assertIn("strongest-demo-1774366441/acceptance-summary.json", prompt)
+        self.assertIn("strongest-demo-1774370225/acceptance-summary.json", prompt)
         self.assertIn("Fail if slide_count is not exactly 6.", prompt)
         self.assertIn("Fail if layout_sequence is not exactly", prompt)
         self.assertIn("China EV Market Entry: Europe & Southeast Asia Strategy", prompt)

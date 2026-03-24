@@ -268,7 +268,7 @@ class OpenAICompatibleProvider(Provider):
         Path(__file__).resolve().parents[2]
         / "reports"
         / "live-verification-history"
-        / "strongest-demo-1774366441"
+        / "strongest-demo-1774370225"
         / "acceptance-summary.json"
     )
     STRONGEST_DEMO_UNIT_ORDER = [

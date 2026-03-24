@@ -52,6 +52,8 @@
 - 用已归档 live acceptance summary 驱动 strongest-demo prompt guardrail，替换了重复硬编码的 strongest-demo 常量
 - 收紧 strongest-demo prompt 规则，让 summary slide 必须输出显式空 evidence 数组，而不是省略必填字段
 - 在 acceptance-summary 驱动的 guardrail 补丁落地后再次刷新 strongest-demo 在线验证，并将结构一致的新 live 快照归档到 `reports/live-verification-history/strongest-demo-1774370225/`
+- 将 strongest-demo provider guardrail 基线和确定性测试统一指向已接受的仓库内快照 `reports/live-verification-history/strongest-demo-1774370225/`
+- 在基线指针统一后再次刷新 strongest-demo 在线验证，并将结构一致的新 live 快照归档到 `reports/live-verification-history/strongest-demo-1774374429/`
 
 ## 当前唯一下一步
 
