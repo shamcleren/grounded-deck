@@ -4,7 +4,7 @@
 
 ## Session Summary
 
-GroundedDeck now drives strongest-demo provider guardrails directly from the archived acceptance snapshot, and this curator pass verified that the refreshed live run still matches the accepted strongest-demo structure after tightening the prompt to require explicit empty evidence arrays on summary slides.
+GroundedDeck still uses the archived strongest-demo acceptance snapshot as the provider-planning baseline, and this curator pass confirmed there is no newer verified worker output to promote beyond the accepted `strongest-demo-1774370225` live snapshot.
 
 ## What Was Just Completed
 
@@ -56,6 +56,8 @@ GroundedDeck now drives strongest-demo provider guardrails directly from the arc
 - fixed a live regression where the provider omitted required evidence fields on the intro slide by making the strongest-demo summary-slide array requirements explicit
 - refreshed `reports/live-verification-latest.{json,md}` and archived a passing strongest-demo live snapshot under `reports/live-verification-history/strongest-demo-1774370225/`
 - confirmed the new `strongest-demo-1774370225` acceptance summary matches the accepted strongest-demo baseline structurally aside from the run timestamp
+- corrected `docs/STRONGEST-DEMO.{md,zh-CN.md}` so canonical strongest-demo references now point to the repository-owned accepted snapshot under `reports/live-verification-history/strongest-demo-1774370225/` instead of an obsolete worktree path
+- reviewed `auto/groundeddeck-auto-sprint/provider-grading-prompt-tightening`, `auto/groundeddeck-auto-sprint-b/acceptance-comparison-tightening`, and `auto/groundeddeck-auto-sprint-c/strongest-demo-slide-id-guardrails`, and confirmed they are still unverified prompt variants with no newer archived strongest-demo verification to justify promotion
 
 ## Current Status
 
@@ -86,6 +88,7 @@ GroundedDeck now drives strongest-demo provider guardrails directly from the arc
 - refreshed strongest-demo live acceptance snapshot after the acceptance-summary-driven guardrail patch: present under `reports/live-verification-history/strongest-demo-1774370225/`
 - latest archived strongest-demo live refresh remains structurally aligned with the accepted baseline; only the run timestamp changed
 - latest archived strongest-demo acceptance snapshot remains structurally identical to the previously accepted baseline
+- canonical strongest-demo docs now reference the repository-owned accepted live snapshot at `reports/live-verification-history/strongest-demo-1774370225/`
 - remaining worker prompt variants: reviewed and currently superseded by the accepted strongest-demo live baseline, so no new verified worker output is pending integration
 - renderer implementation: still deferred
 

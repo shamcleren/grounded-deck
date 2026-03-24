@@ -24,11 +24,11 @@ The deterministic strongest-demo bundle is:
 - slide spec: [strongest-demo-slide-spec.json](/Users/renjinming/code/my_porjects/shamcleren/grounded-deck/fixtures/slide-spec/strongest-demo-slide-spec.json)
 - quality report: [strongest-demo-quality-report.json](/Users/renjinming/code/my_porjects/shamcleren/grounded-deck/fixtures/quality-reports/strongest-demo-quality-report.json)
 
-The refreshed live strongest-demo snapshot is archived at:
+The current accepted live strongest-demo snapshot is archived at:
 
-- [acceptance-summary.json](/Users/renjinming/.codex/worktrees/a0d6/grounded-deck/reports/live-verification-history/strongest-demo-1774362852/acceptance-summary.json)
-- [slide-spec.json](/Users/renjinming/.codex/worktrees/a0d6/grounded-deck/reports/live-verification-history/strongest-demo-1774362852/slide-spec.json)
-- [quality-report.json](/Users/renjinming/.codex/worktrees/a0d6/grounded-deck/reports/live-verification-history/strongest-demo-1774362852/quality-report.json)
+- [acceptance-summary.json](/Users/renjinming/code/my_porjects/shamcleren/grounded-deck/reports/live-verification-history/strongest-demo-1774370225/acceptance-summary.json)
+- [slide-spec.json](/Users/renjinming/code/my_porjects/shamcleren/grounded-deck/reports/live-verification-history/strongest-demo-1774370225/slide-spec.json)
+- [quality-report.json](/Users/renjinming/code/my_porjects/shamcleren/grounded-deck/reports/live-verification-history/strongest-demo-1774370225/quality-report.json)
 
 ## Live Acceptance Snapshot
 
