@@ -27,6 +27,7 @@ GroundedDeck now has a canonical strongest-demo bundle, an explicit automation g
 - added `docs/AUTOMATION-GOVERNANCE.md` and made automation handling part of startup guidance
 - recovered four detached automation worktrees onto named rescue branches so they can be curated instead of lost
 - accepted the strongest-demo rescue work by landing a canonical strongest-demo fixture bundle, deterministic quality metrics, and `make strongest-demo`
+- added `make curator-finalize` so future curator runs use one repository-owned merge-and-cleanup path
 
 ## Current Status
 

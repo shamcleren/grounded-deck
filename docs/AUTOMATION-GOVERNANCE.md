@@ -56,6 +56,7 @@ Curator responsibilities:
 - prepare the branch that is eligible to merge into `main`
 - when all merge gates pass, fast-forward or otherwise intentionally merge the accepted curator branch into `main`
 - after a successful merge, clean up the merged curator branch and its dedicated worktree
+- prefer the repository-owned finalize flow via `make curator-finalize`
 
 The curator is the only automation role that should routinely edit:
 
@@ -115,10 +116,9 @@ Nothing should land on `main` until all of the following are true:
 
 When all gates pass, the preferred automation behavior is:
 
-1. merge the accepted curator branch into `main`
+1. run `make curator-finalize` from the curator branch worktree
 2. verify `main` still passes `make eval`
-3. delete the merged curator branch
-4. remove the merged branch's dedicated worktree
+3. push `main` if the run is authorized to update the remote
 
 ## Recovery Procedure
 

@@ -56,6 +56,7 @@ curator 职责：
 - 准备好可进入 `main` 的整合分支
 - 当所有门槛都满足后，以 fast-forward 或其他有意识的方式把已验收 curator 分支合入 `main`
 - 合并成功后，清理已合入的 curator 分支及其专属 worktree
+- 优先使用仓库内置的标准收尾流程：`make curator-finalize`
 
 只有 curator 角色才应当常规修改以下文件：
 
@@ -115,10 +116,9 @@ verifier 不得静默用 deterministic 输出冒充 online verification。
 
 当所有门槛都满足时，推荐的 automation 行为是：
 
-1. 将已验收的 curator 分支合入 `main`
+1. 在 curator 分支对应的 worktree 中运行 `make curator-finalize`
 2. 确认 `main` 上的 `make eval` 仍然通过
-3. 删除已合入的 curator 分支
-4. 移除该分支对应的专属 worktree
+3. 如果当前 run 被授权更新远端，则把 `main` 推送到远端
 
 ## 故障恢复流程
 
