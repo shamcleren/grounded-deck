@@ -30,6 +30,7 @@ GroundedDeck now has a canonical strongest-demo bundle, an explicit automation g
 - added `make curator-finalize` so future curator runs use one repository-owned merge-and-cleanup path
 - configured the live provider path against MiniMax-M2.7 and archived the first successful strongest-demo online verification under `reports/live-verification-latest.{json,md}`
 - hardened the OpenAI-compatible provider integration so MiniMax reasoning output is split cleanly and `<think>`-wrapped JSON responses can still be parsed and diagnosed
+- added a repository-owned automation role-lock utility so worker and curator schedules can be safely increased without overlapping substantive work
 
 ## Current Status
 
@@ -45,6 +46,7 @@ GroundedDeck now has a canonical strongest-demo bundle, an explicit automation g
 - live credentials / real backend: configured and verified for MiniMax-M2.7
 - strongest-demo canonical bundle: present
 - automation governance for worker / curator / verifier flows: present
+- automation role locks for higher-frequency schedules: present
 - first successful strongest-demo online verification: archived in `reports/live-verification-latest.json` and `reports/live-verification-latest.md`
 - near-term focus: expand provider-backed planning from the verified strongest-demo baseline without weakening deterministic evals
 - renderer implementation: still deferred

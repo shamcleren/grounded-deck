@@ -21,6 +21,7 @@ The goal is to keep automation useful without letting it corrupt `main`, duplica
 4. Only a curator flow may update canonical state docs and prepare changes for `main`.
 5. Live verification must be treated as a separate responsibility with explicit archived artifacts.
 6. A change is not considered repository memory until it lands in tracked files inside this repository.
+7. No two automations with the same role may proceed concurrently; each run must acquire the role lock before doing substantive work.
 
 ## Automation Roles
 
@@ -35,6 +36,7 @@ Use worker automations for bounded implementation tasks such as:
 
 Worker rules:
 
+- acquire the `worker` role lock before substantive work and release it before the run exits
 - start from an isolated worktree
 - create or switch to a named branch before editing
 - do one coherent subtask at a time
@@ -47,6 +49,7 @@ Use the curator flow to turn worker output into canonical repository state.
 
 Curator responsibilities:
 
+- acquire the `curator` role lock before substantive work and release it before the run exits
 - review candidate worker branches
 - choose one integration baseline
 - cherry-pick or manually port non-overlapping changes from other worker branches
@@ -83,6 +86,7 @@ Verifier runs must not silently substitute deterministic output for online verif
 ## Branch And Worktree Rules
 
 - Every automation worktree must be attached to a named branch.
+- The `worker` and `curator` roles share global role locks under `/tmp/grounded-deck-automation-locks/`; a run that cannot acquire its role lock must stop immediately.
 - Branch names should communicate ownership and topic.
 - Prefer prefixes like:
   - `auto/<automation-id>/<topic>` for workers
@@ -111,10 +115,11 @@ Rules:
 Nothing should land on `main` until all of the following are true:
 
 1. the work is on a named branch
-2. `make eval` passes
-3. canonical state docs reflect the new truth
-4. no unresolved conflict remains between worker outputs
-5. if live verification is part of the claimed result, the archived verification artifacts exist in `reports/`
+2. the role lock was acquired successfully for the duration of the run
+3. `make eval` passes
+4. canonical state docs reflect the new truth
+5. no unresolved conflict remains between worker outputs
+6. if live verification is part of the claimed result, the archived verification artifacts exist in `reports/`
 
 When all gates pass, the preferred automation behavior is:
 
@@ -141,6 +146,7 @@ If automation leaves work in an unsafe state:
 Automation prompts should explicitly say:
 
 - create or switch to a named branch before editing
+- acquire the role lock at the start of the run and release it before exit
 - do not edit `main`
 - workers must not update canonical state docs
 - only one subtask should be advanced in one run
@@ -155,4 +161,5 @@ Automation prompts should explicitly say:
 - the rescued strongest-demo candidate work has been curated into the canonical bundle on `main`
 - the first successful online verification against `fixtures/source-packs/strongest-demo-source-pack.json` has been archived in `reports/live-verification-latest.{json,md}`
 - the curator and verifier flow should now preserve that live baseline and advance provider-backed planning without weakening deterministic regression coverage
+- the repository now supports lock-protected multi-lane automation: three worker slots (`:00`, `:10`, `:20`) and three curator slots (`:30`, `:40`, `:50`)
 - once a future curator or verifier branch meets the merge gates, it should merge into `main` and clean up its own branch and worktree automatically

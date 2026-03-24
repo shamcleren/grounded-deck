@@ -42,6 +42,7 @@
 - 将 strongest-demo 的救援改动整合成一套规范 fixture bundle、报告路径和确定性指标基线
 - 使用 MiniMax-M2.7 针对规范 strongest-demo 输入完成并归档了第一次成功在线验证
 - 强化了 OpenAI-compatible provider 路径，使其能够拆分 MiniMax 的推理输出，并兼容 `<think>` 包裹的 JSON 响应
+- 增加了带角色锁的 automation 支持，让更高频的 worker / curator 调度不会发生不安全重叠
 
 ## 当前唯一下一步
 
@@ -64,6 +65,7 @@
 - 仓库文档必须足以支持 AI 跨会话继续工作
 - 可以因为外部反馈调整优先级和 demo 策略，但不能无记录地改动架构边界
 - 定时或无人值守的 AI 工作必须通过 automation governance 流程进入主线，不能直接写 `main`
+- 更高频的定时 automation 在开始实质工作前必须使用仓库提供的角色锁机制
 
 ## 第一阶段完成定义
 

@@ -1,6 +1,6 @@
 PYTHON ?= python3
 
-.PHONY: eval report context handoff test example-pipeline strongest-demo verify-online archive-online-verification check-live-env prepare-live-verification report-live-verification live-status init-live-env curator-finalize
+.PHONY: eval report context handoff test example-pipeline strongest-demo verify-online archive-online-verification check-live-env prepare-live-verification report-live-verification live-status init-live-env curator-finalize automation-lock-status-worker automation-lock-status-curator
 
 eval:
 	$(PYTHON) harness/self_accept.py
@@ -70,3 +70,9 @@ handoff:
 
 curator-finalize:
 	@./scripts/curator_finalize.sh
+
+automation-lock-status-worker:
+	$(PYTHON) -m src.runtime.automation_lock status worker
+
+automation-lock-status-curator:
+	$(PYTHON) -m src.runtime.automation_lock status curator
