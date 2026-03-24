@@ -8,6 +8,16 @@ from time import time
 from src.runtime.env import load_runtime_env
 
 
+PLACEHOLDER_VALUES = {
+    "",
+    "REPLACE_ME",
+    "YOUR_KEY",
+    "YOUR_API_KEY",
+    "YOUR_MODEL",
+    "https://example.com/v1",
+}
+
+
 def render_verification_report(summary: dict) -> str:
     lines = [
         "# Live Verification Report",
@@ -57,22 +67,36 @@ def build_failure_summary(
     }
 
 
+def _is_placeholder(value: str | None) -> bool:
+    if value is None:
+        return True
+    normalized = value.strip()
+    return normalized in PLACEHOLDER_VALUES or normalized.startswith("YOUR_")
+
+
 def validate_live_verification_env(env: dict[str, str] | None = None) -> tuple[bool, list[str]]:
     values = load_runtime_env() if env is None else dict(env)
     missing: list[str] = []
+    invalid: list[str] = []
 
     if values.get("GROUNDED_DECK_LLM_PROVIDER") != "openai-compatible":
         missing.append("GROUNDED_DECK_LLM_PROVIDER")
     if not values.get("GROUNDED_DECK_LLM_MODEL"):
         missing.append("GROUNDED_DECK_LLM_MODEL")
+    elif _is_placeholder(values.get("GROUNDED_DECK_LLM_MODEL")):
+        invalid.append("GROUNDED_DECK_LLM_MODEL")
     if not values.get("GROUNDED_DECK_BASE_URL"):
         missing.append("GROUNDED_DECK_BASE_URL")
+    elif _is_placeholder(values.get("GROUNDED_DECK_BASE_URL")):
+        invalid.append("GROUNDED_DECK_BASE_URL")
 
     api_key_env = values.get("GROUNDED_DECK_API_KEY_ENV", "GROUNDED_DECK_API_KEY")
     if not values.get(api_key_env):
         missing.append(api_key_env)
+    elif _is_placeholder(values.get(api_key_env)):
+        invalid.append(api_key_env)
 
-    return (len(missing) == 0, missing)
+    return (len(missing) == 0 and len(invalid) == 0, missing + invalid)
 
 
 def archive_verification_summary(summary_path: Path, output_dir: Path) -> tuple[Path, Path]:
@@ -100,21 +124,23 @@ def render_live_verification_checklist(env: dict[str, str] | None = None) -> str
         "# Live Verification Checklist",
         "",
         f"- Status: `{status}`",
-        f"- Missing Config: `{missing_text}`",
+        f"- Missing Or Invalid Config: `{missing_text}`",
         "",
         "## Steps",
         "",
         "1. Run `make check-live-env` and confirm it returns `OK`.",
-        "2. Run `make verify-online` to execute the live provider path.",
-        "3. Inspect `/tmp/grounded-deck-online/verification-summary.json`.",
-        "4. Run `make archive-online-verification` to copy the successful result into `reports/`.",
-        "5. Update `docs/LATEST-HANDOFF.md` and `docs/TASK-BOARD.md` with the observed result.",
+        "2. Replace placeholder values copied from `.env.runtime.example` before attempting a live run.",
+        "3. Run `make verify-online` to execute the live provider path.",
+        "4. Inspect `/tmp/grounded-deck-online/verification-summary.json`.",
+        "5. Run `make archive-online-verification` to copy the latest result into `reports/`.",
+        "6. Update `docs/LATEST-HANDOFF.md` and `docs/TASK-BOARD.md` with the observed result.",
         "",
         "## Success Criteria",
         "",
         "- `quality_status` is `pass` in `verification-summary.json`.",
         "- The summary references `normalized-pack.json`, `slide-spec.json`, and `quality-report.json`.",
         "- `reports/live-verification-latest.json` and `.md` are present after archiving.",
+        "- `make live-status` reports `Environment Ready: yes` before the live run starts.",
         "",
     ]
     return "\n".join(lines)
@@ -132,7 +158,7 @@ def render_live_verification_status(summary_path: Path, env: dict[str, str] | No
         "# Live Verification Status",
         "",
         f"- Environment Ready: `{'yes' if ok else 'no'}`",
-        f"- Missing Config: `{', '.join(missing) if missing else 'none'}`",
+        f"- Missing Or Invalid Config: `{', '.join(missing) if missing else 'none'}`",
         f"- Summary Present: `{'yes' if summary_path.exists() else 'no'}`",
     ]
 

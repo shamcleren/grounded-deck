@@ -10,7 +10,7 @@
 
 ## 下一批待做
 
-- 记录 live provider 验证的使用约定和失败模式
+- 把 `.env.runtime.local` 中的占位值替换为真实配置，并跑通第一次 `make verify-online`
 - 留下一次成功 live verification 的记录或工件形态
 - 把第一次成功的 `verification-summary.json` 工件形态沉淀进仓库记忆
 - 后续新增 canonical docs 时，保持中英双语并采用独立语言文件

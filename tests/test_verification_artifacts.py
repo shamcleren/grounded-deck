@@ -49,6 +49,18 @@ class VerificationArtifactTests(unittest.TestCase):
         self.assertTrue(ok)
         self.assertEqual(missing, [])
 
+    def test_validate_live_verification_env_rejects_placeholder_values(self) -> None:
+        ok, missing = validate_live_verification_env(
+            {
+                "GROUNDED_DECK_LLM_PROVIDER": "openai-compatible",
+                "GROUNDED_DECK_LLM_MODEL": "gpt-4.1-mini",
+                "GROUNDED_DECK_BASE_URL": "https://api.openai.com/v1",
+                "GROUNDED_DECK_API_KEY": "REPLACE_ME",
+            }
+        )
+        self.assertFalse(ok)
+        self.assertEqual(missing, ["GROUNDED_DECK_API_KEY"])
+
     def test_render_verification_report_contains_key_fields(self) -> None:
         summary = {
             "mode": "online-verification",
@@ -101,6 +113,7 @@ class VerificationArtifactTests(unittest.TestCase):
         checklist = render_live_verification_checklist({})
         self.assertIn("Status: `BLOCKED`", checklist)
         self.assertIn("GROUNDED_DECK_API_KEY", checklist)
+        self.assertIn("Replace placeholder values", checklist)
 
     def test_write_live_verification_checklist_writes_file(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -115,6 +128,21 @@ class VerificationArtifactTests(unittest.TestCase):
             status = render_live_verification_status(summary_path, {})
             self.assertIn("Environment Ready: `no`", status)
             self.assertIn("Summary Present: `no`", status)
+
+    def test_render_live_verification_status_marks_placeholder_api_key_as_not_ready(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            summary_path = Path(tmpdir) / "missing-summary.json"
+            status = render_live_verification_status(
+                summary_path,
+                {
+                    "GROUNDED_DECK_LLM_PROVIDER": "openai-compatible",
+                    "GROUNDED_DECK_LLM_MODEL": "gpt-4.1-mini",
+                    "GROUNDED_DECK_BASE_URL": "https://api.openai.com/v1",
+                    "GROUNDED_DECK_API_KEY": "REPLACE_ME",
+                },
+            )
+            self.assertIn("Environment Ready: `no`", status)
+            self.assertIn("GROUNDED_DECK_API_KEY", status)
 
     def test_render_live_verification_status_with_summary(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:

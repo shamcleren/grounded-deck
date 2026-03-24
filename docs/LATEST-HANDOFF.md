@@ -22,6 +22,7 @@ GroundedDeck now includes a deterministic fixture-backed pipeline slice in addit
 - wired an OpenAI-compatible provider path with strict local response validation
 - added an opt-in `make verify-online` path that refuses deterministic fallback
 - added automatic verification-summary artifacts for runtime executions
+- tightened live-env checks so placeholder values such as `REPLACE_ME` are treated as invalid
 
 ## Current Status
 
@@ -32,18 +33,20 @@ GroundedDeck now includes a deterministic fixture-backed pipeline slice in addit
 - provider abstraction: present
 - OpenAI-compatible provider path: present and locally testable
 - live verification tooling: ready
+- placeholder env detection: present
+- live status correctly reports placeholder config as not ready
 - live credentials / real backend: not yet configured
 - renderer implementation: still deferred
 
 ## Immediate Next Action
 
-Document live-provider verification expectations and capture one successful online verification run while preserving the deterministic fixture pipeline.
+Capture one successful online verification run while preserving the deterministic fixture pipeline.
 
 ## First Concrete Tasks
 
-1. document required env vars and expected outputs for `make verify-online`
-2. keep deterministic fixture generation as a fallback and regression baseline
-3. capture one successful online verification artifact
+1. replace placeholder values in `.env.runtime.local` with real provider settings
+2. run `make check-live-env`, `make live-status`, and `make verify-online`
+3. archive the resulting `verification-summary.json`
 4. tighten prompts and validators based on observed live outputs
 
 ## Do Not Drift

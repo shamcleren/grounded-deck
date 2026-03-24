@@ -56,6 +56,7 @@ Read [START-HERE.md](START-HERE.md), [AGENTS.md](AGENTS.md), [docs/PROJECT-STATE
 Provider configuration notes live in [docs/runtime-config.md](docs/runtime-config.md).
 The repository includes [.env.runtime.example](.env.runtime.example) for live-provider setup.
 If present, `.env.runtime.local` is auto-loaded by the runtime verification commands.
+`make init-live-env` only creates the template file; placeholder values still need to be replaced before `make verify-online` can succeed.
 
 ## Architecture
 

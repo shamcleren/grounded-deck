@@ -8,7 +8,7 @@
 
 ## Ready Next
 
-- document live-provider verification expectations and failure modes
+- replace placeholder values in `.env.runtime.local` and run the first successful `make verify-online`
 - capture one successful live verification transcript or artifact shape
 - store the first successful `verification-summary.json` artifact shape in repo memory
 - keep canonical docs bilingual via separate language files and switch links

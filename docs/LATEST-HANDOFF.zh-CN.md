@@ -24,6 +24,7 @@ GroundedDeck 现在除了连续性仓库结构之外，还包含一条由 fixtur
 - 接通了 OpenAI-compatible provider 路径，并增加了严格的本地响应校验
 - 添加了拒绝 deterministic fallback 的 `make verify-online` 路径
 - 为运行时执行增加了自动生成的 verification-summary 工件
+- 收紧了 live env 检查，`REPLACE_ME` 这类占位值现在会被视为无效配置
 
 ## 当前状态
 
@@ -34,18 +35,20 @@ GroundedDeck 现在除了连续性仓库结构之外，还包含一条由 fixtur
 - provider abstraction：已具备
 - OpenAI-compatible provider 路径：已具备，且可在本地测试
 - live verification 工具链：已就绪
+- placeholder env detection：已具备
+- live status 已能把占位配置识别为未就绪
 - live 凭证 / 真实后端：尚未配置
 - renderer 实现：仍然延后
 
 ## 立即下一步
 
-在保留确定性 fixture pipeline 的前提下，补齐 live provider 验证约定，并留下一次成功的在线验证记录。
+在保留确定性 fixture pipeline 的前提下，留下一次成功的在线验证记录。
 
 ## 第一批具体任务
 
-1. 记录 `make verify-online` 所需环境变量和预期输出
-2. 保留确定性 fixture 生成为 fallback 和回归基线
-3. 留下一次成功的在线验证工件
+1. 把 `.env.runtime.local` 里的占位值替换成真实 provider 配置
+2. 运行 `make check-live-env`、`make live-status` 和 `make verify-online`
+3. 归档生成的 `verification-summary.json`
 4. 根据真实输出继续收紧 prompt 和 validator
 
 ## 不要漂移

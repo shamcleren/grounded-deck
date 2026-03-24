@@ -36,15 +36,15 @@ Foundation complete. A deterministic baseline pipeline and provider abstraction 
 
 ## Current Next Action
 
-Document live-provider verification expectations and capture one successful online verification run without weakening deterministic regression coverage.
+Capture one successful online verification run without weakening deterministic regression coverage.
 
 ## Immediate Priorities
 
-1. document expected setup, success criteria, and failure modes for `make verify-online`
+1. replace placeholder values in `.env.runtime.local` with real provider settings
 2. keep fixture-based deterministic outputs as regression baselines for `make eval`
 3. capture one successful online verification artifact and harden prompts from observed responses
 
-The environment-variable configuration contract is now documented in `docs/runtime-config.md`; the remaining work is wiring live provider calls.
+The environment-variable configuration contract is now documented in `docs/runtime-config.md`, and placeholder values are now rejected during live preflight. The remaining work is capturing the first successful online run.
 
 ## Active Constraints
 

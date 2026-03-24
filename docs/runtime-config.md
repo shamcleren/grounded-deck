@@ -54,6 +54,7 @@ The repository also includes [.env.runtime.example](../.env.runtime.example) as 
 If `.env.runtime.local` exists, GroundedDeck now auto-loads values from it before reading the live verification commands.
 
 `make init-live-env` creates `.env.runtime.local` from the example file only when it does not already exist.
+The generated file is still not ready for live traffic until every placeholder value is replaced.
 
 It does ship a local example runtime entrypoint for the fixture-backed pipeline:
 
@@ -79,9 +80,9 @@ make verify-online
 
 This command fails fast if `GROUNDED_DECK_LLM_PROVIDER` still resolves to `deterministic`.
 
-`make check-live-env` reports which required values are still missing before you attempt a live run.
+`make check-live-env` reports which required values are still missing or still set to placeholders before you attempt a live run.
 `make prepare-live-verification` writes `reports/live-verification-checklist.md`.
-`make live-status` shows whether the environment is ready and whether a recent verification summary exists in `/tmp/grounded-deck-online/`.
+`make live-status` shows whether the environment is ready, whether any placeholder values remain, and whether a recent verification summary exists in `/tmp/grounded-deck-online/`.
 
 When it succeeds, it also writes:
 
@@ -105,3 +106,32 @@ make report-live-verification
 ```
 
 The archived report can represent either a successful run or a failed attempt with an explicit error section.
+
+## Live Verification Expectations
+
+Before the first real online run:
+
+- `.env.runtime.local` should exist but should remain untracked.
+- `GROUNDED_DECK_LLM_PROVIDER` must be `openai-compatible`.
+- `GROUNDED_DECK_LLM_MODEL`, `GROUNDED_DECK_BASE_URL`, and the selected API key variable must all be real values, not placeholders such as `REPLACE_ME`.
+- `make live-status` should report `Environment Ready: yes`.
+
+Expected successful flow:
+
+1. `make check-live-env`
+2. `make live-status`
+3. `make verify-online`
+4. `make archive-online-verification`
+5. `make report-live-verification`
+
+Expected success outputs:
+
+- `/tmp/grounded-deck-online/verification-summary.json`
+- `reports/live-verification-latest.json`
+- `reports/live-verification-latest.md`
+
+Expected failure modes:
+
+- missing or placeholder env values block the run before network traffic starts
+- deterministic fallback is rejected by `--require-live-provider`
+- provider or transport failures still emit a failure `verification-summary.json`

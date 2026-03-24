@@ -54,6 +54,7 @@ export GROUNDED_DECK_API_KEY=YOUR_KEY
 如果仓库根目录存在 `.env.runtime.local`，GroundedDeck 现在会在执行 live verification 相关命令前自动读取它。
 
 `make init-live-env` 会在 `.env.runtime.local` 不存在时，用模板自动创建它。
+但这个文件创建出来以后仍然不能直接拿去跑真实请求，必须先把所有占位值替换掉。
 
 不过仓库已经提供了 fixture 驱动的本地示例运行入口：
 
@@ -79,9 +80,9 @@ make verify-online
 
 如果 `GROUNDED_DECK_LLM_PROVIDER` 最终仍然解析为 `deterministic`，这个命令会直接失败。
 
-`make check-live-env` 会先告诉你当前还缺哪些必需配置，再决定是否执行在线验证。
+`make check-live-env` 会先告诉你当前还缺哪些必需配置，或者哪些值仍然是占位符，再决定是否执行在线验证。
 `make prepare-live-verification` 会生成 `reports/live-verification-checklist.md`。
-`make live-status` 会显示环境是否就绪，以及 `/tmp/grounded-deck-online/` 下是否已经存在最近一次验证摘要。
+`make live-status` 会显示环境是否就绪、是否还存在占位值，以及 `/tmp/grounded-deck-online/` 下是否已经存在最近一次验证摘要。
 
 如果执行成功，还会写出：
 
@@ -105,3 +106,32 @@ make report-live-verification
 ```
 
 归档报告既可以表示一次成功运行，也可以表示一次带有明确错误信息的失败尝试。
+
+## Live Verification 预期
+
+第一次真实在线验证前，应满足：
+
+- `.env.runtime.local` 已存在，但保持未跟踪状态
+- `GROUNDED_DECK_LLM_PROVIDER` 为 `openai-compatible`
+- `GROUNDED_DECK_LLM_MODEL`、`GROUNDED_DECK_BASE_URL` 和选定的 API key 变量都已经替换成真实值，而不是 `REPLACE_ME` 之类的占位符
+- `make live-status` 显示 `Environment Ready: yes`
+
+推荐的成功执行顺序：
+
+1. `make check-live-env`
+2. `make live-status`
+3. `make verify-online`
+4. `make archive-online-verification`
+5. `make report-live-verification`
+
+成功后应看到：
+
+- `/tmp/grounded-deck-online/verification-summary.json`
+- `reports/live-verification-latest.json`
+- `reports/live-verification-latest.md`
+
+常见失败模式：
+
+- 缺失配置或占位值未替换，会在真正发网络请求前被拦下
+- `--require-live-provider` 会拒绝 deterministic fallback
+- provider 或 transport 失败时，仍会写出失败版 `verification-summary.json`
