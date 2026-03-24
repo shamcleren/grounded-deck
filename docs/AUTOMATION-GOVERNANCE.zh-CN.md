@@ -53,6 +53,7 @@ curator 职责：
 - 解决冲突
 - 更新 canonical state docs
 - 运行 `make eval`
+- 在进入 finalize 或 merge 步骤前先形成一个干净的原子提交
 - 准备好可进入 `main` 的整合分支
 - 当所有门槛都满足后，以 fast-forward 或其他有意识的方式把已验收 curator 分支合入 `main`
 - 合并成功后，清理已合入的 curator 分支及其专属 worktree
@@ -116,9 +117,10 @@ verifier 不得静默用 deterministic 输出冒充 online verification。
 
 当所有门槛都满足时，推荐的 automation 行为是：
 
-1. 在 curator 分支对应的 worktree 中运行 `make curator-finalize`
-2. 确认 `main` 上的 `make eval` 仍然通过
-3. 如果当前 run 被授权更新远端，则把 `main` 推送到远端
+1. 先在 curator 分支上形成一个干净的原子提交
+2. 在 curator 分支对应的 worktree 中运行 `make curator-finalize`
+3. 确认 `main` 上的 `make eval` 仍然通过
+4. 如果当前 run 被授权更新远端，则把 `main` 推送到远端
 
 ## 故障恢复流程
 
@@ -142,6 +144,7 @@ automation prompt 应明确写出：
 - worker 不得更新 canonical state docs
 - 一次运行只推进一个子任务
 - 在声明可交付前先跑 `make eval`
+- 在运行 `make curator-finalize` 或声称分支可合并之前，先形成一个干净的原子提交
 - 遇到真实阻塞时停止，不要顺手扩 scope
 
 ## GroundedDeck 当前策略

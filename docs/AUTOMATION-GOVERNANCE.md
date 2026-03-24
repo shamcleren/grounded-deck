@@ -53,6 +53,7 @@ Curator responsibilities:
 - resolve conflicts
 - update canonical state docs
 - run `make eval`
+- create a clean atomic commit before any finalize or merge step
 - prepare the branch that is eligible to merge into `main`
 - when all merge gates pass, fast-forward or otherwise intentionally merge the accepted curator branch into `main`
 - after a successful merge, clean up the merged curator branch and its dedicated worktree
@@ -116,9 +117,10 @@ Nothing should land on `main` until all of the following are true:
 
 When all gates pass, the preferred automation behavior is:
 
-1. run `make curator-finalize` from the curator branch worktree
-2. verify `main` still passes `make eval`
-3. push `main` if the run is authorized to update the remote
+1. create a clean atomic commit on the curator branch
+2. run `make curator-finalize` from the curator branch worktree
+3. verify `main` still passes `make eval`
+4. push `main` if the run is authorized to update the remote
 
 ## Recovery Procedure
 
@@ -142,6 +144,7 @@ Automation prompts should explicitly say:
 - workers must not update canonical state docs
 - only one subtask should be advanced in one run
 - run `make eval` before declaring a branch ready
+- create a clean atomic commit before running `make curator-finalize` or claiming a branch is ready to merge
 - stop when a real blocker is reached instead of broadening scope
 
 ## Current Policy For GroundedDeck
