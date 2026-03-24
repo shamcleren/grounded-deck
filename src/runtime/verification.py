@@ -144,6 +144,7 @@ def build_live_acceptance_snapshot(
     ]
     unit_layouts: dict[str, str] = {}
     unit_slide_titles: dict[str, str] = {}
+    unit_slide_evidence: dict[str, dict[str, list[str]]] = {}
     decision_backbone = {}
 
     for slide in slides:
@@ -152,6 +153,10 @@ def build_live_acceptance_snapshot(
             unit_id = checks[0]
             unit_layouts[unit_id] = slide.get("layout_type", "unknown")
             unit_slide_titles[unit_id] = slide.get("title", "")
+            unit_slide_evidence[unit_id] = {
+                "source_bindings": slide.get("source_bindings", []),
+                "must_include_checks": checks,
+            }
         if (
             slide.get("layout_type") == "summary"
             and not checks
@@ -162,6 +167,7 @@ def build_live_acceptance_snapshot(
                 "title": slide.get("title", ""),
                 "layout_type": slide.get("layout_type", "unknown"),
                 "source_bindings": slide.get("source_bindings", []),
+                "must_include_checks": slide.get("must_include_checks", []),
             }
 
     return {
@@ -181,6 +187,7 @@ def build_live_acceptance_snapshot(
         },
         "unit_layouts": unit_layouts,
         "unit_slide_titles": unit_slide_titles,
+        "unit_slide_evidence": unit_slide_evidence,
         "decision_backbone": decision_backbone,
         "covered_unit_ids": covered_unit_ids,
         "grounded_content_slides": quality_report.get("grounding", {}).get("grounded_slides"),

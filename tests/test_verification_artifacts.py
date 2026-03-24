@@ -388,6 +388,26 @@ class VerificationArtifactTests(unittest.TestCase):
             ],
         )
 
+    def test_build_live_acceptance_snapshot_tracks_unit_evidence_and_decision_checks(self) -> None:
+        history_dir = ROOT / "reports" / "live-verification-history" / "strongest-demo-1774370225"
+        archived_summary = json.loads((history_dir / "verification-summary.json").read_text(encoding="utf-8"))
+
+        rebuilt = build_live_acceptance_snapshot(
+            archived_summary,
+            normalized_pack_path=history_dir / "normalized-pack.json",
+            slide_spec_path=history_dir / "slide-spec.json",
+            quality_report_path=history_dir / "quality-report.json",
+        )
+
+        self.assertEqual(
+            rebuilt["unit_slide_evidence"]["src-01:sec-01"],
+            {
+                "source_bindings": ["src-01:sec-01"],
+                "must_include_checks": ["src-01:sec-01"],
+            },
+        )
+        self.assertEqual(rebuilt["decision_backbone"]["must_include_checks"], [])
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -32,6 +32,40 @@
     "src-02:sec-01": "进入路径 (Entry Path)",
     "src-03:sec-01": "成本与利润指标 (Cost & Margin Indicators)"
   },
+  "unit_slide_evidence": {
+    "src-01:sec-01": {
+      "source_bindings": [
+        "src-01:sec-01"
+      ],
+      "must_include_checks": [
+        "src-01:sec-01"
+      ]
+    },
+    "src-01:sec-02": {
+      "source_bindings": [
+        "src-01:sec-02"
+      ],
+      "must_include_checks": [
+        "src-01:sec-02"
+      ]
+    },
+    "src-02:sec-01": {
+      "source_bindings": [
+        "src-02:sec-01"
+      ],
+      "must_include_checks": [
+        "src-02:sec-01"
+      ]
+    },
+    "src-03:sec-01": {
+      "source_bindings": [
+        "src-03:sec-01"
+      ],
+      "must_include_checks": [
+        "src-03:sec-01"
+      ]
+    }
+  },
   "decision_backbone": {
     "title": "Decision Backbone",
     "layout_type": "summary",
@@ -40,7 +74,8 @@
       "src-01:sec-02",
       "src-02:sec-01",
       "src-03:sec-01"
-    ]
+    ],
+    "must_include_checks": []
   },
   "covered_unit_ids": [
     "src-01:sec-01",

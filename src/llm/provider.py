@@ -421,6 +421,11 @@ class OpenAICompatibleProvider(Provider):
         return dict(summary.get("unit_slide_titles", {}))
 
     @classmethod
+    def _strongest_demo_unit_evidence(cls) -> dict[str, dict[str, list[str]]]:
+        summary = cls._load_strongest_demo_acceptance_summary()
+        return dict(summary.get("unit_slide_evidence", {}))
+
+    @classmethod
     def _strongest_demo_layout_sequence(cls) -> list[str]:
         summary = cls._load_strongest_demo_acceptance_summary()
         return list(summary.get("layout_sequence", []))
@@ -429,6 +434,11 @@ class OpenAICompatibleProvider(Provider):
     def _strongest_demo_decision_backbone_bindings(cls) -> list[str]:
         summary = cls._load_strongest_demo_acceptance_summary()
         return list(summary.get("decision_backbone", {}).get("source_bindings", []))
+
+    @classmethod
+    def _strongest_demo_decision_backbone_checks(cls) -> list[str]:
+        summary = cls._load_strongest_demo_acceptance_summary()
+        return list(summary.get("decision_backbone", {}).get("must_include_checks", []))
 
     @classmethod
     def _strongest_demo_covered_unit_ids(cls) -> list[str]:
@@ -454,8 +464,10 @@ class OpenAICompatibleProvider(Provider):
     def _build_strongest_demo_planner_rules(cls) -> str:
         unit_layouts = cls._strongest_demo_unit_layouts()
         unit_titles = cls._strongest_demo_unit_titles()
+        unit_evidence = cls._strongest_demo_unit_evidence()
         intro_title = cls._strongest_demo_intro_title()
         decision_backbone_bindings = cls._strongest_demo_decision_backbone_bindings()
+        decision_backbone_checks = cls._strongest_demo_decision_backbone_checks()
         covered_unit_ids = cls._strongest_demo_covered_unit_ids()
         visual_matched_unit_ids = cls._strongest_demo_visual_matched_unit_ids()
         grounded_content_slides = cls._strongest_demo_grounded_content_slides()
@@ -465,7 +477,7 @@ class OpenAICompatibleProvider(Provider):
             for unit_id in cls.STRONGEST_DEMO_UNIT_ORDER
         )
         unit_binding_expectations = ", ".join(
-            f"{unit_id} must use source_bindings ['{unit_id}'] and must_include_checks ['{unit_id}']"
+            f"{unit_id} must use source_bindings {unit_evidence[unit_id]['source_bindings']} and must_include_checks {unit_evidence[unit_id]['must_include_checks']}"
             for unit_id in cls.STRONGEST_DEMO_UNIT_ORDER
         )
         return (
@@ -474,7 +486,7 @@ class OpenAICompatibleProvider(Provider):
             f"- Slide 1 must be a summary slide titled '{intro_title}' with source_bindings set to [] and must_include_checks set to [].\n"
             f"- Slides 2-5 must follow this exact unit order and layout/title pattern: {unit_expectations}.\n"
             f"- Slides 2-5 must also keep exact per-slide evidence wiring: {unit_binding_expectations}.\n"
-            "- Slide 6 must be titled 'Decision Backbone', use layout_type 'summary', set source_bindings to all source units, and set must_include_checks to [].\n"
+            f"- Slide 6 must be titled 'Decision Backbone', use layout_type 'summary', set source_bindings to all source units, and set must_include_checks to exactly {decision_backbone_checks}.\n"
             f"- Slide 6 source_bindings must be exactly {decision_backbone_bindings} in that order.\n"
             "- Treat generated_at_unix as archival metadata only; every other acceptance-summary field must remain structurally identical to the accepted strongest-demo baseline.\n"
             f"- Preserve acceptance-summary comparability: grounded_content_slides must be {grounded_content_slides} of {total_content_slides}, covered_unit_ids must be exactly {covered_unit_ids}, and visual_matched_unit_ids must be exactly {visual_matched_unit_ids}.\n"
@@ -486,6 +498,7 @@ class OpenAICompatibleProvider(Provider):
         expected_sequence = cls._strongest_demo_layout_sequence()
         intro_title = cls._strongest_demo_intro_title()
         decision_backbone_bindings = cls._strongest_demo_decision_backbone_bindings()
+        decision_backbone_checks = cls._strongest_demo_decision_backbone_checks()
         covered_unit_ids = cls._strongest_demo_covered_unit_ids()
         visual_matched_unit_ids = cls._strongest_demo_visual_matched_unit_ids()
         grounded_content_slides = cls._strongest_demo_grounded_content_slides()
@@ -499,7 +512,7 @@ class OpenAICompatibleProvider(Provider):
             f"- Fail if slide 1 is not a summary slide titled '{intro_title}' with source_bindings == [] and must_include_checks == [].\n"
             f"- Fail if slides 2-5 do not map one-to-one to the strongest-demo unit order {cls.STRONGEST_DEMO_UNIT_ORDER} with the expected layout_type values.\n"
             "- Fail if any strongest-demo unit slide does not keep source_bindings == [unit_id] and must_include_checks == [unit_id].\n"
-            f"- Fail if the final slide is not 'Decision Backbone' with layout_type 'summary', source_bindings exactly {decision_backbone_bindings}, and must_include_checks == [].\n"
+            f"- Fail if the final slide is not 'Decision Backbone' with layout_type 'summary', source_bindings exactly {decision_backbone_bindings}, and must_include_checks == {decision_backbone_checks}.\n"
             "- Fail if strongest-demo bilingual unit slide titles drift from the accepted baseline.\n"
             f"- Fail if grounded_content_slides is not {grounded_content_slides} or total_content_slides is not {total_content_slides}.\n"
             f"- Fail if covered_unit_ids is not exactly {covered_unit_ids}.\n"
