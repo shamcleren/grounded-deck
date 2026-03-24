@@ -4,7 +4,7 @@
 
 ## Session Summary
 
-GroundedDeck was upgraded from a static scaffold into a continuity-aware AI project where repository files, not chat history, are the durable memory.
+GroundedDeck now includes a deterministic fixture-backed pipeline slice in addition to the continuity-aware repository structure.
 
 ## What Was Just Completed
 
@@ -14,26 +14,37 @@ GroundedDeck was upgraded from a static scaffold into a continuity-aware AI proj
 - extended the harness so continuity artifacts are mandatory
 - added [START-HERE.md](../START-HERE.md) as the fast startup entrypoint
 - reorganized multilingual docs into separate English and Chinese files with switch links
+- added a normalized source-unit schema and fixture files
+- implemented deterministic ingest, planning, and quality modules
+- extended `make eval` to run pipeline fixture tests
+- introduced a provider abstraction for planner and quality modules
+- added a runtime pipeline entrypoint and example command
+- wired an OpenAI-compatible provider path with strict local response validation
+- added an opt-in `make verify-online` path that refuses deterministic fallback
+- added automatic verification-summary artifacts for runtime executions
 
 ## Current Status
 
 - repository continuity contract: present
 - startup and handoff path: present
 - deterministic harness: passing
-- implementation modules: still scaffold-only
+- deterministic pipeline baseline: passing
+- provider abstraction: present
+- OpenAI-compatible provider path: present and locally testable
+- live verification tooling: ready
+- live credentials / real backend: not yet configured
+- renderer implementation: still deferred
 
 ## Immediate Next Action
 
-Implement the first real pipeline slice:
-
-`ingest -> normalized source units -> slide spec draft -> quality checks`
+Document live-provider verification expectations and capture one successful online verification run while preserving the deterministic fixture pipeline.
 
 ## First Concrete Tasks
 
-1. define the normalized source-unit contract
-2. add an example source fixture
-3. add an example `slide spec` fixture
-4. extend the harness to validate fixtures, not only repo structure
+1. document required env vars and expected outputs for `make verify-online`
+2. keep deterministic fixture generation as a fallback and regression baseline
+3. capture one successful online verification artifact
+4. tighten prompts and validators based on observed live outputs
 
 ## Do Not Drift
 

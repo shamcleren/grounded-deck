@@ -10,12 +10,15 @@
 
 ## 当前阶段
 
-基础阶段已完成，仓库目前具备：
+基础阶段已完成，并且已经有一条确定性基线流水线和 provider abstraction。仓库目前具备：
 
 - 产品与架构定义
 - 开源仓库所需文档
 - 可确定性的 self-acceptance harness
 - 稳定的 `slide spec` schema
+- normalized source-unit schema
+- 由 fixture 驱动的 ingest、planning 和 quality checks
+- 面向 planner 和 quality 模块的可插拔 provider interface
 - 面向未来 AI 会话的 repository-as-memory 连续性契约
 
 ## 已完成内容
@@ -27,16 +30,23 @@
 - 添加了开源社区所需文档与模板
 - 添加了 AI continuity、anti-drift 和 project-state 工件
 - 添加了 startup、handoff 和 task-board 工件以支持跨会话恢复
+- 实现了确定性的 `source pack -> normalized source units -> slide spec draft -> quality checks` 基线
+- 添加了 fixture 驱动的 pipeline 测试和 harness 校验
+- 引入了 provider abstraction，并以 deterministic provider 作为基线
+- 添加了一个面向 fixture 基线执行的 runtime pipeline 入口
+- 接通了 OpenAI-compatible provider 路径，并增加了严格的本地响应校验与 mocked transport 测试
 
 ## 当前唯一下一步
 
-实现第一条真正的流水线切片：`ingest -> normalized source units -> slide spec draft -> quality checks`。
+在不削弱确定性回归覆盖的前提下，补齐 live provider 验证约定，并留下一次成功的在线验证记录。
 
 ## 近期优先级
 
-1. 定义 normalized source-unit 格式
-2. 添加示例输入和示例 `slide spec` fixture
-3. 为 harness 增加 schema 校验和 fixture grading
+1. 记录 `make verify-online` 的预期配置、成功标准和失败模式
+2. 保留 fixture 驱动的确定性输出，作为 `make eval` 的回归基线
+3. 留下一次成功的在线验证工件，并根据真实响应继续收紧 prompt
+
+环境变量配置约定已经写入 `docs/runtime-config.md`，剩余工作是把在线 provider 调用真正接通。
 
 ## 当前约束
 

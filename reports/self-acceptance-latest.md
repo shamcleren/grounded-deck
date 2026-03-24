@@ -1,7 +1,7 @@
 # Self-Acceptance Report
 
 - Status: **PASS**
-- Passed: **25/25**
+- Passed: **32/32**
 
 ## Checks
 
@@ -11,11 +11,16 @@
 - PASS `harness`: present
 - PASS `reports`: present
 - PASS `schemas`: present
+- PASS `fixtures`: present
+- PASS `source-packs`: present
+- PASS `normalized-source-units`: present
+- PASS `slide-spec`: present
 - PASS `ingest`: present
 - PASS `planner`: present
 - PASS `visual`: present
 - PASS `renderer`: present
 - PASS `quality`: present
+- PASS `tests`: present
 - PASS `evals`: present
 - PASS `README.md`: required fragments present
 - PASS `START-HERE.md`: required fragments present
@@ -28,7 +33,9 @@
 - PASS `TASK-BOARD.md`: required fragments present
 - PASS `ARCHITECTURE-DECISIONS.md`: required fragments present
 - PASS `slide-spec.schema.json`: schema contains required fields
-- PASS `rubric.json`: 7 criteria present
+- PASS `normalized-source-units.schema.json`: schema contains required normalized source-unit fields
+- PASS `rubric.json`: 8 criteria present
+- PASS `tests`: unittest discovery passed
 - PASS `grounded-deck-foundation.md`: required fragments present
 
 ## Next Action

@@ -1,0 +1,54 @@
+{
+  "pack_id": "china-ev-brief",
+  "language": "zh-CN",
+  "deck_goal": "Summarize the policy and market implications of China's EV export growth.",
+  "audience": "Strategy leaders evaluating cross-border EV expansion",
+  "sources": [
+    {
+      "source_id": "src-01",
+      "type": "memo",
+      "title": "China EV Export Brief",
+      "language": "zh-CN",
+      "sections": [
+        {
+          "section_id": "sec-01",
+          "heading": "出口增长",
+          "paragraphs": [
+            "2024 年中国新能源汽车出口继续增长，欧洲和东南亚是重点市场。"
+          ],
+          "claims": [
+            "中国新能源汽车出口增长正在扩大海外市场覆盖。"
+          ]
+        },
+        {
+          "section_id": "sec-02",
+          "heading": "政策影响",
+          "paragraphs": [
+            "各国补贴、关税和本地化要求正在影响企业进入节奏。"
+          ],
+          "claims": [
+            "政策约束已经成为出海节奏的核心变量。"
+          ]
+        }
+      ]
+    },
+    {
+      "source_id": "src-02",
+      "type": "report",
+      "title": "Battery Cost Outlook",
+      "language": "zh-CN",
+      "sections": [
+        {
+          "section_id": "sec-01",
+          "heading": "成本优势",
+          "paragraphs": [
+            "电池成本下降仍然是中国品牌维持价格竞争力的关键因素。"
+          ],
+          "claims": [
+            "电池成本优势仍是中国品牌国际定价能力的重要基础。"
+          ]
+        }
+      ]
+    }
+  ]
+}

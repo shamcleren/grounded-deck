@@ -6,7 +6,7 @@
 
 ## 会话摘要
 
-GroundedDeck 已从一个静态脚手架升级为具备连续性意识的 AI 项目：仓库文件而不是聊天历史，才是持久记忆。
+GroundedDeck 现在除了连续性仓库结构之外，还包含一条由 fixture 驱动的确定性流水线切片。
 
 ## 刚刚完成的内容
 
@@ -16,26 +16,37 @@ GroundedDeck 已从一个静态脚手架升级为具备连续性意识的 AI 项
 - 扩展了 harness，使 continuity artifacts 成为必需项
 - 添加了 [START-HERE.md](../START-HERE.md) 作为快速启动入口
 - 调整文档多语言策略，采用独立语言文件加切换链接，而不是同页混排
+- 添加了 normalized source-unit schema 和 fixture 文件
+- 实现了确定性的 ingest、planning 和 quality 模块
+- 扩展了 `make eval`，让它执行 pipeline fixture 测试
+- 为 planner 和 quality 模块引入了 provider abstraction
+- 添加了 runtime pipeline 入口和示例命令
+- 接通了 OpenAI-compatible provider 路径，并增加了严格的本地响应校验
+- 添加了拒绝 deterministic fallback 的 `make verify-online` 路径
+- 为运行时执行增加了自动生成的 verification-summary 工件
 
 ## 当前状态
 
 - 仓库连续性契约：已具备
 - startup 与 handoff 路径：已具备
 - 确定性 harness：通过
-- 实现模块：仍然只有脚手架
+- 确定性 pipeline 基线：通过
+- provider abstraction：已具备
+- OpenAI-compatible provider 路径：已具备，且可在本地测试
+- live verification 工具链：已就绪
+- live 凭证 / 真实后端：尚未配置
+- renderer 实现：仍然延后
 
 ## 立即下一步
 
-实现第一条真正的流水线切片：
-
-`ingest -> normalized source units -> slide spec draft -> quality checks`
+在保留确定性 fixture pipeline 的前提下，补齐 live provider 验证约定，并留下一次成功的在线验证记录。
 
 ## 第一批具体任务
 
-1. 定义 normalized source-unit contract
-2. 添加一个 example source fixture
-3. 添加一个 example `slide spec` fixture
-4. 扩展 harness，使其不仅检查仓库结构，也校验 fixtures
+1. 记录 `make verify-online` 所需环境变量和预期输出
+2. 保留确定性 fixture 生成为 fallback 和回归基线
+3. 留下一次成功的在线验证工件
+4. 根据真实输出继续收紧 prompt 和 validator
 
 ## 不要漂移
 

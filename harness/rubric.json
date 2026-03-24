@@ -24,7 +24,11 @@
     },
     {
       "id": "schema_completeness",
-      "description": "Slide spec schema is present and includes required planning and grounding fields."
+      "description": "Slide spec and normalized source-unit schemas are present and include required planning and grounding fields."
+    },
+    {
+      "id": "fixture_pipeline",
+      "description": "Fixture-backed ingest, slide-spec drafting, and quality checks are present and regression-tested."
     },
     {
       "id": "eval_harness",

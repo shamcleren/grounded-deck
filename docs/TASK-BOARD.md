@@ -8,22 +8,20 @@
 
 ## Ready Next
 
-- define normalized source-unit schema or contract
-- create sample source fixture
-- create sample `slide spec` fixture
-- add fixture-aware harness checks
+- document live-provider verification expectations and failure modes
+- capture one successful live verification transcript or artifact shape
+- store the first successful `verification-summary.json` artifact shape in repo memory
 - keep canonical docs bilingual via separate language files and switch links
 
 ## Later
 
-- implement minimal ingest normalization
-- implement minimal planner output
-- add quality grading for fixtures
+- replace deterministic planner heuristics with provider-backed planning
+- add model-assisted narrative and visual-form grading
 - defer renderer implementation until the planning contract is stable
 
 ## Blockers
 
-- none currently recorded
+- real provider credentials and reachable backend not yet configured for `make verify-online`
 
 ## Update Rule
 

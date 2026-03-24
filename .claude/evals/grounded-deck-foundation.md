@@ -3,13 +3,22 @@
 ### Capability Evals
 
 [CAPABILITY EVAL: repository-foundation]
-Task: The repository must define product intent, architecture boundaries, schema, and harness artifacts.
+Task: The repository must define product intent, architecture boundaries, schemas, and harness artifacts.
 Success Criteria:
   - [ ] `README.md` explains project goal, layout, and self-acceptance entrypoints.
   - [ ] `docs/vision.md` defines quality bar, differentiators, and non-goals.
   - [ ] `docs/architecture.md` defines system layers, data flow, and guardrails.
   - [ ] `schemas/slide-spec.schema.json` exists and is parseable.
+  - [ ] `schemas/normalized-source-units.schema.json` exists and is parseable.
 Expected Output: A local repository scaffold ready for iterative implementation.
+
+[CAPABILITY EVAL: fixture-backed-pipeline]
+Task: The repository must contain a deterministic pipeline slice from source pack fixtures through normalized units, slide spec drafting, and quality checks.
+Success Criteria:
+  - [ ] example source-pack, normalized-source-unit, and slide-spec fixtures exist.
+  - [ ] `tests/test_pipeline.py` passes locally.
+  - [ ] `make eval` validates the new fixture-backed pipeline, not only repository structure.
+Expected Output: A regression-tested baseline pipeline that can be extended with LLM-assisted planning later.
 
 [CAPABILITY EVAL: ai-continuity-contract]
 Task: The repository must preserve durable context for future AI sessions.
@@ -52,6 +61,17 @@ Tests:
   - audience-required: PASS/FAIL
   - slides-required: PASS/FAIL
   - slide-source-bindings-required: PASS/FAIL
+  - normalized-source-units-schema-present: PASS/FAIL
+  - source-unit-binding-required: PASS/FAIL
+Result: pending
+
+[REGRESSION EVAL: pipeline-fixture-integrity]
+Baseline: deterministic-fixture-pipeline
+Tests:
+  - source-pack-fixture-present: PASS/FAIL
+  - normalized-source-unit-fixture-present: PASS/FAIL
+  - slide-spec-fixture-present: PASS/FAIL
+  - pipeline-tests-pass: PASS/FAIL
 Result: pending
 
 [REGRESSION EVAL: continuity-integrity]

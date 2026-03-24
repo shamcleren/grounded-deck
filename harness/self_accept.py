@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import subprocess
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -69,6 +70,50 @@ def validate_schema(path: Path) -> CheckResult:
     return CheckResult("slide-spec.schema.json", True, "schema contains required fields")
 
 
+def validate_normalized_schema(path: Path) -> CheckResult:
+    if not path.exists():
+        return CheckResult("normalized-source-units.schema.json", False, f"missing file: {path}")
+
+    try:
+        schema = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        return CheckResult("normalized-source-units.schema.json", False, f"invalid json: {exc}")
+
+    required_root = {"pack_id", "deck_goal", "audience", "source_units"}
+    root_required = set(schema.get("required", []))
+    missing_root = sorted(required_root - root_required)
+    unit_required = set(
+        schema.get("properties", {}).get("source_units", {}).get("items", {}).get("required", [])
+    )
+    expected_unit_required = {
+        "unit_id",
+        "source_id",
+        "source_title",
+        "section_id",
+        "section_heading",
+        "unit_kind",
+        "language",
+        "text",
+        "claims",
+        "source_binding",
+    }
+    missing_unit = sorted(expected_unit_required - unit_required)
+
+    problems = []
+    if missing_root:
+        problems.append(f"missing root required: {', '.join(missing_root)}")
+    if missing_unit:
+        problems.append(f"missing unit required: {', '.join(missing_unit)}")
+
+    if problems:
+        return CheckResult("normalized-source-units.schema.json", False, "; ".join(problems))
+    return CheckResult(
+        "normalized-source-units.schema.json",
+        True,
+        "schema contains required normalized source-unit fields",
+    )
+
+
 def validate_rubric(path: Path) -> CheckResult:
     if not path.exists():
         return CheckResult("rubric.json", False, f"missing file: {path}")
@@ -92,6 +137,21 @@ def validate_paths(paths: list[Path]) -> list[CheckResult]:
             CheckResult(path.name, exists, "present" if exists else f"missing path: {path}")
         )
     return results
+
+
+def run_unittest_discovery(start_dir: Path) -> CheckResult:
+    command = [sys.executable, "-m", "unittest", "discover", "-s", str(start_dir)]
+    proc = subprocess.run(
+        command,
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if proc.returncode != 0:
+        detail = proc.stdout.strip() or proc.stderr.strip() or "unittest failed"
+        return CheckResult("tests", False, detail)
+    return CheckResult("tests", True, "unittest discovery passed")
 
 
 def render_report(results: list[CheckResult]) -> str:
@@ -133,11 +193,16 @@ def main() -> int:
         ROOT / "harness",
         ROOT / "reports",
         ROOT / "schemas",
+        ROOT / "fixtures",
+        ROOT / "fixtures" / "source-packs",
+        ROOT / "fixtures" / "normalized-source-units",
+        ROOT / "fixtures" / "slide-spec",
         ROOT / "src" / "ingest",
         ROOT / "src" / "planner",
         ROOT / "src" / "visual",
         ROOT / "src" / "renderer",
         ROOT / "src" / "quality",
+        ROOT / "tests",
         ROOT / ".claude" / "evals",
     ]
 
@@ -204,7 +269,9 @@ def main() -> int:
         )
     )
     results.append(validate_schema(ROOT / "schemas" / "slide-spec.schema.json"))
+    results.append(validate_normalized_schema(ROOT / "schemas" / "normalized-source-units.schema.json"))
     results.append(validate_rubric(ROOT / "harness" / "rubric.json"))
+    results.append(run_unittest_discovery(ROOT / "tests"))
     results.append(
         file_contains(
             ROOT / ".claude" / "evals" / "grounded-deck-foundation.md",

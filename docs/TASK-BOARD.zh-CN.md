@@ -10,22 +10,20 @@
 
 ## 下一批待做
 
-- 定义 normalized source-unit schema 或 contract
-- 创建 sample source fixture
-- 创建 sample `slide spec` fixture
-- 添加能识别 fixture 的 harness 检查
+- 记录 live provider 验证的使用约定和失败模式
+- 留下一次成功 live verification 的记录或工件形态
+- 把第一次成功的 `verification-summary.json` 工件形态沉淀进仓库记忆
 - 后续新增 canonical docs 时，保持中英双语并采用独立语言文件
 
 ## 后续
 
-- 实现最小化 ingest normalization
-- 实现最小化 planner 输出
-- 为 fixtures 增加质量 grading
+- 用 provider-backed planning 替换当前确定性 planner 启发式
+- 增加模型辅助的 narrative 和 visual-form grading
 - 在 planning contract 稳定之前暂缓 renderer 实现
 
 ## 阻塞项
 
-- 当前未记录阻塞项
+- `make verify-online` 所需的真实 provider 凭证和可访问后端尚未配置
 
 ## 更新规则
 

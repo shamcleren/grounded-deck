@@ -3,6 +3,7 @@
 [English](README.md) | [简体中文](README.zh-CN.md)
 
 - `ingest`: source parsing and source binding.
+- `llm`: provider abstraction and runtime model configuration.
 - `planner`: narrative planning and deck outline generation.
 - `visual`: visual form selection and diagram planning.
 - `renderer`: editable PPTX rendering.

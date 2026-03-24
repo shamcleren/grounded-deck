@@ -8,12 +8,15 @@ Build a local-first, source-grounded presentation system that produces NotebookL
 
 ## Current Phase
 
-Foundation complete. The repository has:
+Foundation complete. A deterministic baseline pipeline and provider abstraction are now in place. The repository has:
 
 - product and architecture definitions
 - open-source repository docs
 - a deterministic self-acceptance harness
 - a stable `slide spec` schema
+- a normalized source-unit schema
+- fixture-backed ingest, planning, and quality checks
+- a pluggable provider interface for planner and quality modules
 - a repository-as-memory continuity contract for future AI sessions
 
 ## Completed So Far
@@ -25,16 +28,23 @@ Foundation complete. The repository has:
 - added open-source community files and templates
 - added AI continuity, anti-drift, and project-state artifacts
 - added startup, handoff, and task-board artifacts for session continuation
+- implemented a deterministic `source pack -> normalized source units -> slide spec draft -> quality checks` baseline
+- added fixture-backed pipeline tests and harness validation
+- introduced a provider abstraction with a deterministic provider baseline
+- added a runtime pipeline entrypoint for fixture-backed execution
+- wired an OpenAI-compatible provider path with strict local response validation and mocked transport tests
 
 ## Current Next Action
 
-Implement the first real pipeline slice: `ingest -> normalized source units -> slide spec draft -> quality checks`.
+Document live-provider verification expectations and capture one successful online verification run without weakening deterministic regression coverage.
 
 ## Immediate Priorities
 
-1. define the normalized source-unit format
-2. add example input and example `slide spec` fixture
-3. add schema validation and fixture grading to the harness
+1. document expected setup, success criteria, and failure modes for `make verify-online`
+2. keep fixture-based deterministic outputs as regression baselines for `make eval`
+3. capture one successful online verification artifact and harden prompts from observed responses
+
+The environment-variable configuration contract is now documented in `docs/runtime-config.md`; the remaining work is wiring live provider calls.
 
 ## Active Constraints
 

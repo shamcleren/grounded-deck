@@ -3,6 +3,7 @@
 [English](README.md) | [简体中文](README.zh-CN.md)
 
 - `ingest`：来源解析和 source binding。
+- `llm`：provider abstraction 和运行时模型配置。
 - `planner`：叙事规划和 deck outline 生成。
 - `visual`：视觉形式选择和图示规划。
 - `renderer`：可编辑 PPTX 渲染。

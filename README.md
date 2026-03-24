@@ -33,11 +33,14 @@ This repository currently contains the foundation scaffold:
 
 - product definition and architecture docs
 - `slide spec` schema
+- normalized source-unit schema
 - deterministic self-acceptance harness
 - open-source repository documents
-- implementation module boundaries for future work
+- a deterministic fixture-backed `ingest -> normalized source units -> slide spec -> quality checks` baseline
 
-The first milestone is to build an end-to-end `ingest -> slide spec -> quality checks` path before adding a full renderer.
+The next milestone is to introduce a pluggable LLM-backed planning path on top of the current deterministic baseline before adding a full renderer.
+
+The current codebase now includes a provider abstraction for planner and quality modules, with a deterministic provider acting as the regression baseline.
 
 ## AI Continuity
 
@@ -49,6 +52,10 @@ This repository is built to survive long-running AI-driven development across ma
 - project status and the single next action must remain explicit
 
 Read [START-HERE.md](START-HERE.md), [AGENTS.md](AGENTS.md), [docs/PROJECT-STATE.md](docs/PROJECT-STATE.md), [docs/LATEST-HANDOFF.md](docs/LATEST-HANDOFF.md), and [docs/ARCHITECTURE-DECISIONS.md](docs/ARCHITECTURE-DECISIONS.md) before continuing implementation work.
+
+Provider configuration notes live in [docs/runtime-config.md](docs/runtime-config.md).
+The repository includes [.env.runtime.example](.env.runtime.example) for live-provider setup.
+If present, `.env.runtime.local` is auto-loaded by the runtime verification commands.
 
 ## Architecture
 
@@ -81,6 +88,7 @@ Sources
 ## Core Modules
 
 - `src/ingest`: source parsing, chunking, and source binding
+- `src/llm`: provider abstraction and runtime model configuration
 - `src/planner`: deck narrative planning and outline generation
 - `src/visual`: visual form selection and diagram planning
 - `src/renderer`: editable `slide spec -> pptx` rendering
@@ -105,6 +113,24 @@ Run the local harness:
 ```bash
 make eval
 ```
+
+Run the example deterministic pipeline:
+
+```bash
+make example-pipeline
+```
+
+Run the opt-in online verification path:
+
+```bash
+make init-live-env
+make prepare-live-verification
+make check-live-env
+make live-status
+make verify-online
+```
+
+This command is not part of `make eval`; it is only for explicit live-provider checks.
 
 Read the latest report:
 

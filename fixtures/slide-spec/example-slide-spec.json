@@ -1,0 +1,63 @@
+{
+  "deck_goal": "Summarize the policy and market implications of China's EV export growth.",
+  "audience": "Strategy leaders evaluating cross-border EV expansion",
+  "slides": [
+    {
+      "slide_id": "s1-cover",
+      "title": "Summarize the policy and market implications of China's EV export growth.",
+      "goal": "Orient the audience to the presentation goal and source scope.",
+      "layout_type": "cover",
+      "key_points": [
+        "Strategy leaders evaluating cross-border EV expansion",
+        "3 grounded source units"
+      ],
+      "visual_elements": [
+        {
+          "type": "title-block"
+        },
+        {
+          "type": "source-count",
+          "value": 3
+        }
+      ],
+      "source_bindings": [
+        "src-01:sec-01",
+        "src-01:sec-02",
+        "src-02:sec-01"
+      ],
+      "must_include_checks": [
+        "src-01:sec-01",
+        "src-01:sec-02",
+        "src-02:sec-01"
+      ],
+      "speaker_notes": "Introduce the deck goal and emphasize that claims stay grounded to source material."
+    },
+    {
+      "slide_id": "s2-summary",
+      "title": "Key Takeaways",
+      "goal": "Summarize the main grounded claims that must be carried into the deck.",
+      "layout_type": "summary",
+      "key_points": [
+        "中国新能源汽车出口增长正在扩大海外市场覆盖。",
+        "政策约束已经成为出海节奏的核心变量。",
+        "电池成本优势仍是中国品牌国际定价能力的重要基础。"
+      ],
+      "visual_elements": [
+        {
+          "type": "bullet-list"
+        }
+      ],
+      "source_bindings": [
+        "src-01:sec-01",
+        "src-01:sec-02",
+        "src-02:sec-01"
+      ],
+      "must_include_checks": [
+        "src-01:sec-01",
+        "src-01:sec-02",
+        "src-02:sec-01"
+      ],
+      "speaker_notes": "This slide compresses the source pack into the minimum set of claims the deck must retain."
+    }
+  ]
+}

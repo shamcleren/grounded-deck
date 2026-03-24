@@ -7,3 +7,6 @@
 当前约定:
 
 - `self-acceptance-latest.md`: 最近一次基础骨架自验收报告。
+- `live-verification-latest.json`: 最近一次在线验证尝试的摘要工件。
+- `live-verification-latest.md`: 最近一次在线验证尝试的可读报告。
+- `live-verification-checklist.md`: 下一次在线验证前的执行检查单。
