@@ -4,11 +4,12 @@
 
 ## In Progress
 
-- keep strongest-demo provider prompts aligned to the archived acceptance snapshot and compare future live refreshes against it before promoting more provider-backed planning changes
+- keep strongest-demo provider prompts and live verification aligned to the archived acceptance snapshot before promoting more provider-backed planning changes
 
 ## Ready Next
 
 - continue improving provider-backed planning and grading against the strongest-demo path without weakening deterministic coverage
+- compare future strongest-demo live refreshes against `reports/live-verification-history/strongest-demo-1774366441/acceptance-summary.json` before accepting another prompt change
 - wait for a new verified worker patch or a strongest-demo live-refresh delta before promoting another prompt change
 - keep canonical docs bilingual via separate language files and switch links
 

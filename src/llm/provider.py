@@ -4,6 +4,7 @@ import json
 import os
 import re
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Callable
 from urllib import error, request
 
@@ -263,25 +264,20 @@ class DeterministicProvider(Provider):
 
 class OpenAICompatibleProvider(Provider):
     STRONGEST_DEMO_PACK_ID = "china-ev-market-entry"
+    STRONGEST_DEMO_ACCEPTANCE_SNAPSHOT = (
+        Path(__file__).resolve().parents[2]
+        / "reports"
+        / "live-verification-history"
+        / "strongest-demo-1774366441"
+        / "acceptance-summary.json"
+    )
     STRONGEST_DEMO_UNIT_ORDER = [
         "src-01:sec-01",
         "src-01:sec-02",
         "src-02:sec-01",
         "src-03:sec-01",
     ]
-    STRONGEST_DEMO_UNIT_LAYOUTS = {
-        "src-01:sec-01": "timeline",
-        "src-01:sec-02": "comparison",
-        "src-02:sec-01": "process",
-        "src-03:sec-01": "chart",
-    }
-    STRONGEST_DEMO_UNIT_TITLES = {
-        "src-01:sec-01": "出口时间线 (Export Timeline)",
-        "src-01:sec-02": "欧洲 vs 东南亚对比 (Europe vs Southeast Asia Comparison)",
-        "src-02:sec-01": "进入路径 (Entry Path)",
-        "src-03:sec-01": "成本与利润指标 (Cost & Margin Indicators)",
-    }
-    STRONGEST_DEMO_INTRO_TITLE = "China EV Market Entry: Europe & Southeast Asia Strategy"
+    _strongest_demo_acceptance_summary: dict | None = None
 
     def __init__(
         self,
@@ -402,32 +398,110 @@ class OpenAICompatibleProvider(Provider):
         return normalized_pack.get("pack_id") == cls.STRONGEST_DEMO_PACK_ID and unit_ids == cls.STRONGEST_DEMO_UNIT_ORDER
 
     @classmethod
+    def _load_strongest_demo_acceptance_summary(cls) -> dict:
+        if cls._strongest_demo_acceptance_summary is None:
+            cls._strongest_demo_acceptance_summary = json.loads(
+                cls.STRONGEST_DEMO_ACCEPTANCE_SNAPSHOT.read_text(encoding="utf-8")
+            )
+        return cls._strongest_demo_acceptance_summary
+
+    @classmethod
+    def _strongest_demo_intro_title(cls) -> str:
+        summary = cls._load_strongest_demo_acceptance_summary()
+        return str(summary.get("intro_slide", {}).get("title", ""))
+
+    @classmethod
+    def _strongest_demo_unit_layouts(cls) -> dict[str, str]:
+        summary = cls._load_strongest_demo_acceptance_summary()
+        return dict(summary.get("unit_layouts", {}))
+
+    @classmethod
+    def _strongest_demo_unit_titles(cls) -> dict[str, str]:
+        summary = cls._load_strongest_demo_acceptance_summary()
+        return dict(summary.get("unit_slide_titles", {}))
+
+    @classmethod
+    def _strongest_demo_layout_sequence(cls) -> list[str]:
+        summary = cls._load_strongest_demo_acceptance_summary()
+        return list(summary.get("layout_sequence", []))
+
+    @classmethod
+    def _strongest_demo_decision_backbone_bindings(cls) -> list[str]:
+        summary = cls._load_strongest_demo_acceptance_summary()
+        return list(summary.get("decision_backbone", {}).get("source_bindings", []))
+
+    @classmethod
+    def _strongest_demo_covered_unit_ids(cls) -> list[str]:
+        summary = cls._load_strongest_demo_acceptance_summary()
+        return list(summary.get("covered_unit_ids", []))
+
+    @classmethod
+    def _strongest_demo_visual_matched_unit_ids(cls) -> list[str]:
+        summary = cls._load_strongest_demo_acceptance_summary()
+        return list(summary.get("visual_matched_unit_ids", []))
+
+    @classmethod
+    def _strongest_demo_grounded_content_slides(cls) -> int:
+        summary = cls._load_strongest_demo_acceptance_summary()
+        return int(summary.get("grounded_content_slides", 0))
+
+    @classmethod
+    def _strongest_demo_total_content_slides(cls) -> int:
+        summary = cls._load_strongest_demo_acceptance_summary()
+        return int(summary.get("total_content_slides", 0))
+
+    @classmethod
     def _build_strongest_demo_planner_rules(cls) -> str:
+        unit_layouts = cls._strongest_demo_unit_layouts()
+        unit_titles = cls._strongest_demo_unit_titles()
+        intro_title = cls._strongest_demo_intro_title()
+        decision_backbone_bindings = cls._strongest_demo_decision_backbone_bindings()
+        covered_unit_ids = cls._strongest_demo_covered_unit_ids()
+        visual_matched_unit_ids = cls._strongest_demo_visual_matched_unit_ids()
+        grounded_content_slides = cls._strongest_demo_grounded_content_slides()
+        total_content_slides = cls._strongest_demo_total_content_slides()
         unit_expectations = ", ".join(
-            f"{unit_id}->{cls.STRONGEST_DEMO_UNIT_LAYOUTS[unit_id]} titled '{cls.STRONGEST_DEMO_UNIT_TITLES[unit_id]}'"
+            f"{unit_id}->{unit_layouts[unit_id]} titled '{unit_titles[unit_id]}'"
+            for unit_id in cls.STRONGEST_DEMO_UNIT_ORDER
+        )
+        unit_binding_expectations = ", ".join(
+            f"{unit_id} must use source_bindings ['{unit_id}'] and must_include_checks ['{unit_id}']"
             for unit_id in cls.STRONGEST_DEMO_UNIT_ORDER
         )
         return (
             "Strongest-demo accepted live baseline:\n"
-            f"- Produce exactly 6 slides in this order: intro summary, {', '.join(cls.STRONGEST_DEMO_UNIT_LAYOUTS[unit_id] for unit_id in cls.STRONGEST_DEMO_UNIT_ORDER)}, final decision summary.\n"
-            f"- Slide 1 must be a summary slide titled '{cls.STRONGEST_DEMO_INTRO_TITLE}' with no source_bindings and no must_include_checks.\n"
+            f"- Produce exactly 6 slides in this order: intro summary, {', '.join(unit_layouts[unit_id] for unit_id in cls.STRONGEST_DEMO_UNIT_ORDER)}, final decision summary.\n"
+            f"- Slide 1 must be a summary slide titled '{intro_title}' with source_bindings set to [] and must_include_checks set to [].\n"
             f"- Slides 2-5 must follow this exact unit order and layout/title pattern: {unit_expectations}.\n"
-            "- Slide 6 must be titled 'Decision Backbone', use layout_type 'summary', bind all source units, and leave must_include_checks empty.\n"
+            f"- Slides 2-5 must also keep exact per-slide evidence wiring: {unit_binding_expectations}.\n"
+            "- Slide 6 must be titled 'Decision Backbone', use layout_type 'summary', set source_bindings to all source units, and set must_include_checks to [].\n"
+            f"- Slide 6 source_bindings must be exactly {decision_backbone_bindings} in that order.\n"
+            f"- Preserve acceptance-summary comparability: grounded_content_slides must be {grounded_content_slides} of {total_content_slides}, covered_unit_ids must be exactly {covered_unit_ids}, and visual_matched_unit_ids must be exactly {visual_matched_unit_ids}.\n"
             "- Keep the strongest-demo slide titles bilingual exactly where shown above.\n"
         )
 
     @classmethod
     def _build_strongest_demo_grader_rules(cls) -> str:
-        expected_sequence = ["summary"] + [
-            cls.STRONGEST_DEMO_UNIT_LAYOUTS[unit_id] for unit_id in cls.STRONGEST_DEMO_UNIT_ORDER
-        ] + ["summary"]
+        expected_sequence = cls._strongest_demo_layout_sequence()
+        intro_title = cls._strongest_demo_intro_title()
+        decision_backbone_bindings = cls._strongest_demo_decision_backbone_bindings()
+        covered_unit_ids = cls._strongest_demo_covered_unit_ids()
+        visual_matched_unit_ids = cls._strongest_demo_visual_matched_unit_ids()
+        grounded_content_slides = cls._strongest_demo_grounded_content_slides()
+        total_content_slides = cls._strongest_demo_total_content_slides()
         return (
             "Strongest-demo accepted live baseline checks:\n"
+            f"- Compare the output structurally against the archived acceptance snapshot '{cls.STRONGEST_DEMO_ACCEPTANCE_SNAPSHOT.as_posix()}' before treating it as equivalent to the strongest-demo baseline.\n"
+            "- Fail if slide_count is not exactly 6.\n"
             f"- Fail if layout_sequence is not exactly {expected_sequence}.\n"
-            f"- Fail if slide 1 is not a summary slide titled '{cls.STRONGEST_DEMO_INTRO_TITLE}' with empty source_bindings and empty must_include_checks.\n"
-            "- Fail if the final slide is not 'Decision Backbone' with layout_type 'summary', all unit source_bindings, and empty must_include_checks.\n"
-            "- Fail if slides 2-5 do not map one-to-one to the strongest-demo unit order with the expected layout_type values.\n"
+            f"- Fail if slide 1 is not a summary slide titled '{intro_title}' with source_bindings == [] and must_include_checks == [].\n"
+            f"- Fail if slides 2-5 do not map one-to-one to the strongest-demo unit order {cls.STRONGEST_DEMO_UNIT_ORDER} with the expected layout_type values.\n"
+            "- Fail if any strongest-demo unit slide does not keep source_bindings == [unit_id] and must_include_checks == [unit_id].\n"
+            f"- Fail if the final slide is not 'Decision Backbone' with layout_type 'summary', source_bindings exactly {decision_backbone_bindings}, and must_include_checks == [].\n"
             "- Fail if strongest-demo bilingual unit slide titles drift from the accepted baseline.\n"
+            f"- Fail if grounded_content_slides is not {grounded_content_slides} or total_content_slides is not {total_content_slides}.\n"
+            f"- Fail if covered_unit_ids is not exactly {covered_unit_ids}.\n"
+            f"- Fail if visual_matched_unit_ids is not exactly {visual_matched_unit_ids}.\n"
         )
 
     @staticmethod

@@ -6,11 +6,12 @@
 
 ## 进行中
 
-- 保持 strongest-demo provider prompt 与已归档 acceptance snapshot 对齐，并让后续 live refresh 先和它对比，再决定后续 provider-backed planning 改动是否继续上升
+- 保持 strongest-demo provider prompt 与 live verification 都对齐到已归档 acceptance snapshot，再决定后续 provider-backed planning 改动是否继续上升
 
 ## 下一批待做
 
 - 在不削弱确定性回归覆盖的前提下，继续改进 strongest-demo 路径上的 provider-backed planning 与 grading
+- 在接受新的 prompt 改动之前，先让后续 strongest-demo live refresh 与 `reports/live-verification-history/strongest-demo-1774366441/acceptance-summary.json` 做对比
 - 在出现新的已验证 worker 补丁或 strongest-demo live refresh 差异之前，不要继续上升新的 prompt 改动
 - 后续新增 canonical docs 时，保持中英双语并采用独立语言文件
 

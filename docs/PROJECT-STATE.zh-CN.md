@@ -49,6 +49,9 @@
 - 针对收紧后的 prompt 基线重新执行了 strongest-demo 在线验证，并重新归档了通过的 live 结果
 - 将刷新后的 strongest-demo live run 提升为仓库内持久化的历史快照，并补上了结构化 acceptance summary
 - 在 acceptance-alignment 补丁落地后再次刷新 strongest-demo 在线验证，并将一致的 live 快照归档到 `reports/live-verification-history/strongest-demo-1774366441/`
+- 用已归档 live acceptance summary 驱动 strongest-demo prompt guardrail，替换了重复硬编码的 strongest-demo 常量
+- 收紧 strongest-demo prompt 规则，让 summary slide 必须输出显式空 evidence 数组，而不是省略必填字段
+- 在 acceptance-summary 驱动的 guardrail 补丁落地后再次刷新 strongest-demo 在线验证，并将结构一致的新 live 快照归档到 `reports/live-verification-history/strongest-demo-1774370225/`
 
 ## 当前唯一下一步
 

@@ -4,7 +4,7 @@
 
 ## Session Summary
 
-GroundedDeck still carries the accepted acceptance-alignment provider patch, and this curator pass confirmed that the remaining worker prompt variants are superseded by the archived strongest-demo live baseline rather than representing newer verified output to integrate.
+GroundedDeck now drives strongest-demo provider guardrails directly from the archived acceptance snapshot, and this curator pass verified that the refreshed live run still matches the accepted strongest-demo structure after tightening the prompt to require explicit empty evidence arrays on summary slides.
 
 ## What Was Just Completed
 
@@ -47,6 +47,15 @@ GroundedDeck still carries the accepted acceptance-alignment provider patch, and
 - confirmed `reports/live-verification-history/strongest-demo-1774366441/acceptance-summary.json` matches the prior accepted strongest-demo baseline structurally
 - recovered this automation worktree from detached `HEAD` onto `curator/groundeddeck-auto-sprint-2b-curator-20260324` before doing curator review work
 - reviewed the remaining local worker prompt-variant branches and confirmed they are alternative prompt shapes without a newer archived verification result beyond the accepted acceptance-aligned strongest-demo baseline
+- recovered this automation worktree from detached `HEAD` onto `curator/groundeddeck-auto-sprint-2-20260325`
+- integrated the accepted worker direction from `auto/groundeddeck-auto-sprint-b/acceptance-comparison-guardrail` into a curator-owned patch that loads strongest-demo planner and grader guardrails from `reports/live-verification-history/strongest-demo-1774366441/acceptance-summary.json`
+- tightened strongest-demo prompt wording so summary slides must set `source_bindings` and `must_include_checks` to explicit empty arrays instead of omitting them
+- updated prompt regression tests and the archived-acceptance verification test to point at the current accepted strongest-demo snapshot
+- re-ran `python3 -m pytest tests/test_pipeline.py tests/test_verification_artifacts.py` and `make eval`, both of which pass on the current curator branch
+- linked `.env.runtime.local` from the canonical repo into this worktree, then re-ran `make check-live-env`, `make live-status`, `make verify-online`, and `make archive-online-verification`
+- fixed a live regression where the provider omitted required evidence fields on the intro slide by making the strongest-demo summary-slide array requirements explicit
+- refreshed `reports/live-verification-latest.{json,md}` and archived a passing strongest-demo live snapshot under `reports/live-verification-history/strongest-demo-1774370225/`
+- confirmed the new `strongest-demo-1774370225` acceptance summary matches the accepted strongest-demo baseline structurally aside from the run timestamp
 
 ## Current Status
 
@@ -72,6 +81,10 @@ GroundedDeck still carries the accepted acceptance-alignment provider patch, and
 - live verification archive now preserves repo-local copies of the verified artifacts instead of `/tmp` paths
 - refreshed strongest-demo live acceptance snapshot: committed under `reports/live-verification-history/strongest-demo-1774362852/`
 - refreshed strongest-demo live acceptance snapshot after acceptance alignment: present under `reports/live-verification-history/strongest-demo-1774366441/`
+- strongest-demo prompt guardrails now load their baseline from the archived acceptance summary instead of duplicating constants in code
+- strongest-demo summary-slide prompt rules now require explicit empty evidence arrays, which restored live provider compliance with the slide-spec validator
+- refreshed strongest-demo live acceptance snapshot after the acceptance-summary-driven guardrail patch: present under `reports/live-verification-history/strongest-demo-1774370225/`
+- latest archived strongest-demo live refresh remains structurally aligned with the accepted baseline; only the run timestamp changed
 - latest archived strongest-demo acceptance snapshot remains structurally identical to the previously accepted baseline
 - remaining worker prompt variants: reviewed and currently superseded by the accepted strongest-demo live baseline, so no new verified worker output is pending integration
 - renderer implementation: still deferred

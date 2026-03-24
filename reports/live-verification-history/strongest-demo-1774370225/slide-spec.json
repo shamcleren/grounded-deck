@@ -1,0 +1,145 @@
+{
+  "deck_goal": "Recommend a grounded China EV market-entry plan for Europe and Southeast Asia.",
+  "audience": "Regional strategy leaders deciding 2025 market sequencing",
+  "slides": [
+    {
+      "slide_id": "slide-01",
+      "title": "China EV Market Entry: Europe & Southeast Asia Strategy",
+      "goal": "Introduce the deck purpose and align audience on the strategic question",
+      "layout_type": "summary",
+      "key_points": [
+        "Recommend a grounded China EV market-entry plan for Europe and Southeast Asia.",
+        "Provide 2025 market sequencing guidance for regional strategy leaders."
+      ],
+      "visual_elements": [
+        "Strategic question framing block",
+        "Geographic scope indicators (Europe + Southeast Asia)",
+        "Timeline badge (2025 focus)"
+      ],
+      "source_bindings": [],
+      "must_include_checks": [],
+      "speaker_notes": "This deck synthesizes export timing, regional comparison, entry sequencing, and economics to recommend a 2025 China EV market-entry strategy across Europe and Southeast Asia."
+    },
+    {
+      "slide_id": "slide-02",
+      "title": "出口时间线 (Export Timeline)",
+      "goal": "Ground the 2022-2024 export evolution to establish baseline trajectory",
+      "layout_type": "timeline",
+      "key_points": [
+        "2022-2024 年，中国新能源汽车出口节奏已经从单点放量转向分区域深化。",
+        "2022: 试点市场为主",
+        "2023: 形成欧洲与东南亚双主线",
+        "2024: 渠道建设重心转向分区域深化"
+      ],
+      "visual_elements": [
+        "3-phase horizontal timeline (2022 → 2023 → 2024)",
+        "Phase labels: 试点市场 (Pilot Markets), 双主线 (Dual Tracks), 分区域深化 (Regional Deepening)",
+        "Color-coded phases with icons for each stage"
+      ],
+      "source_bindings": [
+        "src-01:sec-01"
+      ],
+      "must_include_checks": [
+        "src-01:sec-01"
+      ],
+      "speaker_notes": "从2022到2024年，中国新能源汽车出口已经从单点放量转向分区域深化。2022年以试点市场为主，2023年开始形成欧洲与东南亚双主线，2024年渠道建设重心转向分区域深化。"
+    },
+    {
+      "slide_id": "slide-03",
+      "title": "欧洲 vs 东南亚对比 (Europe vs Southeast Asia Comparison)",
+      "goal": "Compare strategic fit and tradeoffs between two target regions",
+      "layout_type": "comparison",
+      "key_points": [
+        "欧洲适合追求品牌抬升与高客单价，东南亚更适合追求进入速度与渠道复制。",
+        "欧洲: 单车收入更高，但认证、关税和售后合规压力更重。",
+        "东南亚: 渠道建立更快，本地合作伙伴响应更灵活。"
+      ],
+      "visual_elements": [
+        "2-column comparison layout (Europe | Southeast Asia)",
+        "Europe column: higher revenue, heavy certification/tariff/compliance burden",
+        "Southeast Asia column: faster channel establishment, flexible local partners",
+        "Strategic fit icons (brand elevation vs speed)"
+      ],
+      "source_bindings": [
+        "src-01:sec-02"
+      ],
+      "must_include_checks": [
+        "src-01:sec-02"
+      ],
+      "speaker_notes": "欧洲单车收入更高，但认证、关税和售后合规压力更重；东南亚渠道建立更快，本地合作伙伴响应更灵活。欧洲适合追求品牌抬升与高客单价，东南亚更适合追求进入速度与渠道复制。"
+    },
+    {
+      "slide_id": "slide-04",
+      "title": "进入路径 (Entry Path)",
+      "goal": "Prescribe a sequential entry approach leveraging regional strengths",
+      "layout_type": "process",
+      "key_points": [
+        "先在东南亚建立渠道和售后，再择机进入欧洲，是更稳妥的 2025 市场进入路径。",
+        "Step 1: 东南亚建立经销、服务和备件响应",
+        "Step 2: 验证过的运营模型迁移到欧洲重点国家"
+      ],
+      "visual_elements": [
+        "2-step process flow (Step 1 → Step 2)",
+        "Step 1 box: 东南亚 (建立渠道+售后+备件)",
+        "Step 2 box: 欧洲重点国家 (模型迁移)",
+        "Arrow connecting steps with 2025 sequencing label"
+      ],
+      "source_bindings": [
+        "src-02:sec-01"
+      ],
+      "must_include_checks": [
+        "src-02:sec-01"
+      ],
+      "speaker_notes": "建议先以东南亚市场建立经销、服务和备件响应，再把验证过的运营模型迁移到欧洲重点国家。先在东南亚建立渠道和售后，再择机进入欧洲，是更稳妥的2025市场进入路径。"
+    },
+    {
+      "slide_id": "slide-05",
+      "title": "成本与利润指标 (Cost & Margin Indicators)",
+      "goal": "Quantify the economics enabling competitive pricing and channel investment",
+      "layout_type": "chart",
+      "key_points": [
+        "18% 的电池成本降幅为价格带竞争和渠道投入提供了缓冲空间。",
+        "过去12个月动力电池包成本下降18%。",
+        "Buffer enables: 海外定价竞争力、渠道补贴空间、售后投入余地"
+      ],
+      "visual_elements": [
+        "Single metric callout: 18% cost reduction",
+        "Battery pack cost trend indicator (downward arrow)",
+        "Three buffer allocation icons: pricing power, channel subsidy, after-sales investment"
+      ],
+      "source_bindings": [
+        "src-03:sec-01"
+      ],
+      "must_include_checks": [
+        "src-03:sec-01"
+      ],
+      "speaker_notes": "过去12个月动力电池包成本下降18%，为海外定价、渠道补贴和售后投入预留了利润缓冲。18%的电池成本降幅为价格带竞争和渠道投入提供了缓冲空间。"
+    },
+    {
+      "slide_id": "slide-06",
+      "title": "Decision Backbone",
+      "goal": "Synthesize minimum grounded claims into a compressible decision summary",
+      "layout_type": "summary",
+      "key_points": [
+        "2022-2024 年出口节奏从单点放量转向分区域深化，为双主线布局奠定基础。",
+        "东南亚适合追求进入速度与渠道复制，欧洲适合追求品牌抬升与高客单价。",
+        "先东南亚后欧洲是最稳妥的2025进入路径。",
+        "18%电池成本降幅为价格竞争力和渠道投入提供缓冲空间。"
+      ],
+      "visual_elements": [
+        "4-point decision summary grid",
+        "Each point aligned to source unit",
+        "Sequencing recommendation highlighted",
+        "Economic buffer callout"
+      ],
+      "source_bindings": [
+        "src-01:sec-01",
+        "src-01:sec-02",
+        "src-02:sec-01",
+        "src-03:sec-01"
+      ],
+      "must_include_checks": [],
+      "speaker_notes": "本决策背bone整合了出口时间线、区域对比、进入路径和成本指标四方面的核心结论。建议以东南亚为首要进入市场，利用18%电池成本降幅建立的缓冲空间，验证运营模式后再进入欧洲，实现2025年稳健的市场序列布局。"
+    }
+  ]
+}

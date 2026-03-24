@@ -1,0 +1,42 @@
+{
+  "status": "pass",
+  "failures": [],
+  "coverage": {
+    "required_units": 4,
+    "covered_units": 4,
+    "required_units_ids": [
+      "src-01:sec-01",
+      "src-01:sec-02",
+      "src-02:sec-01",
+      "src-03:sec-01"
+    ],
+    "covered_units_ids": [
+      "src-01:sec-01",
+      "src-01:sec-02",
+      "src-02:sec-01",
+      "src-03:sec-01"
+    ]
+  },
+  "grounding": {
+    "total_content_slides": 5,
+    "grounded_slides": 5
+  },
+  "visual_form": {
+    "expected_units": 4,
+    "matched_units": 4,
+    "expected_units_ids": [
+      "src-01:sec-01",
+      "src-01:sec-02",
+      "src-02:sec-01",
+      "src-03:sec-01"
+    ],
+    "matched_units_ids": [
+      "src-01:sec-01",
+      "src-01:sec-02",
+      "src-02:sec-01",
+      "src-03:sec-01"
+    ]
+  },
+  "provider": "codex-grading",
+  "model": "grounded-deck-evaluator"
+}

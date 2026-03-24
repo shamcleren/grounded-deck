@@ -47,6 +47,9 @@ The strongest deterministic planning demo is now curated back onto `main` as a c
 - refreshed strongest-demo online verification for the tightened prompt baseline and re-archived a passing live result
 - promoted the refreshed strongest-demo live run into a repository-owned history snapshot with a structural acceptance summary
 - refreshed strongest-demo online verification after the acceptance-alignment patch and archived a matching live snapshot under `reports/live-verification-history/strongest-demo-1774366441/`
+- replaced duplicated strongest-demo prompt constants with acceptance-summary-driven prompt guardrails loaded from the archived live snapshot
+- tightened strongest-demo prompt rules so summary slides must emit explicit empty evidence arrays instead of omitting required fields
+- refreshed strongest-demo online verification after the acceptance-summary-driven guardrail patch and archived a structurally matching live snapshot under `reports/live-verification-history/strongest-demo-1774370225/`
 
 ## Current Next Action
 

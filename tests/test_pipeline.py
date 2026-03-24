@@ -248,7 +248,13 @@ class PipelineFixtureTests(unittest.TestCase):
         self.assertIn("Produce exactly 6 slides in this order", prompt)
         self.assertIn("China EV Market Entry: Europe & Southeast Asia Strategy", prompt)
         self.assertIn("src-01:sec-01->timeline", prompt)
-        self.assertIn("Decision Backbone', use layout_type 'summary', bind all source units", prompt)
+        self.assertIn("must use source_bindings ['src-01:sec-01'] and must_include_checks ['src-01:sec-01']", prompt)
+        self.assertIn("source_bindings set to [] and must_include_checks set to []", prompt)
+        self.assertIn("Decision Backbone', use layout_type 'summary', set source_bindings to all source units", prompt)
+        self.assertIn("Slide 6 source_bindings must be exactly ['src-01:sec-01', 'src-01:sec-02', 'src-02:sec-01', 'src-03:sec-01'] in that order.", prompt)
+        self.assertIn("grounded_content_slides must be 5 of 5", prompt)
+        self.assertIn("covered_unit_ids must be exactly ['src-01:sec-01', 'src-01:sec-02', 'src-02:sec-01', 'src-03:sec-01']", prompt)
+        self.assertIn("visual_matched_unit_ids must be exactly ['src-01:sec-01', 'src-01:sec-02', 'src-02:sec-01', 'src-03:sec-01']", prompt)
 
     def test_strongest_demo_grader_prompt_includes_archived_acceptance_checks(self) -> None:
         normalized = load_json(STRONGEST_DEMO_NORMALIZED_FIXTURE)
@@ -257,10 +263,18 @@ class PipelineFixtureTests(unittest.TestCase):
         prompt = OpenAICompatibleProvider.build_grader_user_prompt(normalized, slide_spec)
 
         self.assertIn("Strongest-demo accepted live baseline checks:", prompt)
+        self.assertIn("Compare the output structurally against the archived acceptance snapshot", prompt)
+        self.assertIn("strongest-demo-1774366441/acceptance-summary.json", prompt)
+        self.assertIn("Fail if slide_count is not exactly 6.", prompt)
         self.assertIn("Fail if layout_sequence is not exactly", prompt)
         self.assertIn("China EV Market Entry: Europe & Southeast Asia Strategy", prompt)
+        self.assertIn("source_bindings == [] and must_include_checks == []", prompt)
+        self.assertIn("Fail if any strongest-demo unit slide does not keep source_bindings == [unit_id] and must_include_checks == [unit_id].", prompt)
         self.assertIn("Fail if the final slide is not 'Decision Backbone'", prompt)
         self.assertIn("Fail if strongest-demo bilingual unit slide titles drift", prompt)
+        self.assertIn("Fail if grounded_content_slides is not 5 or total_content_slides is not 5.", prompt)
+        self.assertIn("Fail if covered_unit_ids is not exactly ['src-01:sec-01', 'src-01:sec-02', 'src-02:sec-01', 'src-03:sec-01'].", prompt)
+        self.assertIn("Fail if visual_matched_unit_ids is not exactly ['src-01:sec-01', 'src-01:sec-02', 'src-02:sec-01', 'src-03:sec-01'].", prompt)
 
     def test_openai_compatible_provider_parses_text_content_list(self) -> None:
         provider = OpenAICompatibleProvider(

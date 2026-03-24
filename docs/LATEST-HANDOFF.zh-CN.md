@@ -6,7 +6,7 @@
 
 ## 会话摘要
 
-GroundedDeck 仍然保持着已接受的 acceptance-alignment provider 补丁；而这次 curator 轮次确认，剩余 worker prompt 变体都只是已归档 strongest-demo live 基线之外的替代写法，并不存在比当前基线更新且已验证的输出可供整合。
+GroundedDeck 现在会直接从已归档 acceptance snapshot 驱动 strongest-demo provider guardrail；而这次 curator 轮次确认，在把 summary slide prompt 收紧为显式空 evidence 数组之后，最新 live run 仍与已接受 strongest-demo 结构保持一致。
 
 ## 刚刚完成的内容
 
@@ -49,6 +49,15 @@ GroundedDeck 仍然保持着已接受的 acceptance-alignment provider 补丁；
 - 确认 `reports/live-verification-history/strongest-demo-1774366441/acceptance-summary.json` 与此前接受的 strongest-demo 基线在结构上保持一致
 - 在执行 curator review 之前，将当前 automation worktree 从 detached `HEAD` 恢复并挂接到 `curator/groundeddeck-auto-sprint-2b-curator-20260324`
 - 复核了剩余本地 worker prompt 变体分支，确认它们只是替代性 prompt 结构，没有比当前 acceptance-aligned strongest-demo 基线更新的归档验证结果
+- 将当前 automation worktree 从 detached `HEAD` 恢复并挂接到 `curator/groundeddeck-auto-sprint-2-20260325`
+- 以 curator 自有补丁的方式整合了 `auto/groundeddeck-auto-sprint-b/acceptance-comparison-guardrail` 的已接受方向，让 strongest-demo planner / grader guardrail 直接读取 `reports/live-verification-history/strongest-demo-1774366441/acceptance-summary.json`
+- 收紧 strongest-demo prompt 文案，让 summary slide 必须把 `source_bindings` 和 `must_include_checks` 设置为显式空数组，而不是省略这些字段
+- 更新了 prompt 回归测试以及归档 acceptance 校验测试，使其指向当前已接受 strongest-demo 快照
+- 重新运行了 `python3 -m pytest tests/test_pipeline.py tests/test_verification_artifacts.py` 和 `make eval`，当前 curator 分支均通过
+- 将 canonical repo 中的 `.env.runtime.local` 链接到当前 worktree，然后重新运行了 `make check-live-env`、`make live-status`、`make verify-online` 和 `make archive-online-verification`
+- 修复了一次 live 回归：provider 在封面 summary slide 上省略了必填 evidence 字段；现在 strongest-demo prompt 已明确要求输出空数组
+- 刷新 `reports/live-verification-latest.{json,md}`，并将通过的 strongest-demo live 快照归档到 `reports/live-verification-history/strongest-demo-1774370225/`
+- 确认新的 `strongest-demo-1774370225` acceptance summary 除运行时间戳外，与已接受 strongest-demo 基线在结构上保持一致
 
 ## 当前状态
 
@@ -74,6 +83,10 @@ GroundedDeck 仍然保持着已接受的 acceptance-alignment provider 补丁；
 - live verification archive 现在会保留已验证工件的仓库内副本，而不再只记录 `/tmp` 路径
 - 刷新后的 strongest-demo live acceptance snapshot：已提交到 `reports/live-verification-history/strongest-demo-1774362852/`
 - acceptance alignment 之后再次刷新的 strongest-demo live acceptance snapshot：已存在于 `reports/live-verification-history/strongest-demo-1774366441/`
+- strongest-demo prompt guardrail 现在直接从已归档 acceptance summary 加载，而不是在代码里重复维护常量
+- strongest-demo 的 summary-slide prompt 现在会显式要求空 evidence 数组，从而恢复 live provider 对 slide-spec 校验的满足
+- acceptance-summary 驱动 guardrail 补丁落地后的 strongest-demo live acceptance snapshot：已存在于 `reports/live-verification-history/strongest-demo-1774370225/`
+- 最新归档 strongest-demo live refresh 与已接受基线在结构上仍然对齐，变化只有运行时间戳
 - 最新归档 strongest-demo acceptance snapshot 与此前接受的基线在结构上保持一致
 - 剩余 worker prompt 变体：已经复核，当前都被已接受 strongest-demo live 基线覆盖，因此没有新的已验证 worker 输出等待整合
 - renderer 实现：仍然延后
