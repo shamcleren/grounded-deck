@@ -19,7 +19,7 @@ Foundation complete. A deterministic baseline pipeline and provider abstraction 
 - a pluggable provider interface for planner and quality modules
 - a repository-as-memory continuity contract for future AI sessions
 
-The strongest deterministic planning demo is now curated back onto `main` as a canonical fixture bundle and report path.
+The strongest deterministic planning demo is now curated back onto `main` as a canonical fixture bundle and report path, and the first successful live verification against that canonical strongest-demo input has been archived.
 
 ## Completed So Far
 
@@ -38,18 +38,20 @@ The strongest deterministic planning demo is now curated back onto `main` as a c
 - defined repository automation governance for worker, curator, and verifier flows
 - recovered detached automation worktrees onto named rescue branches so their changes are trackable
 - curated the rescued strongest-demo work into one canonical strongest-demo fixture bundle, report path, and deterministic metric baseline
+- captured and archived the first successful online verification run against the canonical strongest-demo input with MiniMax-M2.7
+- hardened the OpenAI-compatible provider path for MiniMax by splitting reasoning output and tolerating `<think>`-wrapped JSON responses
 
 ## Current Next Action
 
-Capture the first successful online verification run against the canonical strongest-demo input without weakening deterministic regression coverage.
+Use the archived strongest-demo live verification as the baseline for expanding provider-backed planning without weakening deterministic regression coverage.
 
 ## Immediate Priorities
 
-1. replace placeholder values in `.env.runtime.local` with real provider settings
-2. run `make check-live-env`, `make live-status`, `make verify-online`, and `make archive-online-verification`
-3. store the first successful online verification artifact in repository memory
+1. preserve the archived strongest-demo live verification artifact in repository memory as the first accepted online baseline
+2. improve provider-backed planning and grading against the strongest-demo path while keeping `make eval` stable
+3. keep `make verify-online` healthy as a reusable regression probe for the real provider path
 
-External feedback has been absorbed as a prioritization change, not an architecture change. The environment-variable configuration contract is documented in `docs/runtime-config.md`, placeholder values are rejected during live preflight, and the next work is to prove product value with a strongest demo while preserving the deterministic baseline.
+External feedback has been absorbed as a prioritization change, not an architecture change. The environment-variable configuration contract is documented in `docs/runtime-config.md`, placeholder values are rejected during live preflight, and the strongest-demo live path has now been proven once against a real provider while preserving the deterministic baseline.
 
 ## Active Constraints
 

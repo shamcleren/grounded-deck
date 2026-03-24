@@ -148,5 +148,6 @@ automation prompt 应明确写出：
 
 - strongest-demo 的实现工作归 worker 分支负责
 - 已恢复的 strongest-demo 候选工作已经通过 curator 流程整合成 `main` 上的规范工件包
-- 接下来 curator 和 verifier 流程应聚焦于针对 `fixtures/source-packs/strongest-demo-source-pack.json` 的第一次成功 online verification
+- 针对 `fixtures/source-packs/strongest-demo-source-pack.json` 的第一次成功 online verification 已经归档到 `reports/live-verification-latest.{json,md}`
+- 接下来 curator 和 verifier 流程应在不削弱确定性回归覆盖的前提下，保住这条 live baseline 并推进 provider-backed planning
 - 未来如果 curator 或 verifier 分支满足合并门槛，应自动合入 `main`，并清理自己的分支与 worktree

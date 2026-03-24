@@ -43,8 +43,9 @@ The current codebase now includes:
 - a provider abstraction for planner and quality modules, with a deterministic provider acting as the regression baseline
 - a canonical strongest-demo fixture bundle with explicit coverage, grounding, and visual-form metrics
 - a `make strongest-demo` path that regenerates the strongest-demo artifact bundle locally
+- an archived successful strongest-demo online verification under `reports/live-verification-latest.{json,md}`
 
-The next milestone is to capture the first successful online verification run against that canonical strongest-demo input before adding a full renderer.
+The next milestone is to use that verified strongest-demo live path as the baseline for provider-backed planning improvements before adding a full renderer.
 
 ## AI Continuity
 
@@ -148,10 +149,9 @@ Latest report path:
 
 ## Roadmap
 
-1. Capture the first successful online verification run against the canonical strongest-demo input.
-2. Preserve deterministic regression coverage while expanding provider-backed planning.
-3. Introduce editable PPTX rendering with Chinese-safe defaults.
-4. Add artifact-level grading for layout type selection and output editability.
+1. Preserve deterministic regression coverage while expanding provider-backed planning from the verified strongest-demo baseline.
+2. Introduce editable PPTX rendering with Chinese-safe defaults.
+3. Add artifact-level grading for layout type selection and output editability.
 
 See [docs/ROADMAP.md](docs/ROADMAP.md) for the current plan.
 

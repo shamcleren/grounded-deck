@@ -167,6 +167,26 @@ class PipelineFixtureTests(unittest.TestCase):
         self.assertEqual(request["json"]["response_format"], {"type": "json_object"})
         self.assertEqual(len(request["json"]["messages"]), 2)
 
+    def test_openai_compatible_provider_adds_reasoning_split_for_minimax(self) -> None:
+        provider = OpenAICompatibleProvider(
+            ProviderConfig(
+                provider="openai-compatible",
+                model="MiniMax-M2.7",
+                api_key_env="GROUNDED_DECK_API_KEY",
+                base_url="https://api.minimaxi.com/v1",
+            ),
+            api_key="secret",
+        )
+
+        request = provider.build_chat_request(
+            system_prompt="You are a planner.",
+            user_prompt="Summarize the source pack.",
+            response_format={"type": "json_object"},
+        )
+
+        self.assertTrue(request["json"]["reasoning_split"])
+        self.assertEqual(request["json"]["response_format"], {"type": "json_object"})
+
     def test_openai_compatible_provider_parses_json_content(self) -> None:
         provider = OpenAICompatibleProvider(
             ProviderConfig(
@@ -192,6 +212,117 @@ class PipelineFixtureTests(unittest.TestCase):
 
         self.assertEqual(parsed["status"], "pass")
         self.assertEqual(parsed["coverage"]["covered_units"], 3)
+
+    def test_openai_compatible_provider_parses_json_content_wrapped_in_code_fence(self) -> None:
+        provider = OpenAICompatibleProvider(
+            ProviderConfig(
+                provider="openai-compatible",
+                model="gpt-4.1-mini",
+                api_key_env="GROUNDED_DECK_API_KEY",
+                base_url="https://api.example.com/v1",
+            ),
+            api_key="secret",
+        )
+
+        parsed = provider.parse_json_response(
+            {
+                "choices": [
+                    {
+                        "message": {
+                            "content": "```json\n{\"status\":\"pass\",\"failures\":[],\"coverage\":{\"required_units\":3,\"covered_units\":3},\"grounding\":{\"total_content_slides\":2,\"grounded_slides\":2},\"visual_form\":{\"expected_units\":3,\"matched_units\":3}}\n```"
+                        }
+                    }
+                ]
+            }
+        )
+
+        self.assertEqual(parsed["status"], "pass")
+        self.assertEqual(parsed["visual_form"]["matched_units"], 3)
+
+    def test_openai_compatible_provider_parses_text_content_list(self) -> None:
+        provider = OpenAICompatibleProvider(
+            ProviderConfig(
+                provider="openai-compatible",
+                model="gpt-4.1-mini",
+                api_key_env="GROUNDED_DECK_API_KEY",
+                base_url="https://api.example.com/v1",
+            ),
+            api_key="secret",
+        )
+
+        parsed = provider.parse_json_response(
+            {
+                "choices": [
+                    {
+                        "message": {
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": '{"status":"pass","failures":[],"coverage":{"required_units":3,"covered_units":3},"grounding":{"total_content_slides":2,"grounded_slides":2},"visual_form":{"expected_units":3,"matched_units":3}}',
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        )
+
+        self.assertEqual(parsed["status"], "pass")
+        self.assertEqual(parsed["grounding"]["grounded_slides"], 2)
+
+    def test_openai_compatible_provider_parses_minimax_think_wrapped_json(self) -> None:
+        provider = OpenAICompatibleProvider(
+            ProviderConfig(
+                provider="openai-compatible",
+                model="MiniMax-M2.7",
+                api_key_env="GROUNDED_DECK_API_KEY",
+                base_url="https://api.minimaxi.com/v1",
+            ),
+            api_key="secret",
+        )
+
+        parsed = provider.parse_json_response(
+            {
+                "choices": [
+                    {
+                        "message": {
+                            "content": "<think>internal reasoning with example {\\\"ok\\\": false}</think>\n\n{\"status\":\"pass\",\"failures\":[],\"coverage\":{\"required_units\":3,\"covered_units\":3},\"grounding\":{\"total_content_slides\":2,\"grounded_slides\":2},\"visual_form\":{\"expected_units\":3,\"matched_units\":3}}"
+                        }
+                    }
+                ]
+            }
+        )
+
+        self.assertEqual(parsed["status"], "pass")
+        self.assertEqual(parsed["coverage"]["required_units"], 3)
+
+    def test_openai_compatible_provider_reports_content_snippet_on_invalid_json(self) -> None:
+        provider = OpenAICompatibleProvider(
+            ProviderConfig(
+                provider="openai-compatible",
+                model="gpt-4.1-mini",
+                api_key_env="GROUNDED_DECK_API_KEY",
+                base_url="https://api.example.com/v1",
+            ),
+            api_key="secret",
+        )
+
+        with self.assertRaisesRegex(ValueError, "content_snippet=.*not json"):
+            provider.parse_json_response(
+                {
+                    "choices": [
+                        {
+                            "message": {
+                                "content": "not json at all"
+                            }
+                        }
+                    ]
+                }
+            )
+
+    def test_openai_compatible_provider_reports_transport_body_snippet_on_invalid_json(self) -> None:
+        with self.assertRaisesRegex(ValueError, "body_snippet=.*not json"):
+            OpenAICompatibleProvider._parse_transport_body("not json from upstream")
 
     def test_openai_compatible_provider_can_draft_with_mock_transport(self) -> None:
         expected = load_json(SLIDE_SPEC_FIXTURE)
@@ -288,6 +419,58 @@ class PipelineFixtureTests(unittest.TestCase):
             load_json(SLIDE_SPEC_FIXTURE),
         )
         self.assertEqual(report, expected)
+
+    def test_openai_compatible_provider_normalizes_partial_quality_report_shape(self) -> None:
+        def fake_transport(_: dict) -> dict:
+            return {
+                "choices": [
+                    {
+                        "message": {
+                            "content": json.dumps(
+                                {
+                                    "status": "partial",
+                                    "failures": ["mismatch"],
+                                    "coverage": {
+                                        "required_units": ["u1", "u2"],
+                                        "covered_units": ["u1", "u2"],
+                                    },
+                                    "grounding": {"total_content_slides": 2, "grounded_slides": 2},
+                                    "visual_form": {
+                                        "expected_units": ["u1", "u2"],
+                                        "matched_units": ["u1"],
+                                    },
+                                    "provider": "grounded-deck",
+                                    "model": "quality-grader-v1",
+                                },
+                                ensure_ascii=False,
+                            )
+                        }
+                    }
+                ]
+            }
+
+        provider = OpenAICompatibleProvider(
+            ProviderConfig(
+                provider="openai-compatible",
+                model="MiniMax-M2.7",
+                api_key_env="GROUNDED_DECK_API_KEY",
+                base_url="https://api.minimaxi.com/v1",
+            ),
+            api_key="secret",
+            transport=fake_transport,
+        )
+
+        report = provider.grade_slide_spec(
+            load_json(NORMALIZED_FIXTURE),
+            load_json(SLIDE_SPEC_FIXTURE),
+        )
+
+        self.assertEqual(report["status"], "fail")
+        self.assertEqual(report["coverage"]["required_units"], 2)
+        self.assertEqual(report["coverage"]["covered_units"], 2)
+        self.assertEqual(report["coverage"]["required_units_ids"], ["u1", "u2"])
+        self.assertEqual(report["visual_form"]["expected_units"], 2)
+        self.assertEqual(report["visual_form"]["matched_units"], 1)
 
     def test_openai_compatible_provider_rejects_invalid_quality_report_shape(self) -> None:
         def fake_transport(_: dict) -> dict:

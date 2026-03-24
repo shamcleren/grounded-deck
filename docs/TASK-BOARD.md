@@ -4,13 +4,12 @@
 
 ## In Progress
 
-- run the first successful online verification against the canonical strongest-demo input
+- expand provider-backed planning from the verified strongest-demo baseline without weakening deterministic regression coverage
 
 ## Ready Next
 
-- replace placeholder values in `.env.runtime.local` and run the first successful `make verify-online`
-- capture one successful live verification transcript or artifact shape
-- store the first successful `verification-summary.json` artifact shape in repo memory
+- tighten provider-backed planning and grading prompts against the strongest-demo path
+- decide which portions of the live strongest-demo output should become future regression fixtures or acceptance checks
 - keep canonical docs bilingual via separate language files and switch links
 
 ## Later
@@ -22,7 +21,7 @@
 
 ## Blockers
 
-- real provider credentials and reachable backend not yet configured for `make verify-online`
+- none for the strongest-demo live verification path
 
 ## Update Rule
 

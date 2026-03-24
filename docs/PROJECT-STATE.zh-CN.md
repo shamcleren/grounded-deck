@@ -21,7 +21,7 @@
 - 面向 planner 和 quality 模块的可插拔 provider interface
 - 面向未来 AI 会话的 repository-as-memory 连续性契约
 
-另外，最强确定性 planning demo 现在已经通过 curator 流程整合回 `main`，并作为规范 fixture bundle 与报告路径存在。
+另外，最强确定性 planning demo 现在已经通过 curator 流程整合回 `main`，并作为规范 fixture bundle 与报告路径存在；针对这套规范 strongest-demo 输入的第一次成功在线验证也已经归档。
 
 ## 已完成内容
 
@@ -40,18 +40,20 @@
 - 为 worker、curator、verifier 三类 automation 定义了仓库级治理规则
 - 把 detached 的 automation worktree 恢复到了命名救援分支上，避免改动继续匿名漂浮
 - 将 strongest-demo 的救援改动整合成一套规范 fixture bundle、报告路径和确定性指标基线
+- 使用 MiniMax-M2.7 针对规范 strongest-demo 输入完成并归档了第一次成功在线验证
+- 强化了 OpenAI-compatible provider 路径，使其能够拆分 MiniMax 的推理输出，并兼容 `<think>` 包裹的 JSON 响应
 
 ## 当前唯一下一步
 
-在不削弱确定性回归覆盖的前提下，针对规范 strongest-demo 输入，留下一次成功的在线验证记录。
+以已归档的 strongest-demo 在线验证为基线，在不削弱确定性回归覆盖的前提下扩展 provider-backed planning。
 
 ## 近期优先级
 
-1. 把 `.env.runtime.local` 里的占位值替换成真实 provider 配置
-2. 运行 `make check-live-env`、`make live-status`、`make verify-online` 和 `make archive-online-verification`
-3. 把第一次成功的在线验证工件沉淀进仓库记忆
+1. 将已归档的 strongest-demo live verification 工件作为第一条被接受的在线基线沉淀进仓库记忆
+2. 在保持 `make eval` 稳定的前提下，继续改进 strongest-demo 路径上的 provider-backed planning 和 grading
+3. 让 `make verify-online` 保持可复用，作为真实 provider 路径的回归探针
 
-这次吸收外部评价，只调整优先级，不调整架构边界。环境变量配置约定已经写入 `docs/runtime-config.md`，而且 live 预检现在会拦截占位值。接下来要做的是在保留确定性基线的前提下，用一个最强 demo 证明产品价值。
+这次吸收外部评价，只调整优先级，不调整架构边界。环境变量配置约定已经写入 `docs/runtime-config.md`，而且 live 预检现在会拦截占位值。现在 strongest-demo 已经在真实 provider 上跑通一次，接下来要做的是在保留确定性基线的前提下继续扩展 provider-backed planning。
 
 ## 当前约束
 

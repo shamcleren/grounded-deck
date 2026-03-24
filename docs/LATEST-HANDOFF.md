@@ -4,7 +4,7 @@
 
 ## Session Summary
 
-GroundedDeck now has a canonical strongest-demo bundle, an explicit automation governance layer, and the deterministic fixture-backed pipeline.
+GroundedDeck now has a canonical strongest-demo bundle, an explicit automation governance layer, the deterministic fixture-backed pipeline, and one archived successful online verification run against the strongest-demo input.
 
 ## What Was Just Completed
 
@@ -28,6 +28,8 @@ GroundedDeck now has a canonical strongest-demo bundle, an explicit automation g
 - recovered four detached automation worktrees onto named rescue branches so they can be curated instead of lost
 - accepted the strongest-demo rescue work by landing a canonical strongest-demo fixture bundle, deterministic quality metrics, and `make strongest-demo`
 - added `make curator-finalize` so future curator runs use one repository-owned merge-and-cleanup path
+- configured the live provider path against MiniMax-M2.7 and archived the first successful strongest-demo online verification under `reports/live-verification-latest.{json,md}`
+- hardened the OpenAI-compatible provider integration so MiniMax reasoning output is split cleanly and `<think>`-wrapped JSON responses can still be parsed and diagnosed
 
 ## Current Status
 
@@ -37,26 +39,26 @@ GroundedDeck now has a canonical strongest-demo bundle, an explicit automation g
 - deterministic pipeline baseline: passing
 - provider abstraction: present
 - OpenAI-compatible provider path: present and locally testable
-- live verification tooling: ready
+- live verification tooling: ready and proven
 - placeholder env detection: present
-- live status correctly reports placeholder config as not ready
-- live credentials / real backend: not yet configured
+- live status correctly reports environment readiness and the last archived result
+- live credentials / real backend: configured and verified for MiniMax-M2.7
 - strongest-demo canonical bundle: present
 - automation governance for worker / curator / verifier flows: present
-- near-term focus: first successful online verification against the canonical strongest-demo input
+- first successful strongest-demo online verification: archived in `reports/live-verification-latest.json` and `reports/live-verification-latest.md`
+- near-term focus: expand provider-backed planning from the verified strongest-demo baseline without weakening deterministic evals
 - renderer implementation: still deferred
 
 ## Immediate Next Action
 
-Run the first successful online verification against the canonical strongest-demo input and archive the resulting verification summary.
+Use the archived strongest-demo online verification as the baseline for the next provider-backed planning iteration while preserving deterministic regression coverage.
 
 ## First Concrete Tasks
 
-1. replace placeholder values in `.env.runtime.local` with real provider settings
-2. run `make check-live-env`
-3. run `make live-status`
-4. run `make verify-online`
-5. run `make archive-online-verification` and confirm the archived reports exist in `reports/`
+1. treat `reports/live-verification-latest.json` and `reports/live-verification-latest.md` as the canonical first live-run memory
+2. improve provider-backed planning and grading behavior against the strongest-demo path
+3. keep `make verify-online` passing on the real provider path while preserving `make eval`
+4. record any future provider-specific compatibility decisions in repository docs instead of leaving them implicit
 
 ## Do Not Drift
 
@@ -65,7 +67,7 @@ Run the first successful online verification against the canonical strongest-dem
 - do not skip the intermediate `slide spec`
 - do not leave state changes undocumented
 - do not let worker automations update canonical state docs or write directly to `main`
-- do not fall back to the old example fixture for the first claimed online verification
+- do not fall back to the old example fixture for future claims about the strongest-demo live path
 
 ## Resume Hint
 

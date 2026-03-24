@@ -6,13 +6,12 @@
 
 ## 进行中
 
-- 针对规范 strongest-demo 输入完成第一次成功 online verification
+- 以已验证的 strongest-demo 基线为起点，在不削弱确定性回归覆盖的前提下扩展 provider-backed planning
 
 ## 下一批待做
 
-- 把 `.env.runtime.local` 中的占位值替换为真实配置，并跑通第一次 `make verify-online`
-- 留下一次成功 live verification 的记录或工件形态
-- 把第一次成功的 `verification-summary.json` 工件形态沉淀进仓库记忆
+- 收紧 strongest-demo 路径上的 provider-backed planning 和 grading prompt
+- 决定 live strongest-demo 输出里的哪些部分应该上升为未来的回归 fixture 或 acceptance check
 - 后续新增 canonical docs 时，保持中英双语并采用独立语言文件
 
 ## 后续
@@ -24,7 +23,7 @@
 
 ## 阻塞项
 
-- `make verify-online` 所需的真实 provider 凭证和可访问后端尚未配置
+- strongest-demo live verification 路径当前无阻塞项
 
 ## 更新规则
 

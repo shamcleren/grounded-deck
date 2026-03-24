@@ -5,7 +5,7 @@ import os
 import re
 from dataclasses import dataclass
 from typing import Callable
-from urllib import request
+from urllib import error, request
 
 from src.llm.validation import validate_quality_report_like, validate_slide_spec_like
 from src.runtime.env import load_runtime_env
@@ -291,6 +291,8 @@ class OpenAICompatibleProvider(Provider):
                 {"role": "user", "content": user_prompt},
             ],
         }
+        if self.config.model.startswith("MiniMax-"):
+            payload["reasoning_split"] = True
         if response_format is not None:
             payload["response_format"] = response_format
 
@@ -309,10 +311,68 @@ class OpenAICompatibleProvider(Provider):
             raise ValueError("response did not include choices")
 
         content = choices[0].get("message", {}).get("content")
-        if not isinstance(content, str) or not content.strip():
+        raw_content = self._coerce_message_content(content)
+        if not raw_content:
             raise ValueError("response did not include message content")
 
-        return json.loads(content)
+        candidate = self._extract_json_candidate(raw_content)
+        try:
+            return json.loads(candidate)
+        except json.JSONDecodeError as exc:
+            snippet = self._content_snippet(raw_content)
+            raise ValueError(
+                f"response content was not valid JSON: {exc.msg} at line {exc.lineno} column {exc.colno}; "
+                f"content_snippet={snippet}"
+            ) from exc
+
+    @staticmethod
+    def _coerce_message_content(content: object) -> str:
+        if isinstance(content, str):
+            return content.strip()
+        if isinstance(content, list):
+            text_parts: list[str] = []
+            for item in content:
+                if isinstance(item, str):
+                    text_parts.append(item)
+                    continue
+                if isinstance(item, dict) and item.get("type") == "text":
+                    text_value = item.get("text")
+                    if isinstance(text_value, str):
+                        text_parts.append(text_value)
+            return "\n".join(part.strip() for part in text_parts if part and part.strip()).strip()
+        return ""
+
+    @classmethod
+    def _extract_json_candidate(cls, raw_content: str) -> str:
+        stripped = raw_content.strip()
+        stripped = re.sub(r"<think>.*?</think>\s*", "", stripped, flags=re.DOTALL).strip()
+        if stripped.startswith("```"):
+            fenced = re.match(r"^```(?:json)?\s*(.*?)\s*```$", stripped, re.DOTALL)
+            if fenced:
+                stripped = fenced.group(1).strip()
+
+        if stripped.startswith("{") or stripped.startswith("["):
+            return stripped
+
+        json_start_positions = [index for index in (stripped.find("{"), stripped.find("[")) if index >= 0]
+        if not json_start_positions:
+            return stripped
+
+        start = min(json_start_positions)
+        end_object = stripped.rfind("}")
+        end_array = stripped.rfind("]")
+        end = max(end_object, end_array)
+        if end >= start:
+            return stripped[start : end + 1].strip()
+
+        return stripped
+
+    @staticmethod
+    def _content_snippet(raw_content: str, limit: int = 240) -> str:
+        snippet = raw_content.strip().replace("\n", "\\n")
+        if len(snippet) > limit:
+            return snippet[:limit] + "..."
+        return snippet
 
     def draft_slide_spec(self, normalized_pack: dict) -> dict:
         request_payload = self.build_chat_request(
@@ -350,6 +410,7 @@ class OpenAICompatibleProvider(Provider):
             response_format={"type": "json_object"},
         )
         parsed = self.parse_json_response(self.transport(request_payload))
+        parsed = self._normalize_quality_report(parsed)
         validate_quality_report_like(parsed)
         return parsed
 
@@ -360,8 +421,59 @@ class OpenAICompatibleProvider(Provider):
             headers=prepared_request["headers"],
             method="POST",
         )
-        with request.urlopen(req) as response:
-            return json.loads(response.read().decode("utf-8"))
+        try:
+            with request.urlopen(req) as response:
+                body = response.read().decode("utf-8")
+                return self._parse_transport_body(body)
+        except error.HTTPError as exc:
+            body = exc.read().decode("utf-8", errors="replace")
+            raise ValueError(
+                f"provider returned HTTP {exc.code}; body_snippet={self._content_snippet(body)}"
+            ) from exc
+
+    @classmethod
+    def _parse_transport_body(cls, body: str) -> dict:
+        try:
+            return json.loads(body)
+        except json.JSONDecodeError as exc:
+            raise ValueError(
+                f"provider returned non-JSON response body: {exc.msg} at line {exc.lineno} column {exc.colno}; "
+                f"body_snippet={cls._content_snippet(body)}"
+            ) from exc
+
+    @staticmethod
+    def _normalize_quality_report(payload: dict) -> dict:
+        normalized = dict(payload)
+
+        status = normalized.get("status")
+        if status == "partial":
+            normalized["status"] = "fail"
+
+        failures = normalized.get("failures")
+        if failures is None:
+            normalized["failures"] = []
+
+        coverage = normalized.get("coverage")
+        if isinstance(coverage, dict):
+            normalized["coverage"] = dict(coverage)
+            for key in ("required_units", "covered_units"):
+                if isinstance(normalized["coverage"].get(key), list):
+                    normalized["coverage"][f"{key}_ids"] = normalized["coverage"][key]
+                    normalized["coverage"][key] = len(normalized["coverage"][key])
+
+        grounding = normalized.get("grounding")
+        if isinstance(grounding, dict):
+            normalized["grounding"] = dict(grounding)
+
+        visual_form = normalized.get("visual_form")
+        if isinstance(visual_form, dict):
+            normalized["visual_form"] = dict(visual_form)
+            for key in ("expected_units", "matched_units"):
+                if isinstance(normalized["visual_form"].get(key), list):
+                    normalized["visual_form"][f"{key}_ids"] = normalized["visual_form"][key]
+                    normalized["visual_form"][key] = len(normalized["visual_form"][key])
+
+        return normalized
 
 
 def build_provider_from_env(env: dict[str, str] | None = None) -> Provider:

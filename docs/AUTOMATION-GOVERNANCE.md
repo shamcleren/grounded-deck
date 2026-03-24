@@ -148,5 +148,6 @@ Automation prompts should explicitly say:
 
 - strongest-demo implementation work belongs on worker branches
 - the rescued strongest-demo candidate work has been curated into the canonical bundle on `main`
-- the curator and verifier flow should now focus on the first successful online verification against `fixtures/source-packs/strongest-demo-source-pack.json`
+- the first successful online verification against `fixtures/source-packs/strongest-demo-source-pack.json` has been archived in `reports/live-verification-latest.{json,md}`
+- the curator and verifier flow should now preserve that live baseline and advance provider-backed planning without weakening deterministic regression coverage
 - once a future curator or verifier branch meets the merge gates, it should merge into `main` and clean up its own branch and worktree automatically
