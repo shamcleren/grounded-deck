@@ -13,12 +13,32 @@
 - Coverage: `4/4` source units retained in `must_include_checks`.
 - Grounding: `5/5` non-cover slides keep valid source bindings.
 - Visual Form: `4/4` grounded units match deterministic layout expectations.
+- Narrative Quality: `1.0` quality ratio, `16` key points, `4` source-annotated.
+
+## Artifact Grade
+
+- Status: `pass`
+- Editability: `1.0`
+- Notes Coverage: `1.0`
+- Source Bindings Coverage: `1.0`
+- Chinese Text: `True`
+
+## Narrative Grade
+
+- Status: `pass`
+- Mode: `deterministic`
+- Avg Coherence: `1.0`
+- Avg Grounding: `0.88`
+- Avg Visual Fit: `1.0`
+- Avg Composite: `0.97`
+- Issues: `0`
 
 ## Artifact Bundle
 
 - Normalized Pack: `reports/strongest-demo/normalized-pack.json`
 - Slide Spec: `reports/strongest-demo/slide-spec.json`
 - Quality Report: `reports/strongest-demo/quality-report.json`
+- PPTX Output: `reports/strongest-demo/strongest-demo.pptx`
 - Verification Summary: `reports/strongest-demo/verification-summary.json`
 
 ## Why This Demo

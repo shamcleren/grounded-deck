@@ -279,10 +279,23 @@ def archive_verification_summary(summary_path: Path, output_dir: Path) -> tuple[
                 slide_spec_path=archived_paths["slide_spec"],
                 quality_report_path=archived_paths["quality_report"],
             )
-            (history_dir / "acceptance-summary.json").write_text(
+            acceptance_path = history_dir / "acceptance-summary.json"
+            acceptance_path.write_text(
                 json.dumps(acceptance_summary, ensure_ascii=False, indent=2) + "\n",
                 encoding="utf-8",
             )
+
+            # 自动执行 acceptance delta 比较
+            if ACCEPTED_STRONGEST_DEMO_BASELINE.exists():
+                delta = compare_against_accepted_baseline(acceptance_path)
+                (history_dir / "acceptance-delta.json").write_text(
+                    json.dumps(delta, ensure_ascii=False, indent=2) + "\n",
+                    encoding="utf-8",
+                )
+                (history_dir / "acceptance-delta.md").write_text(
+                    render_acceptance_delta_report(delta) + "\n",
+                    encoding="utf-8",
+                )
 
     json_target = output_dir / "live-verification-latest.json"
     md_target = output_dir / "live-verification-latest.md"
@@ -291,6 +304,96 @@ def archive_verification_summary(summary_path: Path, output_dir: Path) -> tuple[
     md_target.write_text(render_verification_report(archived_summary) + "\n", encoding="utf-8")
 
     return json_target, md_target
+
+
+# ---------- Acceptance baseline comparison ----------
+
+ACCEPTED_STRONGEST_DEMO_BASELINE = (
+    Path(__file__).resolve().parents[1].parent
+    / "reports"
+    / "live-verification-history"
+    / "strongest-demo-1774370225"
+    / "acceptance-summary.json"
+)
+
+
+def compare_against_accepted_baseline(
+    candidate_acceptance_path: Path,
+    *,
+    baseline_path: Path | None = None,
+) -> dict:
+    """将候选 acceptance summary 与已接受的基线进行比较。
+
+    返回一个 dict 包含：
+    - status: "match" | "drift" | "error"
+    - baseline_path: 基线文件路径
+    - candidate_path: 候选文件路径
+    - differences: 差异列表（仅 status=="drift" 时非空）
+    - error: 错误信息（仅 status=="error" 时非空）
+    """
+    baseline = baseline_path or ACCEPTED_STRONGEST_DEMO_BASELINE
+
+    result: dict = {
+        "baseline_path": str(baseline),
+        "candidate_path": str(candidate_acceptance_path),
+        "differences": [],
+        "error": None,
+    }
+
+    if not baseline.exists():
+        result["status"] = "error"
+        result["error"] = f"baseline not found: {baseline}"
+        return result
+
+    if not candidate_acceptance_path.exists():
+        result["status"] = "error"
+        result["error"] = f"candidate not found: {candidate_acceptance_path}"
+        return result
+
+    try:
+        baseline_data = json.loads(baseline.read_text(encoding="utf-8"))
+        candidate_data = json.loads(candidate_acceptance_path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError) as exc:
+        result["status"] = "error"
+        result["error"] = f"failed to read acceptance summaries: {exc}"
+        return result
+
+    differences = compare_acceptance_summaries(baseline_data, candidate_data)
+    result["differences"] = differences
+    result["status"] = "match" if not differences else "drift"
+    return result
+
+
+def render_acceptance_delta_report(delta: dict) -> str:
+    """将 acceptance delta 结果渲染为 Markdown 报告。"""
+    lines = [
+        "# Acceptance Delta Report",
+        "",
+        f"- Status: `{delta['status']}`",
+        f"- Baseline: `{delta['baseline_path']}`",
+        f"- Candidate: `{delta['candidate_path']}`",
+        "",
+    ]
+
+    if delta["status"] == "error":
+        lines.extend(["## Error", "", delta.get("error", "unknown error"), ""])
+    elif delta["status"] == "drift":
+        lines.extend(["## Differences", ""])
+        for diff in delta["differences"]:
+            lines.append(f"- {diff}")
+        lines.append("")
+    else:
+        lines.extend(
+            [
+                "## Result",
+                "",
+                "Candidate acceptance summary matches the accepted baseline "
+                "(only `generated_at_unix` may differ).",
+                "",
+            ]
+        )
+
+    return "\n".join(lines)
 
 
 def render_live_verification_checklist(env: dict[str, str] | None = None) -> str:

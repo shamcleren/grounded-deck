@@ -9,6 +9,7 @@
       "layout_type": "cover",
       "key_points": [
         "Regional strategy leaders deciding 2025 market sequencing",
+        "2022-2024 年，中国新能源汽车出口节奏已经从单点放量转向分区域深化。",
         "4 grounded source units"
       ],
       "visual_elements": [
@@ -18,6 +19,15 @@
         {
           "type": "source-count",
           "value": 4
+        },
+        {
+          "type": "topic-overview",
+          "topics": [
+            "出口时间线",
+            "欧洲 vs 东南亚对比",
+            "进入路径",
+            "成本与利润指标"
+          ]
         }
       ],
       "source_bindings": [
@@ -40,13 +50,43 @@
       "goal": "Compress the source pack into the minimum grounded claims the deck must preserve.",
       "layout_type": "summary",
       "key_points": [
-        "2022-2024 年，中国新能源汽车出口节奏已经从单点放量转向分区域深化。",
-        "欧洲适合追求品牌抬升与高客单价，东南亚更适合追求进入速度与渠道复制。",
-        "先在东南亚建立渠道和售后，再择机进入欧洲，是更稳妥的 2025 市场进入路径。"
+        "2022-2024 年，中国新能源汽车出口节奏已经从单点放量转向分区域深化。 [src-01:sec-01]",
+        "欧洲适合追求品牌抬升与高客单价，东南亚更适合追求进入速度与渠道复制。 [src-01:sec-02]",
+        "先在东南亚建立渠道和售后，再择机进入欧洲，是更稳妥的 2025 市场进入路径。 [src-02:sec-01]",
+        "18% 的电池成本降幅为价格带竞争和渠道投入提供了缓冲空间。 [src-03:sec-01]"
       ],
       "visual_elements": [
         {
           "type": "bullet-list"
+        },
+        {
+          "type": "claim-source-map",
+          "entries": [
+            {
+              "unit_id": "src-01:sec-01",
+              "section": "出口时间线",
+              "claim": "2022-2024 年，中国新能源汽车出口节奏已经从单点放量转向分区域深化。",
+              "source_binding": "src-01:sec-01"
+            },
+            {
+              "unit_id": "src-01:sec-02",
+              "section": "欧洲 vs 东南亚对比",
+              "claim": "欧洲适合追求品牌抬升与高客单价，东南亚更适合追求进入速度与渠道复制。",
+              "source_binding": "src-01:sec-02"
+            },
+            {
+              "unit_id": "src-02:sec-01",
+              "section": "进入路径",
+              "claim": "先在东南亚建立渠道和售后，再择机进入欧洲，是更稳妥的 2025 市场进入路径。",
+              "source_binding": "src-02:sec-01"
+            },
+            {
+              "unit_id": "src-03:sec-01",
+              "section": "成本与利润指标",
+              "claim": "18% 的电池成本降幅为价格带竞争和渠道投入提供了缓冲空间。",
+              "source_binding": "src-03:sec-01"
+            }
+          ]
         }
       ],
       "source_bindings": [
@@ -69,7 +109,8 @@
       "goal": "Show how the grounded evidence changes over time.",
       "layout_type": "timeline",
       "key_points": [
-        "2022-2024 年，中国新能源汽车出口节奏已经从单点放量转向分区域深化。"
+        "2022-2024 年，中国新能源汽车出口节奏已经从单点放量转向分区域深化。",
+        "出口时间线 2022 年出口仍以试点市场为主，2023 年开始形成欧洲与东南亚双主线，2024 年渠道建设重心转向分区域深化"
       ],
       "visual_elements": [
         {
@@ -78,6 +119,11 @@
             "2022",
             "2023",
             "2024"
+          ],
+          "events": [
+            "2022: 出口仍以试点市场为主",
+            "2023: 开始形成欧洲与东南亚双主线",
+            "2024: 渠道建设重心转向分区域深化"
           ]
         }
       ],
@@ -95,7 +141,9 @@
       "goal": "Contrast grounded market options without losing source traceability.",
       "layout_type": "comparison",
       "key_points": [
-        "欧洲适合追求品牌抬升与高客单价，东南亚更适合追求进入速度与渠道复制。"
+        "欧洲适合追求品牌抬升与高客单价，东南亚更适合追求进入速度与渠道复制。",
+        "欧洲 vs 东南亚对比 欧洲单车收入更高，但认证、关税和售后合规压力更重",
+        "东南亚渠道建立更快，本地合作伙伴响应更灵活"
       ],
       "visual_elements": [
         {
@@ -103,7 +151,16 @@
           "columns": [
             "欧洲",
             "东南亚"
-          ]
+          ],
+          "column_points": {
+            "欧洲": [
+              "欧洲 vs 东南亚对比 欧洲单车收入更高，但认证、关税和售后合规压力更重",
+              "欧洲适合追求品牌抬升与高客单价，东南亚更适合追求进入速度与渠道复制"
+            ],
+            "东南亚": [
+              "东南亚渠道建立更快，本地合作伙伴响应更灵活"
+            ]
+          }
         }
       ],
       "source_bindings": [
@@ -120,12 +177,19 @@
       "goal": "Turn grounded evidence into an ordered action path.",
       "layout_type": "process",
       "key_points": [
-        "先在东南亚建立渠道和售后，再择机进入欧洲，是更稳妥的 2025 市场进入路径。"
+        "先在东南亚建立渠道和售后，再择机进入欧洲，是更稳妥的 2025 市场进入路径。",
+        "进入路径 建议先以东南亚市场建立经销、服务和备件响应，再把验证过的运营模型迁移到欧洲重点国家"
       ],
       "visual_elements": [
         {
           "type": "process-flow",
-          "steps": 1
+          "steps": 4,
+          "step_labels": [
+            "以东南亚市场建立经销、服务和备件响应",
+            "把验证过的运营模型迁移到欧洲重点国家",
+            "在东南亚建立渠道和售后",
+            "择机进入欧洲，是更稳妥的 2025 市场进入路径"
+          ]
         }
       ],
       "source_bindings": [
@@ -142,7 +206,8 @@
       "goal": "Surface the grounded numeric signal that should shape the decision.",
       "layout_type": "chart",
       "key_points": [
-        "18% 的电池成本降幅为价格带竞争和渠道投入提供了缓冲空间。"
+        "18% 的电池成本降幅为价格带竞争和渠道投入提供了缓冲空间。",
+        "成本与利润指标 过去 12 个月动力电池包成本下降 18%，为海外定价、渠道补贴和售后投入预留了利润缓冲"
       ],
       "visual_elements": [
         {
@@ -150,6 +215,10 @@
           "metrics": [
             "12",
             "18%"
+          ],
+          "labels": [
+            "成本与利润指标 过去 12 个月动力电池包成本下降 18",
+            "12 个月动力电池包成本下降 18%，为海外定价、渠道补贴和售后投"
           ]
         }
       ],

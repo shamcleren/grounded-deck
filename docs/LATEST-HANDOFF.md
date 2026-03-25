@@ -4,12 +4,20 @@
 
 ## Session Summary
 
-GroundedDeck still uses the archived strongest-demo acceptance snapshot as the provider-planning baseline, and this curator pass promoted the accepted worker patch from `auto/groundeddeck-auto-sprint-b/grading-acceptance-delta-check`. The rolling live pointer now references a newer passing run at `strongest-demo-1774381550`, and the new comparison helper confirms it remains structurally identical to the accepted `strongest-demo-1774370225` baseline aside from the timestamp.
-
-This follow-up curator review found that `main` already contains that accepted integration, while all remaining ahead-of-`main` worker branches are still unverified strongest-demo prompt variants. No new archived strongest-demo verification beyond `strongest-demo-1774381550` exists, so no additional worker output is currently eligible for promotion.
+GroundedDeck now has automated acceptance delta comparison that ensures future live verification runs are automatically compared against the accepted strongest-demo baseline. The `archive_verification_summary` flow auto-generates `acceptance-delta.json` and `acceptance-delta.md`, and the eval harness includes an `acceptance-baseline` check. Combined with the continuity grading from the previous session, the repository now has comprehensive self-validation for both AI continuity and provider-backed planning consistency.
 
 ## What Was Just Completed
 
+- automated acceptance delta comparison in `src/runtime/verification.py`
+- `compare_against_accepted_baseline()` function compares any candidate acceptance summary against the accepted baseline, returning status (match/drift/error), differences list, and error details
+- `render_acceptance_delta_report()` renders delta results as Markdown report
+- `ACCEPTED_STRONGEST_DEMO_BASELINE` constant points to the canonical accepted snapshot at `reports/live-verification-history/strongest-demo-1774370225/acceptance-summary.json`
+- `archive_verification_summary` now auto-generates `acceptance-delta.json` and `acceptance-delta.md` when archiving, so every future `make archive-online-verification` automatically compares against the baseline
+- added `acceptance-baseline` check to eval harness: validates baseline exists, is valid JSON, has required fields, self-compares as match, and checks all passing archived snapshots from the baseline timestamp onwards
+- added `make compare-acceptance` Makefile target for independent baseline comparison (compares latest archived snapshot against accepted baseline)
+- added 12 acceptance baseline comparison tests covering: baseline existence, valid JSON, required fields, self-match, drift detection, timestamp-only match, missing candidate/baseline error handling, delta report rendering (match/drift/error), and all-archived-snapshots regression
+- total test count: 248 passing (up from 236)
+- eval harness: 38/38 passing (up from 37)
 - added [AGENTS.md](../AGENTS.md) as the AI operating contract
 - added [docs/PROJECT-STATE.md](PROJECT-STATE.md) as the canonical current-state record
 - added [docs/ARCHITECTURE-DECISIONS.md](ARCHITECTURE-DECISIONS.md) to prevent architecture drift
@@ -71,6 +79,8 @@ This follow-up curator review found that `main` already contains that accepted i
 
 ## Current Status
 
+- acceptance delta comparison: automated in archive flow and eval harness (38/38 evals)
+- continuity artifact grading: complete and wired into eval harness (40/40 checks passing)
 - repository continuity contract: present
 - startup and handoff path: present
 - deterministic harness: passing
@@ -105,22 +115,56 @@ This follow-up curator review found that `main` already contains that accepted i
 - the latest rolling live pointer now references `reports/live-verification-history/strongest-demo-1774381550/`, while the accepted strongest-demo baseline remains `reports/live-verification-history/strongest-demo-1774370225/`
 - remaining worker prompt variants: reviewed and currently unverified against a newer archived strongest-demo acceptance delta, so no further worker output is pending integration
 - current curator review result: no promotable verified worker output beyond what `main` already contains
-- renderer implementation: still deferred
+- visual form selector: extracted from `DeterministicProvider` into `src/visual/selector.py` with `LayoutSelection` data class, `infer_layout_type`, `build_visual_elements`, and `select_visual_form` public APIs
+- `DeterministicProvider` now delegates to `src/visual/selector.py` with full behavioral compatibility
+- 22 new tests in `tests/test_visual_selector.py` covering rule inference, visual element building, and strongest-demo regression
+- total test count: 75 passing, `make eval` 34/34 green
+- visual selector wired into `OpenAICompatibleProvider`: `draft_slide_spec` now runs rule-engine post-validation and attaches `_layout_validation` metadata to model output
+- visual selector wired into `OpenAICompatibleProvider`: `grade_slide_spec` now injects rule-engine layout analysis into the grader prompt as a grading signal
+- added `validate_model_layouts` function and `LayoutValidationReport` data class with `as_grader_hint()` for generating structured validation summaries
+- `build_grader_user_prompt` now accepts optional `layout_validation_hint` keyword argument for rule-engine signal injection
+- 9 new tests in `LayoutValidationTests` covering match/mismatch detection, missing slides, multi-unit slides, grader hint generation, and strongest-demo regression
+- total test count: 84 passing, `make eval` 34/34 green
+- model-assisted layout inference: added `model_assisted_infer_layout_type` function with `ModelLayoutCallback` type and automatic rule-based fallback
+- `select_visual_form` now accepts optional `layout_callback` keyword argument for model-assisted inference
+- `OpenAICompatibleProvider.build_layout_callback()` generates a callback that sends single-unit layout queries to the LLM
+- 10 new tests in `ModelAssistedInferenceTests` + 4 new tests in `PipelineFixtureTests` for layout callback and grader hint
+- total test count: 98 passing, `make eval` 34/34 green
+- implemented PPTX renderer scaffold in `src/renderer/pptx_renderer.py` with `render_slide_spec_to_pptx` entry point
+- renderer supports all 7 layout types: cover, summary, timeline, comparison, process, chart, section
+- each layout produces styled shapes with professional blue-gray color scheme, speaker notes, and source binding audit trail
+- updated `src/renderer/__init__.py` to export public API
+- 29 new tests in `tests/test_pptx_renderer.py` covering all layout types, strongest-demo regression, and error handling
+- total test count: 127 passing, `make eval` 34/34 green
+- renderer implementation: complete
+- wired PPTX renderer into `src/runtime/pipeline.py` via `render_pptx` keyword argument on `run_pipeline`
+- updated `src/runtime/cli.py` with `--render-pptx` CLI argument, defaults to `output.pptx` in the output directory
+- updated `src/runtime/demo.py` to automatically render `strongest-demo.pptx` as part of `write_strongest_demo_bundle`
+- added `render-demo` Makefile target for end-to-end strongest-demo pipeline + PPTX rendering
+- added `*.pptx` to `.gitignore`
+- `make render-demo` successfully produces `reports/strongest-demo/strongest-demo.pptx` (6 slides, 46KB)
+- 8 new pipeline PPTX integration tests in `PipelinePptxIntegrationTests`
+- total test count: 198 passing, `make eval` 36/36 green
+- end-to-end pipeline: complete (source pack → normalized units → slide spec → quality checks → editable PPTX → artifact grading → narrative grading → continuity grading)
+- content enrichment: complete (key_points from claims+text, visual_elements with events/column_points/step_labels/labels)
+- cover/summary enrichment: complete (cover has audience+core claim+topic-overview, summary has all-unit claims with [binding] annotations)
+- narrative quality grading: complete (deterministic + model-assisted modes, three-dimensional scoring)
+- artifact grading: complete and wired into pipeline/CLI/demo/eval (editability, notes coverage, source bindings, slide count, chinese text detection)
+- evaluation-plan phase one + phase two + phase three: all complete
 
 ## Immediate Next Action
 
-Use the archived strongest-demo live acceptance snapshot to compare future live refreshes before promoting more provider-backed planning changes.
+Continue improving provider-backed planning and grading against the strongest-demo path without weakening deterministic coverage.
 
 ## First Concrete Tasks
 
-1. treat `reports/live-verification-latest.json` and `reports/live-verification-latest.md` as rolling pointers to the latest archived live snapshot
-2. compare future strongest-demo online refreshes against `reports/live-verification-history/strongest-demo-1774370225/acceptance-summary.json`
-3. keep `make verify-online` passing on the real provider path while preserving `make eval`
-4. wait for a new verified worker patch or a live refresh delta beyond `strongest-demo-1774381550` before promoting another provider prompt change
+1. compare future strongest-demo online refreshes against `reports/live-verification-history/strongest-demo-1774370225/acceptance-summary.json`
+2. keep `make verify-online` passing on the real provider path while preserving `make eval`
+3. keep strongest-demo canonical docs pinned to the current accepted repository-owned snapshot until a newer verified snapshot is accepted
+4. keep canonical docs bilingual via separate language files and switch links
 
 ## Do Not Drift
 
-- do not start with renderer work
 - do not collapse the project into a single prompt pipeline
 - do not skip the intermediate `slide spec`
 - do not leave state changes undocumented

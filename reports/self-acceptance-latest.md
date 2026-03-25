@@ -1,7 +1,7 @@
 # Self-Acceptance Report
 
 - Status: **PASS**
-- Passed: **34/34**
+- Passed: **38/38**
 
 ## Checks
 
@@ -38,6 +38,10 @@
 - PASS `normalized-source-units.schema.json`: schema contains required normalized source-unit fields
 - PASS `rubric.json`: 8 criteria present
 - PASS `tests`: unittest discovery passed
+- PASS `artifact-grading`: PPTX artifact grade pass — 6 slides, 57 editable text boxes, editability=1.0, notes=1.0, source_bindings=1.0
+- PASS `narrative-grading`: narrative grade pass — 6 slides, coherence=1.0, grounding=0.88, visual_fit=1.0, composite=0.97
+- PASS `continuity-grading`: continuity grade pass — 40/40 checks passed
+- PASS `acceptance-baseline`: acceptance baseline valid — slide_count=6, quality_status=pass, layout_sequence=['summary', 'timeline', 'comparison', 'process', 'chart', 'summary']
 - PASS `grounded-deck-foundation.md`: required fragments present
 
 ## Next Action

@@ -30,9 +30,9 @@ GroundedDeck uses eval-driven development:
 
 ## Grader Strategy
 
-- phase one: code-based graders for files, schema, and eval definitions
-- phase two: artifact graders for PPT editability, source coverage, and font constraints
-- phase three: model-based graders for narrative quality and visual selection quality
+- phase one: code-based graders for files, schema, and eval definitions ✅
+- phase two: artifact graders for PPT editability, source coverage, and font constraints ✅
+- phase three: model-based graders for narrative quality and visual selection quality ✅
 
 ## Outputs
 
@@ -42,8 +42,9 @@ GroundedDeck uses eval-driven development:
 
 ## Next Stage
 
-- validate example `slide spec` instances against schema
-- grade sample decks for coverage and grounding
-- inspect exported PPT artifacts for editable object usage and Chinese font rules
-- grade continuity artifacts so future agents can safely resume from repository state alone
-- grade handoff completeness and task-board freshness
+- ✅ validate example `slide spec` instances against schema
+- ✅ grade sample decks for coverage and grounding
+- ✅ inspect exported PPT artifacts for editable object usage and Chinese font rules
+- ✅ grade continuity artifacts so future agents can safely resume from repository state alone
+- ✅ grade handoff completeness and task-board freshness
+- ✅ add model-based narrative quality grading via OpenAI-compatible provider

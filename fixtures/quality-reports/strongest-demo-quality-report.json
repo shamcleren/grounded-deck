@@ -18,6 +18,14 @@
     "mismatches": [],
     "match_ratio": 1.0
   },
+  "narrative_quality": {
+    "total_key_points": 16,
+    "slides_with_empty_key_points": [],
+    "slides_with_generic_key_points": [],
+    "source_annotated_points": 4,
+    "issues": [],
+    "quality_ratio": 1.0
+  },
   "provider": "deterministic",
   "model": "baseline-fixture"
 }

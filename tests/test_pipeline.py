@@ -398,7 +398,25 @@ class PipelineFixtureTests(unittest.TestCase):
         )
 
         drafted = provider.draft_slide_spec(normalized)
-        self.assertEqual(drafted, expected)
+
+        # 验证 _layout_validation 附加字段存在且结构正确
+        self.assertIn("_layout_validation", drafted)
+        validation = drafted["_layout_validation"]
+        self.assertIn("matched", validation)
+        self.assertIn("mismatched", validation)
+        self.assertIn("total", validation)
+        self.assertIn("match_ratio", validation)
+        self.assertIn("all_matched", validation)
+        self.assertIn("details", validation)
+        self.assertEqual(validation["total"], 4)  # strongest-demo 有 4 个 source units
+        # 注意: mock 返回的是 example slide spec（只有 3 个 content slides），
+        # 而 normalized 输入是 strongest-demo（4 个 units），所以不一定全部匹配
+        self.assertIsInstance(validation["all_matched"], bool)
+        self.assertGreater(validation["matched"] + validation["mismatched"], 0)
+
+        # 核心 slide spec 内容（不含 _layout_validation）应与 expected 一致
+        drafted_core = {k: v for k, v in drafted.items() if k != "_layout_validation"}
+        self.assertEqual(drafted_core, expected)
 
     def test_openai_compatible_provider_rejects_invalid_slide_spec_shape(self) -> None:
         def fake_transport(_: dict) -> dict:
@@ -471,6 +489,87 @@ class PipelineFixtureTests(unittest.TestCase):
             slide_spec,
         )
         self.assertEqual(report, expected)
+
+    def test_openai_compatible_provider_build_layout_callback(self) -> None:
+        """build_layout_callback 返回的 callback 向 LLM 发送单 unit 请求并解析布局字符串。"""
+        def fake_transport(request: dict) -> dict:
+            # 验证 system prompt 包含布局类型列表
+            self.assertIn("timeline", request["json"]["messages"][0]["content"])
+            self.assertIn("comparison", request["json"]["messages"][0]["content"])
+            # 验证 user prompt 包含 unit 内容
+            self.assertIn("出口时间线", request["json"]["messages"][1]["content"])
+            return {
+                "choices": [
+                    {"message": {"content": "  timeline  "}}
+                ]
+            }
+
+        provider = OpenAICompatibleProvider(
+            ProviderConfig(
+                provider="openai-compatible",
+                model="gpt-4.1-mini",
+                api_key_env="GROUNDED_DECK_API_KEY",
+                base_url="https://api.example.com/v1",
+            ),
+            api_key="secret",
+            transport=fake_transport,
+        )
+
+        callback = provider.build_layout_callback()
+        unit = {
+            "unit_id": "u1",
+            "section_heading": "出口时间线",
+            "text": "2022 年到 2024 年的变化",
+            "claims": [],
+        }
+        layout = callback(unit)
+        self.assertEqual(layout, "timeline")
+
+    def test_openai_compatible_provider_layout_callback_strips_quotes(self) -> None:
+        """build_layout_callback 能正确去除模型返回中的引号包裹。"""
+        def fake_transport(request: dict) -> dict:
+            return {
+                "choices": [
+                    {"message": {"content": '"comparison"'}}
+                ]
+            }
+
+        provider = OpenAICompatibleProvider(
+            ProviderConfig(
+                provider="openai-compatible",
+                model="gpt-4.1-mini",
+                api_key_env="GROUNDED_DECK_API_KEY",
+                base_url="https://api.example.com/v1",
+            ),
+            api_key="secret",
+            transport=fake_transport,
+        )
+
+        callback = provider.build_layout_callback()
+        unit = {"section_heading": "对比", "text": "A vs B", "claims": []}
+        layout = callback(unit)
+        self.assertEqual(layout, "comparison")
+
+    def test_grader_prompt_includes_layout_validation_hint(self) -> None:
+        """当有 layout_validation_hint 时，grader user prompt 包含规则引擎分析。"""
+        normalized = load_json(STRONGEST_DEMO_NORMALIZED_FIXTURE)
+        slide_spec = load_json(STRONGEST_DEMO_SLIDE_SPEC_FIXTURE)
+
+        prompt = OpenAICompatibleProvider.build_grader_user_prompt(
+            normalized,
+            slide_spec,
+            layout_validation_hint="Visual selector rule-based validation: all 4 unit layouts match.",
+        )
+        self.assertIn("Rule-engine layout analysis", prompt)
+        self.assertIn("all 4 unit layouts match", prompt)
+
+    def test_grader_prompt_without_hint_has_no_validation_block(self) -> None:
+        """当没有 layout_validation_hint 时，grader prompt 不包含规则引擎分析块。"""
+        normalized = load_json(STRONGEST_DEMO_NORMALIZED_FIXTURE)
+        slide_spec = load_json(STRONGEST_DEMO_SLIDE_SPEC_FIXTURE)
+
+        prompt = OpenAICompatibleProvider.build_grader_user_prompt(normalized, slide_spec)
+        self.assertNotIn("Rule-engine layout analysis", prompt)
 
     def test_openai_compatible_provider_normalizes_partial_quality_report_shape(self) -> None:
         def fake_transport(_: dict) -> dict:
@@ -613,8 +712,270 @@ class PipelineFixtureTests(unittest.TestCase):
             self.assertTrue((output_dir / "quality-report.json").exists())
             self.assertTrue((output_dir / "verification-summary.json").exists())
             self.assertTrue((output_dir / "strongest-demo-report.md").exists())
+            self.assertTrue((output_dir / "strongest-demo.pptx").exists())
             self.assertEqual(bundle["result"]["quality_report"]["status"], "pass")
             self.assertIn("Success Metrics", bundle["report_path"].read_text(encoding="utf-8"))
+            # 验证 PPTX 文件非空
+            pptx_size = (output_dir / "strongest-demo.pptx").stat().st_size
+            self.assertGreater(pptx_size, 0)
+
+
+class PipelinePptxIntegrationTests(unittest.TestCase):
+    """pipeline render_pptx 参数集成测试。"""
+
+    def test_run_pipeline_with_render_pptx_produces_file(self) -> None:
+        """run_pipeline 传入 render_pptx 参数时生成 .pptx 文件。"""
+        raw = json.loads(STRONGEST_DEMO_RAW_FIXTURE.read_text(encoding="utf-8"))
+        with tempfile.TemporaryDirectory() as tmpdir:
+            pptx_path = Path(tmpdir) / "test-output.pptx"
+            result = run_pipeline(raw, render_pptx=pptx_path)
+            self.assertIn("pptx_path", result)
+            self.assertTrue(Path(result["pptx_path"]).exists())
+            self.assertTrue(Path(result["pptx_path"]).suffix == ".pptx")
+
+    def test_run_pipeline_without_render_pptx_has_no_pptx_key(self) -> None:
+        """run_pipeline 不传 render_pptx 时结果中没有 pptx_path。"""
+        raw = json.loads(STRONGEST_DEMO_RAW_FIXTURE.read_text(encoding="utf-8"))
+        result = run_pipeline(raw)
+        self.assertNotIn("pptx_path", result)
+
+    def test_run_pipeline_render_pptx_produces_valid_pptx(self) -> None:
+        """渲染的 PPTX 文件可以被 python-pptx 打开。"""
+        from pptx import Presentation
+
+        raw = json.loads(STRONGEST_DEMO_RAW_FIXTURE.read_text(encoding="utf-8"))
+        with tempfile.TemporaryDirectory() as tmpdir:
+            pptx_path = Path(tmpdir) / "test.pptx"
+            result = run_pipeline(raw, render_pptx=pptx_path)
+            prs = Presentation(result["pptx_path"])
+            self.assertEqual(len(prs.slides), len(result["slide_spec"]["slides"]))
+
+    def test_run_pipeline_render_pptx_creates_directories(self) -> None:
+        """render_pptx 路径中的中间目录会自动创建。"""
+        raw = json.loads(STRONGEST_DEMO_RAW_FIXTURE.read_text(encoding="utf-8"))
+        with tempfile.TemporaryDirectory() as tmpdir:
+            deep_path = Path(tmpdir) / "a" / "b" / "c" / "output.pptx"
+            result = run_pipeline(raw, render_pptx=deep_path)
+            self.assertTrue(Path(result["pptx_path"]).exists())
+
+    def test_run_pipeline_render_pptx_string_path(self) -> None:
+        """render_pptx 接受字符串路径。"""
+        raw = json.loads(STRONGEST_DEMO_RAW_FIXTURE.read_text(encoding="utf-8"))
+        with tempfile.TemporaryDirectory() as tmpdir:
+            pptx_path = str(Path(tmpdir) / "test.pptx")
+            result = run_pipeline(raw, render_pptx=pptx_path)
+            self.assertIn("pptx_path", result)
+            self.assertTrue(Path(result["pptx_path"]).exists())
+
+    def test_strongest_demo_bundle_pptx_in_report_text(self) -> None:
+        """strongest-demo report 中提及 PPTX 输出。"""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            output_dir = Path(tmpdir) / "demo"
+            bundle = write_strongest_demo_bundle(
+                input_path=STRONGEST_DEMO_RAW_FIXTURE,
+                output_dir=output_dir,
+                provider=DeterministicProvider(),
+            )
+            report_text = bundle["report_path"].read_text(encoding="utf-8")
+            self.assertIn("strongest-demo.pptx", report_text)
+
+    def test_strongest_demo_bundle_pptx_path_in_result(self) -> None:
+        """strongest-demo bundle 的 result 中包含 pptx_path。"""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            output_dir = Path(tmpdir) / "demo"
+            bundle = write_strongest_demo_bundle(
+                input_path=STRONGEST_DEMO_RAW_FIXTURE,
+                output_dir=output_dir,
+                provider=DeterministicProvider(),
+            )
+            self.assertIn("pptx_path", bundle["result"])
+
+    def test_strongest_demo_bundle_pptx_contains_correct_slide_count(self) -> None:
+        """strongest-demo 的 PPTX 包含正确的 slide 数量。"""
+        from pptx import Presentation
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            output_dir = Path(tmpdir) / "demo"
+            bundle = write_strongest_demo_bundle(
+                input_path=STRONGEST_DEMO_RAW_FIXTURE,
+                output_dir=output_dir,
+                provider=DeterministicProvider(),
+            )
+            pptx_path = output_dir / "strongest-demo.pptx"
+            prs = Presentation(str(pptx_path))
+            expected_count = len(bundle["result"]["slide_spec"]["slides"])
+            self.assertEqual(len(prs.slides), expected_count)
+
+
+class PipelineArtifactGradingTests(unittest.TestCase):
+    """pipeline artifact grading 集成测试。"""
+
+    def test_run_pipeline_with_pptx_includes_artifact_grade(self) -> None:
+        """render_pptx 时默认执行 artifact grading。"""
+        raw = json.loads(STRONGEST_DEMO_RAW_FIXTURE.read_text(encoding="utf-8"))
+        with tempfile.TemporaryDirectory() as tmpdir:
+            pptx_path = Path(tmpdir) / "test.pptx"
+            result = run_pipeline(raw, render_pptx=pptx_path)
+            self.assertIn("artifact_grade", result)
+            self.assertEqual(result["artifact_grade"]["status"], "pass")
+
+    def test_run_pipeline_artifact_grade_has_metrics(self) -> None:
+        """artifact grade 包含完整的 metrics。"""
+        raw = json.loads(STRONGEST_DEMO_RAW_FIXTURE.read_text(encoding="utf-8"))
+        with tempfile.TemporaryDirectory() as tmpdir:
+            pptx_path = Path(tmpdir) / "test.pptx"
+            result = run_pipeline(raw, render_pptx=pptx_path)
+            metrics = result["artifact_grade"]["metrics"]
+            self.assertIn("slide_count", metrics)
+            self.assertIn("editability_ratio", metrics)
+            self.assertIn("notes_coverage_ratio", metrics)
+            self.assertIn("source_binding_coverage_ratio", metrics)
+            self.assertIn("chinese_text_found", metrics)
+
+    def test_run_pipeline_artifact_grade_slide_count_matches_spec(self) -> None:
+        """artifact grade 的 slide_count 与 slide spec 一致。"""
+        raw = json.loads(STRONGEST_DEMO_RAW_FIXTURE.read_text(encoding="utf-8"))
+        with tempfile.TemporaryDirectory() as tmpdir:
+            pptx_path = Path(tmpdir) / "test.pptx"
+            result = run_pipeline(raw, render_pptx=pptx_path)
+            self.assertEqual(
+                result["artifact_grade"]["metrics"]["slide_count"],
+                len(result["slide_spec"]["slides"]),
+            )
+
+    def test_run_pipeline_artifact_grade_disabled(self) -> None:
+        """grade_artifact=False 时不执行 artifact grading。"""
+        raw = json.loads(STRONGEST_DEMO_RAW_FIXTURE.read_text(encoding="utf-8"))
+        with tempfile.TemporaryDirectory() as tmpdir:
+            pptx_path = Path(tmpdir) / "test.pptx"
+            result = run_pipeline(raw, render_pptx=pptx_path, grade_artifact=False)
+            self.assertNotIn("artifact_grade", result)
+            self.assertIn("pptx_path", result)
+
+    def test_run_pipeline_no_pptx_no_artifact_grade(self) -> None:
+        """不渲染 PPTX 时没有 artifact grade。"""
+        raw = json.loads(STRONGEST_DEMO_RAW_FIXTURE.read_text(encoding="utf-8"))
+        result = run_pipeline(raw)
+        self.assertNotIn("artifact_grade", result)
+        self.assertNotIn("pptx_path", result)
+
+    def test_strongest_demo_bundle_includes_artifact_grade(self) -> None:
+        """strongest-demo bundle 包含 artifact grade。"""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            output_dir = Path(tmpdir) / "demo"
+            bundle = write_strongest_demo_bundle(
+                input_path=STRONGEST_DEMO_RAW_FIXTURE,
+                output_dir=output_dir,
+                provider=DeterministicProvider(),
+            )
+            self.assertIn("artifact_grade", bundle["result"])
+            self.assertEqual(bundle["result"]["artifact_grade"]["status"], "pass")
+            # 验证 artifact-grade.json 文件存在
+            self.assertTrue((output_dir / "artifact-grade.json").exists())
+
+    def test_strongest_demo_bundle_report_includes_artifact_section(self) -> None:
+        """strongest-demo report 包含 Artifact Grade 部分。"""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            output_dir = Path(tmpdir) / "demo"
+            bundle = write_strongest_demo_bundle(
+                input_path=STRONGEST_DEMO_RAW_FIXTURE,
+                output_dir=output_dir,
+                provider=DeterministicProvider(),
+            )
+            report_text = bundle["report_path"].read_text(encoding="utf-8")
+            self.assertIn("## Artifact Grade", report_text)
+            self.assertIn("Editability:", report_text)
+            self.assertIn("Notes Coverage:", report_text)
+
+    def test_artifact_grade_editability_is_perfect(self) -> None:
+        """所有文本框应可编辑。"""
+        raw = json.loads(STRONGEST_DEMO_RAW_FIXTURE.read_text(encoding="utf-8"))
+        with tempfile.TemporaryDirectory() as tmpdir:
+            pptx_path = Path(tmpdir) / "test.pptx"
+            result = run_pipeline(raw, render_pptx=pptx_path)
+            self.assertEqual(result["artifact_grade"]["metrics"]["editability_ratio"], 1.0)
+
+    def test_artifact_grade_detects_chinese_text(self) -> None:
+        """strongest-demo PPTX 应包含中文。"""
+        raw = json.loads(STRONGEST_DEMO_RAW_FIXTURE.read_text(encoding="utf-8"))
+        with tempfile.TemporaryDirectory() as tmpdir:
+            pptx_path = Path(tmpdir) / "test.pptx"
+            result = run_pipeline(raw, render_pptx=pptx_path)
+            self.assertTrue(result["artifact_grade"]["metrics"]["chinese_text_found"])
+
+
+class NarrativePipelineIntegrationTests(unittest.TestCase):
+    """pipeline narrative grading 集成测试。"""
+
+    def test_run_pipeline_includes_narrative_grade(self) -> None:
+        """pipeline 默认执行 narrative grading。"""
+        raw = json.loads(STRONGEST_DEMO_RAW_FIXTURE.read_text(encoding="utf-8"))
+        result = run_pipeline(raw)
+        self.assertIn("narrative_grade", result)
+        self.assertEqual(result["narrative_grade"]["status"], "pass")
+
+    def test_run_pipeline_narrative_grade_has_required_fields(self) -> None:
+        """narrative grade 包含完整的字段。"""
+        raw = json.loads(STRONGEST_DEMO_RAW_FIXTURE.read_text(encoding="utf-8"))
+        result = run_pipeline(raw)
+        ng = result["narrative_grade"]
+        self.assertIn("status", ng)
+        self.assertIn("mode", ng)
+        self.assertIn("avg_coherence", ng)
+        self.assertIn("avg_grounding", ng)
+        self.assertIn("avg_visual_fit", ng)
+        self.assertIn("avg_composite", ng)
+        self.assertIn("slides", ng)
+
+    def test_run_pipeline_narrative_grade_slide_count_matches(self) -> None:
+        """narrative grade 的 slide_count 与 slide spec 一致。"""
+        raw = json.loads(STRONGEST_DEMO_RAW_FIXTURE.read_text(encoding="utf-8"))
+        result = run_pipeline(raw)
+        self.assertEqual(
+            result["narrative_grade"]["slide_count"],
+            len(result["slide_spec"]["slides"]),
+        )
+
+    def test_run_pipeline_narrative_grade_disabled(self) -> None:
+        """grade_narrative_quality=False 时不执行 narrative grading。"""
+        raw = json.loads(STRONGEST_DEMO_RAW_FIXTURE.read_text(encoding="utf-8"))
+        result = run_pipeline(raw, grade_narrative_quality=False)
+        self.assertNotIn("narrative_grade", result)
+
+    def test_run_pipeline_narrative_grade_avg_composite_above_threshold(self) -> None:
+        """strongest-demo 的 avg_composite 应 >= 0.7。"""
+        raw = json.loads(STRONGEST_DEMO_RAW_FIXTURE.read_text(encoding="utf-8"))
+        result = run_pipeline(raw)
+        self.assertGreaterEqual(result["narrative_grade"]["avg_composite"], 0.7)
+
+    def test_strongest_demo_bundle_includes_narrative_grade(self) -> None:
+        """strongest-demo bundle 包含 narrative grade。"""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            output_dir = Path(tmpdir) / "demo"
+            bundle = write_strongest_demo_bundle(
+                input_path=STRONGEST_DEMO_RAW_FIXTURE,
+                output_dir=output_dir,
+                provider=DeterministicProvider(),
+            )
+            self.assertIn("narrative_grade", bundle["result"])
+            self.assertEqual(bundle["result"]["narrative_grade"]["status"], "pass")
+            # 验证 narrative-grade.json 文件存在
+            self.assertTrue((output_dir / "narrative-grade.json").exists())
+
+    def test_strongest_demo_bundle_report_includes_narrative_section(self) -> None:
+        """strongest-demo report 包含 Narrative Grade 部分。"""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            output_dir = Path(tmpdir) / "demo"
+            bundle = write_strongest_demo_bundle(
+                input_path=STRONGEST_DEMO_RAW_FIXTURE,
+                output_dir=output_dir,
+                provider=DeterministicProvider(),
+            )
+            report_text = bundle["report_path"].read_text(encoding="utf-8")
+            self.assertIn("## Narrative Grade", report_text)
+            self.assertIn("Avg Coherence:", report_text)
+            self.assertIn("Avg Grounding:", report_text)
+            self.assertIn("Avg Visual Fit:", report_text)
 
 
 if __name__ == "__main__":

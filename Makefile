@@ -1,6 +1,6 @@
 PYTHON ?= python3
 
-.PHONY: eval report context handoff test example-pipeline strongest-demo verify-online archive-online-verification check-live-env prepare-live-verification report-live-verification live-status init-live-env
+.PHONY: eval report context handoff test example-pipeline strongest-demo render-demo grade-artifact verify-online archive-online-verification check-live-env prepare-live-verification report-live-verification live-status init-live-env compare-acceptance
 
 eval:
 	$(PYTHON) harness/self_accept.py
@@ -15,6 +15,28 @@ example-pipeline:
 
 strongest-demo:
 	$(PYTHON) -c "from pathlib import Path; from src.runtime.demo import write_strongest_demo_bundle; result = write_strongest_demo_bundle(input_path=Path('fixtures/source-packs/strongest-demo-source-pack.json'), output_dir=Path('reports/strongest-demo')); print(result['report_path'])"
+
+render-demo:
+	@echo "==> Running strongest-demo pipeline and rendering PPTX..."
+	$(PYTHON) -c "\
+from pathlib import Path; \
+from src.runtime.demo import write_strongest_demo_bundle; \
+result = write_strongest_demo_bundle( \
+    input_path=Path('fixtures/source-packs/strongest-demo-source-pack.json'), \
+    output_dir=Path('reports/strongest-demo'), \
+); \
+pptx_path = result['result'].get('pptx_path', 'reports/strongest-demo/strongest-demo.pptx'); \
+print(f'PPTX rendered to: {pptx_path}'); \
+print(f'Report: {result[\"report_path\"]}'); \
+ag = result['result'].get('artifact_grade', {}); \
+print(f'Artifact grade: {ag.get(\"status\", \"N/A\")}'); \
+print(f'Editability: {ag.get(\"metrics\", {}).get(\"editability_ratio\", \"N/A\")}'); \
+print(f'Notes coverage: {ag.get(\"metrics\", {}).get(\"notes_coverage_ratio\", \"N/A\")}'); \
+print(f'Source bindings: {ag.get(\"metrics\", {}).get(\"source_binding_coverage_ratio\", \"N/A\")}')"
+
+grade-artifact:
+	@echo "==> Grading PPTX artifact..."
+	$(PYTHON) harness/grade_artifact.py
 
 verify-online:
 	$(PYTHON) -m src.runtime.cli \
@@ -48,6 +70,21 @@ init-live-env:
 		cp .env.runtime.example .env.runtime.local; \
 		echo "created .env.runtime.local from .env.runtime.example"; \
 	fi
+
+compare-acceptance:
+	@echo "==> Comparing latest archived acceptance summary against accepted baseline..."
+	$(PYTHON) -c "\
+from pathlib import Path; \
+from src.runtime.verification import compare_against_accepted_baseline, render_acceptance_delta_report, ACCEPTED_STRONGEST_DEMO_BASELINE; \
+import sys; \
+history = ACCEPTED_STRONGEST_DEMO_BASELINE.parent.parent; \
+snapshots = sorted([d for d in history.iterdir() if (d / 'acceptance-summary.json').exists()], reverse=True); \
+latest = snapshots[0] / 'acceptance-summary.json' if snapshots else None; \
+print(f'Baseline: {ACCEPTED_STRONGEST_DEMO_BASELINE}'); \
+print(f'Latest:   {latest}'); \
+delta = compare_against_accepted_baseline(latest) if latest else {'status': 'error', 'error': 'no snapshots found', 'baseline_path': str(ACCEPTED_STRONGEST_DEMO_BASELINE), 'candidate_path': 'none', 'differences': []}; \
+print(render_acceptance_delta_report(delta)); \
+sys.exit(0 if delta['status'] in ('match',) else 1)"
 
 report:
 	@if [ -f reports/self-acceptance-latest.md ]; then \

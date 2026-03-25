@@ -10,6 +10,15 @@ from urllib import error, request
 
 from src.llm.validation import validate_quality_report_like, validate_slide_spec_like
 from src.runtime.env import load_runtime_env
+from src.visual.selector import (
+    build_visual_elements as _vs_build_visual_elements,
+    infer_layout_type as _vs_infer_layout_type,
+    model_assisted_infer_layout_type as _vs_model_assisted_infer,
+    unique_preserving_order as _vs_unique_preserving_order,
+    validate_model_layouts as _vs_validate_model_layouts,
+    ALL_CONTENT_LAYOUTS as _VS_ALL_CONTENT_LAYOUTS,
+    ModelLayoutCallback as _VS_ModelLayoutCallback,
+)
 
 
 @dataclass(frozen=True)
@@ -38,62 +47,62 @@ class Provider:
 class DeterministicProvider(Provider):
     @staticmethod
     def unique_preserving_order(values: list[str]) -> list[str]:
-        seen: set[str] = set()
-        ordered: list[str] = []
-        for value in values:
-            if value in seen:
-                continue
-            seen.add(value)
-            ordered.append(value)
-        return ordered
+        return _vs_unique_preserving_order(values)
 
     @staticmethod
     def infer_layout_type(unit: dict) -> str:
-        text = f'{unit["section_heading"]} {unit["text"]}'.lower()
-
-        if "vs" in text or "对比" in text or "差异" in text:
-            return "comparison"
-        if "路径" in text or "步骤" in text or "进入" in text or "落地" in text:
-            return "process"
-        if "时间线" in text or "阶段" in text or re.search(r"\b20\d{2}\b", text):
-            return "timeline"
-        if (
-            "成本" in text
-            or "利润" in text
-            or "指标" in text
-            or "份额" in text
-            or "%" in text
-            or re.search(r"\d", text)
-        ):
-            return "chart"
-        return "summary"
+        return _vs_infer_layout_type(unit).layout_type
 
     @staticmethod
     def build_visual_elements(layout_type: str, unit: dict) -> list[dict]:
-        if layout_type == "timeline":
-            milestones = DeterministicProvider.unique_preserving_order(
-                re.findall(r"\b(20\d{2})\b", unit["text"])
-            )
-            return [{"type": "timeline", "milestones": milestones[:4]}]
-        if layout_type == "comparison":
-            columns = []
-            for label in ("欧洲", "东南亚"):
-                if label in unit["text"] and label not in columns:
-                    columns.append(label)
-            return [{"type": "comparison-columns", "columns": columns or ["Option A", "Option B"]}]
-        if layout_type == "process":
-            return [{"type": "process-flow", "steps": max(1, len(unit.get("claims", [])))}]
-        if layout_type == "chart":
-            metrics = DeterministicProvider.unique_preserving_order(
-                re.findall(r"\d+%|\d+\.\d+%|\d+", unit["text"])
-            )
-            return [{"type": "metric-cards", "metrics": metrics[:4]}]
-        return [{"type": "bullet-list"}]
+        return _vs_build_visual_elements(layout_type, unit)
+
+    @classmethod
+    def _extract_key_points(cls, unit: dict) -> list[str]:
+        """从 unit 的 claims 和 text 中提取丰富的 key_points。
+
+        策略：
+        1. claims 始终作为主要 key_points（最多 3 条）
+        2. 如果 claims 不足 3 条，从 text 中提取补充要点（按句号拆分，去重）
+        """
+        import re as _re
+
+        claims = list(unit.get("claims", []))
+        key_points = claims[:3]
+
+        if len(key_points) < 3:
+            text = unit.get("text", "")
+            # 归一化去重：去除尾部标点后比较
+            def _normalize(s: str) -> str:
+                return s.strip().rstrip("。；;.，,")
+
+            seen = {_normalize(kp) for kp in key_points}
+            # 按句号/分号拆分 text 中的片段
+            fragments = _re.split(r"[。；]", text)
+            for frag in fragments:
+                frag = frag.strip()
+                if not frag:
+                    continue
+                norm_frag = _normalize(frag)
+                if norm_frag in seen:
+                    continue
+                # 排除太短的片段（可能只是标题重复）
+                if len(frag) < 8:
+                    continue
+                # 排除和 section_heading 完全相同的片段
+                if frag == unit.get("section_heading", ""):
+                    continue
+                key_points.append(frag)
+                seen.add(norm_frag)
+                if len(key_points) >= 3:
+                    break
+
+        return key_points
 
     @classmethod
     def build_unit_slide(cls, unit: dict) -> dict:
         layout_type = cls.infer_layout_type(unit)
-        claim_points = unit.get("claims", []) or [unit["text"]]
+        key_points = cls._extract_key_points(unit)
         goals = {
             "timeline": "Show how the grounded evidence changes over time.",
             "comparison": "Contrast grounded market options without losing source traceability.",
@@ -107,18 +116,84 @@ class DeterministicProvider(Provider):
             "title": unit["section_heading"],
             "goal": goals[layout_type],
             "layout_type": layout_type,
-            "key_points": claim_points[:3],
+            "key_points": key_points,
             "visual_elements": cls.build_visual_elements(layout_type, unit),
             "source_bindings": [unit["source_binding"]],
             "must_include_checks": [unit["unit_id"]],
             "speaker_notes": f'Ground this slide in {unit["source_binding"]} and keep the structure editable.',
         }
 
-    def draft_slide_spec(self, normalized_pack: dict) -> dict:
+    @classmethod
+    def _build_cover_key_points(cls, normalized_pack: dict) -> list[str]:
+        """为 cover slide 构建 source-grounded 的 key_points。
+
+        策略：
+        1. audience 描述作为第一条
+        2. 从所有 units 的 claims 中选取最具代表性的 1-2 条作为 deck 核心论点摘要
+        3. source scope 描述（N 个 grounded source units）
+        """
         source_units = normalized_pack["source_units"]
+        points: list[str] = [normalized_pack["audience"]]
+
+        # 从所有 claims 中取第一条作为核心论点摘要
+        all_claims: list[str] = []
+        for unit in source_units:
+            all_claims.extend(unit.get("claims", []))
+        if all_claims:
+            points.append(all_claims[0])
+
+        points.append(f"{len(source_units)} grounded source units")
+        return points
+
+    @classmethod
+    def _build_summary_key_points(cls, source_units: list[dict]) -> list[str]:
+        """为 summary (Decision Backbone) slide 构建完整的 source-grounded key_points。
+
+        策略：从所有 units 的 claims 中提取，不限于前 3 条，确保每个 unit 至少贡献一条。
+        每条 claim 附加来源标注以增强可审计性。
+        """
         summary_points: list[str] = []
         for unit in source_units:
-            summary_points.extend(unit.get("claims", []))
+            claims = unit.get("claims", [])
+            binding = unit.get("source_binding", "")
+            for claim in claims:
+                annotated = f"{claim} [{binding}]" if binding else claim
+                if annotated not in summary_points:
+                    summary_points.append(annotated)
+        return summary_points
+
+    @classmethod
+    def _build_cover_visual_elements(cls, normalized_pack: dict) -> list[dict]:
+        """为 cover slide 构建丰富的 visual_elements。"""
+        source_units = normalized_pack["source_units"]
+        # 收集所有 section headings 作为 source scope 概览
+        topics = [unit["section_heading"] for unit in source_units]
+        return [
+            {"type": "title-block"},
+            {"type": "source-count", "value": len(source_units)},
+            {"type": "topic-overview", "topics": topics},
+        ]
+
+    @classmethod
+    def _build_summary_visual_elements(cls, source_units: list[dict]) -> list[dict]:
+        """为 summary slide 构建丰富的 visual_elements。"""
+        # 每个 source unit 的核心声明与来源映射
+        claim_map: list[dict] = []
+        for unit in source_units:
+            claims = unit.get("claims", [])
+            claim_map.append({
+                "unit_id": unit["unit_id"],
+                "section": unit["section_heading"],
+                "claim": claims[0] if claims else unit.get("text", "")[:80],
+                "source_binding": unit.get("source_binding", ""),
+            })
+        return [
+            {"type": "bullet-list"},
+            {"type": "claim-source-map", "entries": claim_map},
+        ]
+
+    def draft_slide_spec(self, normalized_pack: dict) -> dict:
+        source_units = normalized_pack["source_units"]
 
         content_slides = [self.build_unit_slide(unit) for unit in source_units]
 
@@ -131,14 +206,8 @@ class DeterministicProvider(Provider):
                     "title": normalized_pack["deck_goal"],
                     "goal": "Orient the audience to the presentation goal and source scope.",
                     "layout_type": "cover",
-                    "key_points": [
-                        normalized_pack["audience"],
-                        f'{len(source_units)} grounded source units',
-                    ],
-                    "visual_elements": [
-                        {"type": "title-block"},
-                        {"type": "source-count", "value": len(source_units)},
-                    ],
+                    "key_points": self._build_cover_key_points(normalized_pack),
+                    "visual_elements": self._build_cover_visual_elements(normalized_pack),
                     "source_bindings": [unit["source_binding"] for unit in source_units],
                     "must_include_checks": [unit["unit_id"] for unit in source_units],
                     "speaker_notes": "Introduce the deck goal and emphasize that claims stay grounded to source material.",
@@ -148,10 +217,8 @@ class DeterministicProvider(Provider):
                     "title": "Decision Backbone",
                     "goal": "Compress the source pack into the minimum grounded claims the deck must preserve.",
                     "layout_type": "summary",
-                    "key_points": summary_points[:3],
-                    "visual_elements": [
-                        {"type": "bullet-list"},
-                    ],
+                    "key_points": self._build_summary_key_points(source_units),
+                    "visual_elements": self._build_summary_visual_elements(source_units),
                     "source_bindings": [unit["source_binding"] for unit in source_units],
                     "must_include_checks": [unit["unit_id"] for unit in source_units],
                     "speaker_notes": "This slide compresses the source pack into the minimum set of claims the deck must retain.",
@@ -190,6 +257,51 @@ class DeterministicProvider(Provider):
 
         if ungrounded_slide_ids:
             failures.append(f"ungrounded slides: {', '.join(ungrounded_slide_ids)}")
+
+        # ---------- narrative quality 评估 ----------
+        narrative_issues: list[str] = []
+        slides_with_empty_kp = []
+        slides_with_generic_kp = []
+        slides_with_source_annotations = 0
+        total_key_points = 0
+
+        for slide in slide_spec["slides"]:
+            sid = slide["slide_id"]
+            kp = slide.get("key_points", [])
+            total_key_points += len(kp)
+
+            # 检查空 key_points（cover 除外）
+            if slide["layout_type"] != "cover" and not kp:
+                slides_with_empty_kp.append(sid)
+
+            # 检查通用/非 grounded key_points
+            for point in kp:
+                if isinstance(point, str):
+                    # 检查是否包含 source binding 标注
+                    if "[" in point and "]" in point:
+                        slides_with_source_annotations += 1
+
+            # 检查 generic key_points（不包含中文字符且不是标准短语的）
+            for point in kp:
+                if isinstance(point, str) and len(point) < 10:
+                    # 太短的 key_point 可能是通用的
+                    if not any(ord(c) > 0x4E00 for c in point):
+                        slides_with_generic_kp.append(sid)
+                        break
+
+        if slides_with_empty_kp:
+            narrative_issues.append(f"slides with empty key_points: {', '.join(slides_with_empty_kp)}")
+            failures.append(f"narrative: empty key_points on {', '.join(slides_with_empty_kp)}")
+
+        # 检查 summary slide 的 claim coverage
+        summary_slides = [s for s in slide_spec["slides"] if s["layout_type"] == "summary"]
+        for s_slide in summary_slides:
+            s_kp = s_slide.get("key_points", [])
+            if len(s_kp) < len(normalized_pack["source_units"]):
+                narrative_issues.append(
+                    f"summary '{s_slide['slide_id']}' has {len(s_kp)} key_points but "
+                    f"{len(normalized_pack['source_units'])} source units exist"
+                )
 
         layout_mismatches: list[dict] = []
         matched_units = 0
@@ -256,6 +368,17 @@ class DeterministicProvider(Provider):
                 "matched_units": matched_units,
                 "mismatches": layout_mismatches,
                 "match_ratio": round(matched_units / max(1, len(required_units)), 2),
+            },
+            "narrative_quality": {
+                "total_key_points": total_key_points,
+                "slides_with_empty_key_points": slides_with_empty_kp,
+                "slides_with_generic_key_points": slides_with_generic_kp,
+                "source_annotated_points": slides_with_source_annotations,
+                "issues": narrative_issues,
+                "quality_ratio": round(
+                    1.0 - len(slides_with_empty_kp) / max(1, len(slide_spec["slides"])),
+                    2,
+                ),
             },
             "provider": self.name,
             "model": self.config.model,
@@ -590,10 +713,22 @@ class OpenAICompatibleProvider(Provider):
         )
 
     @staticmethod
-    def build_grader_user_prompt(normalized_pack: dict, slide_spec: dict) -> str:
+    def build_grader_user_prompt(
+        normalized_pack: dict,
+        slide_spec: dict,
+        *,
+        layout_validation_hint: str = "",
+    ) -> str:
         strongest_demo_rules = ""
         if OpenAICompatibleProvider._matches_strongest_demo_pack(normalized_pack):
             strongest_demo_rules = OpenAICompatibleProvider._build_strongest_demo_grader_rules()
+
+        validation_block = ""
+        if layout_validation_hint:
+            validation_block = (
+                f"Rule-engine layout analysis (use as grading signal, not override):\n"
+                f"{layout_validation_hint}\n"
+            )
 
         return (
             "Grade this slide_spec against the normalized source pack.\n"
@@ -604,6 +739,7 @@ class OpenAICompatibleProvider(Provider):
             "process, chart, or summary.\n"
             "- Prefer fail over partial credit when required evidence is missing.\n"
             f"{strongest_demo_rules}"
+            f"{validation_block}"
             "- Return JSON only.\n"
             f"normalized_pack={json.dumps(normalized_pack, ensure_ascii=False)}\n"
             f"slide_spec={json.dumps(slide_spec, ensure_ascii=False)}"
@@ -617,12 +753,101 @@ class OpenAICompatibleProvider(Provider):
         )
         parsed = self.parse_json_response(self.transport(request_payload))
         validate_slide_spec_like(parsed)
+
+        # 规则引擎 post-validation：记录模型选择与规则推断的一致性
+        validation_report = _vs_validate_model_layouts(normalized_pack, parsed)
+        parsed["_layout_validation"] = {
+            "matched": validation_report.matched_count,
+            "mismatched": validation_report.mismatched_count,
+            "total": validation_report.total_count,
+            "match_ratio": validation_report.match_ratio,
+            "all_matched": validation_report.all_matched,
+            "details": [
+                {
+                    "unit_id": item.unit_id,
+                    "rule_layout": item.rule_layout,
+                    "model_layout": item.model_layout,
+                    "matched": item.matched,
+                    "signals": item.matched_signals,
+                }
+                for item in validation_report.items
+            ],
+        }
         return parsed
 
+    # ---------- Model-assisted layout inference ----------
+
+    @staticmethod
+    def _build_layout_system_prompt() -> str:
+        """构建布局推断的 system prompt。"""
+        layout_list = ", ".join(_VS_ALL_CONTENT_LAYOUTS)
+        return (
+            "You are GroundedDeck's visual layout selector. "
+            f"Given a source unit, return ONLY one layout type from: {layout_list}. "
+            "Choose based on the content structure: "
+            "timeline for chronology/year-based evidence, "
+            "comparison for tradeoffs or vs framing, "
+            "process for stepwise entry/action paths, "
+            "chart for numeric or metric-heavy evidence, "
+            "otherwise summary. "
+            "Return ONLY the layout type string, nothing else."
+        )
+
+    @staticmethod
+    def _build_layout_user_prompt(unit: dict) -> str:
+        """构建布局推断的 user prompt。"""
+        return (
+            f"section_heading: {unit.get('section_heading', '')}\n"
+            f"text: {unit.get('text', '')}\n"
+            f"claims: {json.dumps(unit.get('claims', []), ensure_ascii=False)}"
+        )
+
+    def build_layout_callback(self) -> _VS_ModelLayoutCallback:
+        """构建一个可传给 visual selector 的 model layout callback。
+
+        该 callback 使用当前 provider 的 transport 向 LLM 发送单个 unit 的内容，
+        获取模型建议的 layout_type 字符串。
+        """
+        def _callback(unit: dict) -> str:
+            request_payload = self.build_chat_request(
+                system_prompt=self._build_layout_system_prompt(),
+                user_prompt=self._build_layout_user_prompt(unit),
+            )
+            response = self.transport(request_payload)
+            content = response.get("choices", [{}])[0].get("message", {}).get("content", "")
+            layout = self._coerce_message_content(content).strip().lower()
+            # 去除可能的引号包裹
+            layout = layout.strip("'\"` \t\n")
+            return layout
+
+        return _callback
+
+    def build_narrative_callback(self) -> "Callable[[dict, dict], dict]":
+        """构建一个可传给 narrative grader 的 model callback。
+
+        该 callback 使用当前 provider 的 transport 向 LLM 发送叙事评分请求，
+        返回解析后的 JSON dict。
+        """
+        def _callback(prompts: dict, slide_spec: dict) -> dict:
+            request_payload = self.build_chat_request(
+                system_prompt=prompts["system"],
+                user_prompt=prompts["user"],
+                response_format={"type": "json_object"},
+            )
+            return self.parse_json_response(self.transport(request_payload))
+
+        return _callback
+
     def grade_slide_spec(self, normalized_pack: dict, slide_spec: dict) -> dict:
+        # 生成规则引擎验证摘要用于注入 grader prompt
+        validation_report = _vs_validate_model_layouts(normalized_pack, slide_spec)
+        grader_hint = validation_report.as_grader_hint()
+
         request_payload = self.build_chat_request(
             system_prompt=self.build_grader_system_prompt(),
-            user_prompt=self.build_grader_user_prompt(normalized_pack, slide_spec),
+            user_prompt=self.build_grader_user_prompt(
+                normalized_pack, slide_spec, layout_validation_hint=grader_hint,
+            ),
             response_format={"type": "json_object"},
         )
         parsed = self.parse_json_response(self.transport(request_payload))

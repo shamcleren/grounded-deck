@@ -1,0 +1,66 @@
+{
+  "status": "pass",
+  "mode": "deterministic",
+  "slide_count": 6,
+  "avg_coherence": 1.0,
+  "avg_grounding": 0.88,
+  "avg_visual_fit": 1.0,
+  "avg_composite": 0.97,
+  "issues": [],
+  "slides": [
+    {
+      "slide_id": "s1-cover",
+      "layout_type": "cover",
+      "coherence_score": 1.0,
+      "grounding_score": 0.85,
+      "visual_fit_score": 1.0,
+      "composite_score": 0.96,
+      "issues": []
+    },
+    {
+      "slide_id": "s2-summary",
+      "layout_type": "summary",
+      "coherence_score": 1.0,
+      "grounding_score": 1.0,
+      "visual_fit_score": 1.0,
+      "composite_score": 1.0,
+      "issues": []
+    },
+    {
+      "slide_id": "slide-src-01-sec-01",
+      "layout_type": "timeline",
+      "coherence_score": 1.0,
+      "grounding_score": 0.85,
+      "visual_fit_score": 1.0,
+      "composite_score": 0.96,
+      "issues": []
+    },
+    {
+      "slide_id": "slide-src-01-sec-02",
+      "layout_type": "comparison",
+      "coherence_score": 1.0,
+      "grounding_score": 0.85,
+      "visual_fit_score": 1.0,
+      "composite_score": 0.96,
+      "issues": []
+    },
+    {
+      "slide_id": "slide-src-02-sec-01",
+      "layout_type": "process",
+      "coherence_score": 1.0,
+      "grounding_score": 0.85,
+      "visual_fit_score": 1.0,
+      "composite_score": 0.96,
+      "issues": []
+    },
+    {
+      "slide_id": "slide-src-03-sec-01",
+      "layout_type": "chart",
+      "coherence_score": 1.0,
+      "grounding_score": 0.85,
+      "visual_fit_score": 1.0,
+      "composite_score": 0.96,
+      "issues": []
+    }
+  ]
+}

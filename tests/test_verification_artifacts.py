@@ -7,10 +7,13 @@ from pathlib import Path
 
 from src.runtime.env import load_runtime_env
 from src.runtime.verification import (
+    ACCEPTED_STRONGEST_DEMO_BASELINE,
     archive_verification_summary,
     build_live_acceptance_snapshot,
     build_failure_summary,
     compare_acceptance_summaries,
+    compare_against_accepted_baseline,
+    render_acceptance_delta_report,
     render_verification_report,
     render_live_verification_checklist,
     render_live_verification_status,
@@ -407,6 +410,164 @@ class VerificationArtifactTests(unittest.TestCase):
             },
         )
         self.assertEqual(rebuilt["decision_backbone"]["must_include_checks"], [])
+
+
+class AcceptanceBaselineComparisonTests(unittest.TestCase):
+    """Acceptance baseline 比较功能测试。"""
+
+    def test_accepted_baseline_exists(self) -> None:
+        """已接受的基线文件必须存在。"""
+        self.assertTrue(
+            ACCEPTED_STRONGEST_DEMO_BASELINE.exists(),
+            f"accepted baseline not found: {ACCEPTED_STRONGEST_DEMO_BASELINE}",
+        )
+
+    def test_accepted_baseline_is_valid_json(self) -> None:
+        """已接受的基线必须是有效的 JSON。"""
+        data = json.loads(ACCEPTED_STRONGEST_DEMO_BASELINE.read_text(encoding="utf-8"))
+        self.assertIsInstance(data, dict)
+
+    def test_accepted_baseline_has_required_fields(self) -> None:
+        """已接受的基线必须包含必需的结构字段。"""
+        data = json.loads(ACCEPTED_STRONGEST_DEMO_BASELINE.read_text(encoding="utf-8"))
+        required_fields = [
+            "slide_count", "layout_sequence", "intro_slide",
+            "unit_layouts", "covered_unit_ids", "quality_status",
+        ]
+        for field in required_fields:
+            self.assertIn(field, data, f"baseline missing field: {field}")
+
+    def test_compare_against_accepted_baseline_self_match(self) -> None:
+        """基线与自身比较应该返回 match。"""
+        delta = compare_against_accepted_baseline(ACCEPTED_STRONGEST_DEMO_BASELINE)
+        self.assertEqual(delta["status"], "match")
+        self.assertEqual(delta["differences"], [])
+
+    def test_compare_against_accepted_baseline_with_drift(self) -> None:
+        """与基线不一致的候选应该返回 drift。"""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            candidate_path = Path(tmpdir) / "candidate.json"
+            candidate_data = json.loads(
+                ACCEPTED_STRONGEST_DEMO_BASELINE.read_text(encoding="utf-8")
+            )
+            candidate_data["slide_count"] = 999  # 故意修改
+            candidate_path.write_text(
+                json.dumps(candidate_data, ensure_ascii=False, indent=2),
+                encoding="utf-8",
+            )
+            delta = compare_against_accepted_baseline(candidate_path)
+            self.assertEqual(delta["status"], "drift")
+            self.assertTrue(len(delta["differences"]) > 0)
+
+    def test_compare_against_accepted_baseline_timestamp_only_is_match(self) -> None:
+        """仅 generated_at_unix 不同应该返回 match。"""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            candidate_path = Path(tmpdir) / "candidate.json"
+            candidate_data = json.loads(
+                ACCEPTED_STRONGEST_DEMO_BASELINE.read_text(encoding="utf-8")
+            )
+            candidate_data["generated_at_unix"] = 9999999999  # 仅修改时间戳
+            candidate_path.write_text(
+                json.dumps(candidate_data, ensure_ascii=False, indent=2),
+                encoding="utf-8",
+            )
+            delta = compare_against_accepted_baseline(candidate_path)
+            self.assertEqual(delta["status"], "match")
+
+    def test_compare_against_missing_candidate_returns_error(self) -> None:
+        """候选文件不存在应该返回 error。"""
+        delta = compare_against_accepted_baseline(Path("/nonexistent/file.json"))
+        self.assertEqual(delta["status"], "error")
+        self.assertIn("not found", delta["error"])
+
+    def test_compare_against_missing_baseline_returns_error(self) -> None:
+        """基线文件不存在应该返回 error。"""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            candidate_path = Path(tmpdir) / "candidate.json"
+            candidate_path.write_text("{}", encoding="utf-8")
+            delta = compare_against_accepted_baseline(
+                candidate_path,
+                baseline_path=Path("/nonexistent/baseline.json"),
+            )
+            self.assertEqual(delta["status"], "error")
+            self.assertIn("baseline not found", delta["error"])
+
+    def test_render_acceptance_delta_report_match(self) -> None:
+        """渲染 match 状态的 delta 报告。"""
+        delta = {
+            "status": "match",
+            "baseline_path": "/path/to/baseline.json",
+            "candidate_path": "/path/to/candidate.json",
+            "differences": [],
+            "error": None,
+        }
+        report = render_acceptance_delta_report(delta)
+        self.assertIn("# Acceptance Delta Report", report)
+        self.assertIn("match", report)
+        self.assertIn("matches the accepted baseline", report)
+
+    def test_render_acceptance_delta_report_drift(self) -> None:
+        """渲染 drift 状态的 delta 报告。"""
+        delta = {
+            "status": "drift",
+            "baseline_path": "/path/to/baseline.json",
+            "candidate_path": "/path/to/candidate.json",
+            "differences": ["slide_count: baseline=6 candidate=5"],
+            "error": None,
+        }
+        report = render_acceptance_delta_report(delta)
+        self.assertIn("drift", report)
+        self.assertIn("## Differences", report)
+        self.assertIn("slide_count", report)
+
+    def test_render_acceptance_delta_report_error(self) -> None:
+        """渲染 error 状态的 delta 报告。"""
+        delta = {
+            "status": "error",
+            "baseline_path": "/path/to/baseline.json",
+            "candidate_path": "/path/to/candidate.json",
+            "differences": [],
+            "error": "file not found",
+        }
+        report = render_acceptance_delta_report(delta)
+        self.assertIn("error", report)
+        self.assertIn("## Error", report)
+        self.assertIn("file not found", report)
+
+    def test_all_archived_snapshots_match_accepted_baseline(self) -> None:
+        """从已接受基线开始的所有通过的归档 acceptance summaries 应该与基线一致（仅 generated_at_unix 可以不同）。
+
+        注意：
+        - 早期快照（1774370225 之前）可能缺少后来添加的字段（如 unit_slide_evidence），因此跳过。
+        - 失败的快照（quality_status != "pass"）本身就不应该与基线一致，因此跳过。
+        """
+        history_dir = ACCEPTED_STRONGEST_DEMO_BASELINE.parent.parent
+        self.assertTrue(history_dir.exists())
+
+        baseline_data = json.loads(
+            ACCEPTED_STRONGEST_DEMO_BASELINE.read_text(encoding="utf-8")
+        )
+        # 获取已接受基线的时间戳作为起始点
+        baseline_timestamp = baseline_data.get("generated_at_unix", 0)
+
+        for snapshot_dir in sorted(history_dir.iterdir()):
+            candidate = snapshot_dir / "acceptance-summary.json"
+            if not candidate.exists():
+                continue
+            candidate_data = json.loads(candidate.read_text(encoding="utf-8"))
+            # 只检查与基线同时代或更新的快照
+            candidate_timestamp = candidate_data.get("generated_at_unix", 0)
+            if candidate_timestamp < baseline_timestamp:
+                continue
+            # 跳过失败的快照
+            if candidate_data.get("quality_status") != "pass":
+                continue
+            differences = compare_acceptance_summaries(baseline_data, candidate_data)
+            self.assertEqual(
+                differences,
+                [],
+                f"snapshot {snapshot_dir.name} has drift from accepted baseline: {differences}",
+            )
 
 
 if __name__ == "__main__":
