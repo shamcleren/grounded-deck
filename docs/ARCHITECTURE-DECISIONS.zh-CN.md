@@ -37,4 +37,4 @@
 
 ## 变更策略
 
-如果未来修改改变了固定不变量或模块拆分，必须在本文件和对应英文文件中增加新的决策记录，并同步更新 [PROJECT-STATE.zh-CN.md](PROJECT-STATE.zh-CN.md)。
+如果未来修改改变了固定不变量或模块拆分，必须在本文件和对应英文文件中增加新的决策记录，并同步更新 [PROJECT-STATE.md](PROJECT-STATE.md)。

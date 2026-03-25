@@ -1,6 +1,6 @@
 # Project State
 
-[English](PROJECT-STATE.md) | [简体中文](PROJECT-STATE.zh-CN.md)
+[English](PROJECT-STATE.md)
 
 ## North Star
 
@@ -40,7 +40,6 @@ The strongest deterministic planning demo is now curated back onto `main` as a c
 - curated the rescued strongest-demo work into one canonical strongest-demo fixture bundle, report path, and deterministic metric baseline
 - captured and archived the first successful online verification run against the canonical strongest-demo input with MiniMax-M2.7
 - hardened the OpenAI-compatible provider path for MiniMax by splitting reasoning output and tolerating `<think>`-wrapped JSON responses
-- added lock-protected automation support so higher-frequency worker and curator schedules do not overlap unsafely
 - integrated the accepted worker patch that tightens provider planner and grader prompts around the strongest-demo baseline
 - integrated the accepted worker patch from `auto/groundeddeck-auto-sprint-b/provider-planning-acceptance-alignment` so provider prompts and mocked transport tests encode the archived strongest-demo acceptance summary
 - restored the `src/visual` and `src/renderer` package scaffolds so `make eval` remains green on the current repository tree
@@ -75,8 +74,6 @@ External feedback has been absorbed as a prioritization change, not an architect
 - architecture must remain source-grounded and auditable
 - repository docs must stay sufficient for AI continuation
 - feedback may change priorities and demo strategy, but must not silently change architecture boundaries
-- scheduled or unattended AI work must land through the automation governance flow instead of writing directly to `main`
-- higher-frequency scheduled automation must use the repository role-lock mechanism before substantive work
 
 ## Definition of Done for Phase One
 

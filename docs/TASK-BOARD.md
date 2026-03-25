@@ -1,6 +1,6 @@
 # Task Board
 
-[English](TASK-BOARD.md) | [简体中文](TASK-BOARD.zh-CN.md)
+[English](TASK-BOARD.md)
 
 ## In Progress
 

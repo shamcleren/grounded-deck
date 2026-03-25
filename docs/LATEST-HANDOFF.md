@@ -1,6 +1,6 @@
 # Latest Handoff
 
-[English](LATEST-HANDOFF.md) | [简体中文](LATEST-HANDOFF.zh-CN.md)
+[English](LATEST-HANDOFF.md)
 
 ## Session Summary
 
@@ -26,13 +26,9 @@ This follow-up curator review found that `main` already contains that accepted i
 - added automatic verification-summary artifacts for runtime executions
 - tightened live-env checks so placeholder values such as `REPLACE_ME` are treated as invalid
 - absorbed external product feedback by narrowing near-term focus toward a strongest demo and planning-quality proof points without changing architecture boundaries
-- added `docs/AUTOMATION-GOVERNANCE.md` and made automation handling part of startup guidance
-- recovered four detached automation worktrees onto named rescue branches so they can be curated instead of lost
 - accepted the strongest-demo rescue work by landing a canonical strongest-demo fixture bundle, deterministic quality metrics, and `make strongest-demo`
-- added `make curator-finalize` so future curator runs use one repository-owned merge-and-cleanup path
 - configured the live provider path against MiniMax-M2.7 and archived the first successful strongest-demo online verification under `reports/live-verification-latest.{json,md}`
 - hardened the OpenAI-compatible provider integration so MiniMax reasoning output is split cleanly and `<think>`-wrapped JSON responses can still be parsed and diagnosed
-- added a repository-owned automation role-lock utility so worker and curator schedules can be safely increased without overlapping substantive work
 - integrated the accepted worker patch from `auto/groundeddeck-auto-sprint/provider-planning-prompt-tightening`
 - tightened the OpenAI-compatible provider planner and grader prompts around the strongest-demo baseline structure, layout expectations, and grading focus
 - restored `src/visual/__init__.py` and `src/renderer/__init__.py` so the current repository tree satisfies the self-acceptance completeness checks
@@ -86,8 +82,8 @@ This follow-up curator review found that `main` already contains that accepted i
 - live status correctly reports environment readiness and the last archived result
 - live credentials / real backend: configured and verified for MiniMax-M2.7
 - strongest-demo canonical bundle: present
-- automation governance for worker / curator / verifier flows: present
-- automation role locks for higher-frequency schedules: present
+- automation governance for worker / curator / verifier flows: retired (documents and tooling removed)
+- automation role locks for higher-frequency schedules: retired (documents and tooling removed)
 - first successful strongest-demo online verification: archived in `reports/live-verification-latest.json` and `reports/live-verification-latest.md`
 - near-term focus: expand provider-backed planning from the verified strongest-demo baseline without weakening deterministic evals
 - provider prompt tightening for strongest-demo: integrated on the current curator branch
@@ -128,7 +124,6 @@ Use the archived strongest-demo live acceptance snapshot to compare future live 
 - do not collapse the project into a single prompt pipeline
 - do not skip the intermediate `slide spec`
 - do not leave state changes undocumented
-- do not let worker automations update canonical state docs or write directly to `main`
 - do not fall back to the old example fixture for future claims about the strongest-demo live path
 
 ## Resume Hint
