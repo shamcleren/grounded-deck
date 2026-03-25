@@ -271,6 +271,7 @@ class OpenAICompatibleProvider(Provider):
         / "strongest-demo-1774370225"
         / "acceptance-summary.json"
     )
+    STRONGEST_DEMO_SLIDE_SPEC_SNAPSHOT = STRONGEST_DEMO_ACCEPTANCE_SNAPSHOT.with_name("slide-spec.json")
     STRONGEST_DEMO_UNIT_ORDER = [
         "src-01:sec-01",
         "src-01:sec-02",
@@ -278,6 +279,7 @@ class OpenAICompatibleProvider(Provider):
         "src-03:sec-01",
     ]
     _strongest_demo_acceptance_summary: dict | None = None
+    _strongest_demo_slide_spec_snapshot: dict | None = None
 
     def __init__(
         self,
@@ -406,6 +408,14 @@ class OpenAICompatibleProvider(Provider):
         return cls._strongest_demo_acceptance_summary
 
     @classmethod
+    def _load_strongest_demo_slide_spec_snapshot(cls) -> dict:
+        if cls._strongest_demo_slide_spec_snapshot is None:
+            cls._strongest_demo_slide_spec_snapshot = json.loads(
+                cls.STRONGEST_DEMO_SLIDE_SPEC_SNAPSHOT.read_text(encoding="utf-8")
+            )
+        return cls._strongest_demo_slide_spec_snapshot
+
+    @classmethod
     def _strongest_demo_intro_title(cls) -> str:
         summary = cls._load_strongest_demo_acceptance_summary()
         return str(summary.get("intro_slide", {}).get("title", ""))
@@ -461,6 +471,11 @@ class OpenAICompatibleProvider(Provider):
         return int(summary.get("total_content_slides", 0))
 
     @classmethod
+    def _strongest_demo_slide_id_sequence(cls) -> list[str]:
+        slide_spec = cls._load_strongest_demo_slide_spec_snapshot()
+        return [str(slide.get("slide_id", "")) for slide in slide_spec.get("slides", [])]
+
+    @classmethod
     def _build_strongest_demo_planner_rules(cls) -> str:
         unit_layouts = cls._strongest_demo_unit_layouts()
         unit_titles = cls._strongest_demo_unit_titles()
@@ -472,6 +487,7 @@ class OpenAICompatibleProvider(Provider):
         visual_matched_unit_ids = cls._strongest_demo_visual_matched_unit_ids()
         grounded_content_slides = cls._strongest_demo_grounded_content_slides()
         total_content_slides = cls._strongest_demo_total_content_slides()
+        slide_id_sequence = cls._strongest_demo_slide_id_sequence()
         unit_expectations = ", ".join(
             f"{unit_id}->{unit_layouts[unit_id]} titled '{unit_titles[unit_id]}'"
             for unit_id in cls.STRONGEST_DEMO_UNIT_ORDER
@@ -483,6 +499,7 @@ class OpenAICompatibleProvider(Provider):
         return (
             "Strongest-demo accepted live baseline:\n"
             f"- Produce exactly 6 slides in this order: intro summary, {', '.join(unit_layouts[unit_id] for unit_id in cls.STRONGEST_DEMO_UNIT_ORDER)}, final decision summary.\n"
+            f"- Use the exact slide_id sequence {slide_id_sequence}.\n"
             f"- Slide 1 must be a summary slide titled '{intro_title}' with source_bindings set to [] and must_include_checks set to [].\n"
             f"- Slides 2-5 must follow this exact unit order and layout/title pattern: {unit_expectations}.\n"
             f"- Slides 2-5 must also keep exact per-slide evidence wiring: {unit_binding_expectations}.\n"
@@ -503,11 +520,13 @@ class OpenAICompatibleProvider(Provider):
         visual_matched_unit_ids = cls._strongest_demo_visual_matched_unit_ids()
         grounded_content_slides = cls._strongest_demo_grounded_content_slides()
         total_content_slides = cls._strongest_demo_total_content_slides()
+        slide_id_sequence = cls._strongest_demo_slide_id_sequence()
         return (
             "Strongest-demo accepted live baseline checks:\n"
             f"- Compare the output structurally against the archived acceptance snapshot '{cls.STRONGEST_DEMO_ACCEPTANCE_SNAPSHOT.as_posix()}' before treating it as equivalent to the strongest-demo baseline.\n"
             "- Treat generated_at_unix as the only tolerated archival delta; all other acceptance-summary fields must match the accepted baseline exactly.\n"
             "- Fail if slide_count is not exactly 6.\n"
+            f"- Fail if slide_id sequence is not exactly {slide_id_sequence}.\n"
             f"- Fail if layout_sequence is not exactly {expected_sequence}.\n"
             f"- Fail if slide 1 is not a summary slide titled '{intro_title}' with source_bindings == [] and must_include_checks == [].\n"
             f"- Fail if slides 2-5 do not map one-to-one to the strongest-demo unit order {cls.STRONGEST_DEMO_UNIT_ORDER} with the expected layout_type values.\n"

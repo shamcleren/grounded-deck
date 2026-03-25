@@ -246,6 +246,7 @@ class PipelineFixtureTests(unittest.TestCase):
 
         self.assertIn("Strongest-demo accepted live baseline:", prompt)
         self.assertIn("Produce exactly 6 slides in this order", prompt)
+        self.assertIn("Use the exact slide_id sequence ['slide-01', 'slide-02', 'slide-03', 'slide-04', 'slide-05', 'slide-06'].", prompt)
         self.assertIn("China EV Market Entry: Europe & Southeast Asia Strategy", prompt)
         self.assertIn("src-01:sec-01->timeline", prompt)
         self.assertIn("must use source_bindings ['src-01:sec-01'] and must_include_checks ['src-01:sec-01']", prompt)
@@ -268,6 +269,7 @@ class PipelineFixtureTests(unittest.TestCase):
         self.assertIn("strongest-demo-1774370225/acceptance-summary.json", prompt)
         self.assertIn("generated_at_unix as the only tolerated archival delta", prompt)
         self.assertIn("Fail if slide_count is not exactly 6.", prompt)
+        self.assertIn("Fail if slide_id sequence is not exactly ['slide-01', 'slide-02', 'slide-03', 'slide-04', 'slide-05', 'slide-06'].", prompt)
         self.assertIn("Fail if layout_sequence is not exactly", prompt)
         self.assertIn("China EV Market Entry: Europe & Southeast Asia Strategy", prompt)
         self.assertIn("source_bindings == [] and must_include_checks == []", prompt)
