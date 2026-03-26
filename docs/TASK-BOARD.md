@@ -1,7 +1,5 @@
 # Task Board
 
-[English](TASK-BOARD.md)
-
 ## In Progress
 
 - keep strongest-demo provider prompts and live verification aligned to the archived acceptance snapshot before promoting more provider-backed planning changes

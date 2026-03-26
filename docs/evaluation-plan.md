@@ -1,7 +1,5 @@
 # Evaluation Plan
 
-[English](evaluation-plan.md)
-
 ## Principles
 
 GroundedDeck uses eval-driven development:

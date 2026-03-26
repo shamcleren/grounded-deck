@@ -1,7 +1,5 @@
 # Start Here
 
-[English](START-HERE.md)
-
 Use this file when a new AI session needs to continue GroundedDeck quickly.
 
 ## 30-Second Startup

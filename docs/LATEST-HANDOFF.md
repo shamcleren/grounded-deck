@@ -1,7 +1,5 @@
 # Latest Handoff
 
-[English](LATEST-HANDOFF.md)
-
 ## Session Summary
 
 GroundedDeck now has narrative quality post-validation in the OpenAI-compatible provider grading path. The deterministic narrative grader cross-validates model grading results, attaching `_narrative_validation` metadata. Combined with the automated acceptance delta comparison and continuity grading from previous sessions, the repository now has comprehensive self-validation for AI continuity and provider-backed planning consistency.

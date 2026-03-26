@@ -1,7 +1,5 @@
 # AGENTS
 
-[English](AGENTS.md)
-
 This repository is designed for long-running AI-driven development. Do not depend on chat history as the source of truth. The repository itself is the durable memory.
 
 ## Required Read Order
@@ -27,10 +25,11 @@ Before making changes, read these files in order:
 - Keep the current next action explicit and singular.
 - Preserve the `slide spec` intermediate representation as the stable contract between planning, rendering, and grading.
 - Run `make eval` before considering a task complete.
+- When modifying a document that has a `.zh-CN.md` bilingual counterpart, update both the English and Chinese versions in the same change set to keep them in sync.
 
 ## Anti-Drift Rules
 
-- No direct “one giant prompt” architecture.
+- No direct "one giant prompt" architecture.
 - No renderer-owned content understanding.
 - No final artifact generation without auditable intermediate state.
 - No silent removal of coverage, grounding, or editability requirements.
