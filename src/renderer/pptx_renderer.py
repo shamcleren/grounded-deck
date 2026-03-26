@@ -7,7 +7,7 @@
 - 零外部模板依赖，纯代码生成
 - 每页 slide 保留 source bindings 和 speaker notes 以支持审计
 - 所有文本框保持可编辑状态
-- 专业蓝灰色调配色方案
+- 支持可切换的主题配色方案
 """
 
 from __future__ import annotations
@@ -22,6 +22,8 @@ from pptx import Presentation
 from pptx.dml.color import RGBColor
 from pptx.enum.text import MSO_ANCHOR, PP_ALIGN
 from pptx.util import Cm, Emu, Pt
+
+from src.renderer.themes import SlideTheme, get_theme
 
 logger = logging.getLogger(__name__)
 
@@ -162,8 +164,9 @@ def _add_textbox(
     return txbox
 
 
-def _add_title_block(slide, title: str, subtitle: str = "") -> None:
+def _add_title_block(slide, title: str, subtitle: str = "", theme: SlideTheme | None = None) -> None:
     """在 slide 顶部添加标题区域。"""
+    t = theme or get_theme()
     # 标题
     _add_textbox(
         slide,
@@ -174,7 +177,7 @@ def _add_title_block(slide, title: str, subtitle: str = "") -> None:
         title,
         font_size=28,
         bold=True,
-        color=COLOR_DARK,
+        color=t.text_dark,
         font_name=FONT_TITLE,
     )
     # 副标题
@@ -187,7 +190,7 @@ def _add_title_block(slide, title: str, subtitle: str = "") -> None:
             Cm(1.0),
             subtitle,
             font_size=14,
-            color=COLOR_MUTED,
+            color=t.text_muted,
         )
 
 
@@ -264,10 +267,11 @@ def _add_bullet_list(slide, left: Emu, top: Emu, width: Emu, height: Emu, items:
 # ================================================================
 
 
-def _render_cover(slide, slide_data: dict) -> None:
+def _render_cover(slide, slide_data: dict, theme: SlideTheme | None = None) -> None:
     """渲染 cover 布局：大标题 + 目标受众 + source count。"""
+    t = theme or get_theme()
     # 背景色块
-    _add_rounded_rect(slide, Cm(0), Cm(0), SLIDE_WIDTH, Cm(10), fill_color=COLOR_PRIMARY)
+    _add_rounded_rect(slide, Cm(0), Cm(0), SLIDE_WIDTH, Cm(10), fill_color=t.primary)
 
     # 主标题（白色大字）
     _add_textbox(
@@ -279,7 +283,7 @@ def _render_cover(slide, slide_data: dict) -> None:
         slide_data["title"],
         font_size=36,
         bold=True,
-        color=COLOR_WHITE,
+        color=t.text_white,
         font_name=FONT_TITLE,
         alignment=PP_ALIGN.LEFT,
     )
@@ -296,7 +300,7 @@ def _render_cover(slide, slide_data: dict) -> None:
             Cm(1.5),
             subtitle_text,
             font_size=16,
-            color=RGBColor(0xBF, 0xDB, 0xFE),  # 浅蓝色
+            color=t.cover_subtitle,
             alignment=PP_ALIGN.LEFT,
         )
 
@@ -335,9 +339,10 @@ def _render_cover(slide, slide_data: dict) -> None:
         )
 
 
-def _render_summary(slide, slide_data: dict) -> None:
+def _render_summary(slide, slide_data: dict, theme: SlideTheme | None = None) -> None:
     """渲染 summary 布局：决策骨架，要点列表 + 来源标注 + claim-source 映射。"""
-    _add_title_block(slide, slide_data["title"], slide_data.get("goal", ""))
+    t = theme or get_theme()
+    _add_title_block(slide, slide_data["title"], slide_data.get("goal", ""), theme=t)
 
     key_points = slide_data.get("key_points", [])
     if key_points:
@@ -384,14 +389,15 @@ def _render_summary(slide, slide_data: dict) -> None:
         )
 
 
-def _render_timeline(slide, slide_data: dict) -> None:
+def _render_timeline(slide, slide_data: dict, theme: SlideTheme | None = None) -> None:
     """渲染 timeline 布局：装饰线 + 原生表格（里程碑行 + 事件行）。
 
     使用 python-pptx 原生 Table 对象展示时间线数据，
     确保用户可以在 PowerPoint 中直接编辑里程碑和事件描述。
     保留水平装饰线作为视觉锚点。
     """
-    _add_title_block(slide, slide_data["title"], slide_data.get("goal", ""))
+    t = theme or get_theme()
+    _add_title_block(slide, slide_data["title"], slide_data.get("goal", ""), theme=t)
 
     # 提取 milestones 和 events
     milestones = []
@@ -417,7 +423,7 @@ def _render_timeline(slide, slide_data: dict) -> None:
         MSO_SHAPE.RECTANGLE, line_left, line_y, line_width, Cm(0.15),
     )
     line.fill.solid()
-    line.fill.fore_color.rgb = COLOR_TIMELINE_ACCENT
+    line.fill.fore_color.rgb = t.timeline_accent
     line.line.fill.background()
 
     # 装饰性圆形节点
@@ -432,7 +438,7 @@ def _render_timeline(slide, slide_data: dict) -> None:
             Cm(0.95),
         )
         dot.fill.solid()
-        dot.fill.fore_color.rgb = COLOR_TIMELINE_ACCENT
+        dot.fill.fore_color.rgb = t.timeline_accent
         dot.line.fill.background()
 
     # 原生表格：2 行 x n 列（里程碑行 + 事件行）
@@ -453,23 +459,23 @@ def _render_timeline(slide, slide_data: dict) -> None:
     for ci in range(table_cols):
         table.columns[ci].width = col_width
 
-    # 第一行：里程碑标签（绿色强调，居中）
+    # 第一行：里程碑标签（主题色强调，居中）
     for ci in range(table_cols):
         cell = table.cell(0, ci)
         cell.text = ""
-        _fill_cell(cell, COLOR_TIMELINE_ACCENT)
+        _fill_cell(cell, t.timeline_accent)
         p = cell.text_frame.paragraphs[0]
         p.alignment = PP_ALIGN.CENTER
         run = p.add_run()
         run.text = str(milestones[ci]) if ci < n else ""
-        _set_font(run, size=18, bold=True, color=COLOR_WHITE, name=FONT_TITLE)
+        _set_font(run, size=18, bold=True, color=t.text_white, name=FONT_TITLE)
         cell.vertical_anchor = MSO_ANCHOR.MIDDLE
 
     # 第二行：事件描述（浅色背景）
     for ci in range(table_cols):
         cell = table.cell(1, ci)
         cell.text = ""
-        bg = RGBColor(0xEC, 0xFD, 0xF5) if ci % 2 == 0 else COLOR_WHITE
+        bg = t.bg_light if ci % 2 == 0 else t.bg_white
         _fill_cell(cell, bg)
         p = cell.text_frame.paragraphs[0]
         p.alignment = PP_ALIGN.CENTER
@@ -502,13 +508,14 @@ def _render_timeline(slide, slide_data: dict) -> None:
         )
 
 
-def _render_comparison(slide, slide_data: dict) -> None:
+def _render_comparison(slide, slide_data: dict, theme: SlideTheme | None = None) -> None:
     """渲染 comparison 布局：原生表格对比 + 标题行着色。
 
     使用 python-pptx 原生 Table 对象，确保输出在 PowerPoint 中
     完全可编辑（可调整列宽、添加行、修改单元格样式）。
     """
-    _add_title_block(slide, slide_data["title"], slide_data.get("goal", ""))
+    t = theme or get_theme()
+    _add_title_block(slide, slide_data["title"], slide_data.get("goal", ""), theme=t)
 
     # 提取列名和列要点
     columns = []
@@ -546,7 +553,7 @@ def _render_comparison(slide, slide_data: dict) -> None:
     table.columns[1].width = col_width
 
     # 标题行
-    header_colors = [COLOR_COMPARISON_LEFT, COLOR_COMPARISON_RIGHT]
+    header_colors = [t.comparison_left, t.comparison_right]
     for ci, col_name in enumerate(columns[:2]):
         cell = table.cell(0, ci)
         cell.text = ""
@@ -555,7 +562,7 @@ def _render_comparison(slide, slide_data: dict) -> None:
         p.alignment = PP_ALIGN.CENTER
         run = p.add_run()
         run.text = str(col_name)
-        _set_font(run, size=18, bold=True, color=COLOR_WHITE, name=FONT_TITLE)
+        _set_font(run, size=18, bold=True, color=t.text_white, name=FONT_TITLE)
         cell.vertical_anchor = MSO_ANCHOR.MIDDLE
 
     # 数据行
@@ -564,9 +571,9 @@ def _render_comparison(slide, slide_data: dict) -> None:
             cell = table.cell(ri + 1, ci)
             cell.text = ""
             # 交替行背景
-            bg = RGBColor(0xEF, 0xF6, 0xFF) if ci == 0 else RGBColor(0xFE, 0xF2, 0xF2)
+            bg = t.table_alt_left if ci == 0 else t.table_alt_right
             if ri % 2 == 1:
-                bg = COLOR_WHITE
+                bg = t.bg_white
             _fill_cell(cell, bg)
             p = cell.text_frame.paragraphs[0]
             p.alignment = PP_ALIGN.LEFT
@@ -592,14 +599,15 @@ def _render_comparison(slide, slide_data: dict) -> None:
         )
 
 
-def _render_process(slide, slide_data: dict) -> None:
+def _render_process(slide, slide_data: dict, theme: SlideTheme | None = None) -> None:
     """渲染 process 布局：原生表格展示步骤 + 装饰性箭头连接。
 
     使用 python-pptx 原生 Table 对象展示流程步骤，
     确保用户可以在 PowerPoint 中直接编辑步骤内容。
     保留装饰性箭头作为视觉连接。
     """
-    _add_title_block(slide, slide_data["title"], slide_data.get("goal", ""))
+    t = theme or get_theme()
+    _add_title_block(slide, slide_data["title"], slide_data.get("goal", ""), theme=t)
 
     # 提取步骤数和步骤标签
     step_count = 1
@@ -644,19 +652,19 @@ def _render_process(slide, slide_data: dict) -> None:
     for ci in range(table_cols):
         table.columns[ci].width = col_width
 
-    # 第一行：步骤序号（紫色强调）
+    # 第一行：步骤序号（主题色强调）
     for ci in range(table_cols):
         cell = table.cell(0, ci)
         cell.text = ""
-        # 最后一步用紫色实底，其他用浅色
+        # 最后一步用主题色实底，其他用浅色
         is_last = (ci == table_cols - 1)
-        bg = COLOR_PROCESS_ACCENT if is_last else COLOR_LIGHT_BG
+        bg = t.process_accent if is_last else t.bg_light
         _fill_cell(cell, bg)
         p = cell.text_frame.paragraphs[0]
         p.alignment = PP_ALIGN.CENTER
         run = p.add_run()
         run.text = f"Step {ci + 1}"
-        text_color = COLOR_WHITE if is_last else COLOR_PROCESS_ACCENT
+        text_color = t.text_white if is_last else t.process_accent
         _set_font(run, size=14, bold=True, color=text_color, name=FONT_TITLE)
         cell.vertical_anchor = MSO_ANCHOR.MIDDLE
 
@@ -665,13 +673,13 @@ def _render_process(slide, slide_data: dict) -> None:
         cell = table.cell(1, ci)
         cell.text = ""
         is_last = (ci == table_cols - 1)
-        bg = COLOR_PROCESS_ACCENT if is_last else COLOR_WHITE
+        bg = t.process_accent if is_last else t.bg_white
         _fill_cell(cell, bg)
         p = cell.text_frame.paragraphs[0]
         p.alignment = PP_ALIGN.CENTER
         run = p.add_run()
         run.text = step_labels[ci] if ci < len(step_labels) else ""
-        text_color = COLOR_WHITE if is_last else COLOR_BODY
+        text_color = t.text_white if is_last else t.text_body
         _set_font(run, size=12, color=text_color)
         cell.vertical_anchor = MSO_ANCHOR.MIDDLE
 
@@ -690,7 +698,7 @@ def _render_process(slide, slide_data: dict) -> None:
             arrow_height,
         )
         arrow.fill.solid()
-        arrow.fill.fore_color.rgb = COLOR_PROCESS_ACCENT
+        arrow.fill.fore_color.rgb = t.process_accent
         arrow.line.fill.background()
 
     # key_points（放在箭头下方）
@@ -710,14 +718,15 @@ def _render_process(slide, slide_data: dict) -> None:
         )
 
 
-def _render_chart(slide, slide_data: dict) -> None:
+def _render_chart(slide, slide_data: dict, theme: SlideTheme | None = None) -> None:
     """渲染 chart 布局：原生表格展示指标 + 关键数字 + 上下文标签。
 
     使用 python-pptx 原生 Table 对象展示指标数据，
     确保用户可以在 PowerPoint 中直接编辑数值和标签。
     当指标数量 <= 4 时使用横向表格，否则回退到纵向表格。
     """
-    _add_title_block(slide, slide_data["title"], slide_data.get("goal", ""))
+    t = theme or get_theme()
+    _add_title_block(slide, slide_data["title"], slide_data.get("goal", ""), theme=t)
 
     # 提取指标和标签
     metrics = []
@@ -755,19 +764,19 @@ def _render_chart(slide, slide_data: dict) -> None:
     for ci in range(table_cols):
         cell = table.cell(0, ci)
         cell.text = ""
-        _fill_cell(cell, COLOR_LIGHT_BG)
+        _fill_cell(cell, t.bg_light)
         p = cell.text_frame.paragraphs[0]
         p.alignment = PP_ALIGN.CENTER
         run = p.add_run()
         run.text = str(metrics[ci]) if ci < n else "—"
-        _set_font(run, size=32, bold=True, color=COLOR_CHART_ACCENT, name=FONT_TITLE)
+        _set_font(run, size=32, bold=True, color=t.chart_accent, name=FONT_TITLE)
         cell.vertical_anchor = MSO_ANCHOR.MIDDLE
 
     # 第二行：指标标签（小字体，灰色）
     for ci in range(table_cols):
         cell = table.cell(1, ci)
         cell.text = ""
-        _fill_cell(cell, COLOR_WHITE)
+        _fill_cell(cell, t.bg_white)
         p = cell.text_frame.paragraphs[0]
         p.alignment = PP_ALIGN.CENTER
         run = p.add_run()
@@ -792,19 +801,20 @@ def _render_chart(slide, slide_data: dict) -> None:
         )
 
 
-def _render_section(slide, slide_data: dict) -> None:
+def _render_section(slide, slide_data: dict, theme: SlideTheme | None = None) -> None:
     """渲染 section 布局：章节分隔页，带装饰性分隔线。"""
+    t = theme or get_theme()
     from pptx.enum.shapes import MSO_SHAPE
 
     # 背景色块
-    _add_rounded_rect(slide, Cm(0), Cm(6.0), SLIDE_WIDTH, Cm(7.0), fill_color=COLOR_PRIMARY)
+    _add_rounded_rect(slide, Cm(0), Cm(6.0), SLIDE_WIDTH, Cm(7.0), fill_color=t.primary)
 
     # 上方装饰线
     top_line = slide.shapes.add_shape(
         MSO_SHAPE.RECTANGLE, Cm(6.0), Cm(6.8), Cm(21.0), Cm(0.08),
     )
     top_line.fill.solid()
-    top_line.fill.fore_color.rgb = COLOR_ACCENT
+    top_line.fill.fore_color.rgb = t.accent
     top_line.line.fill.background()
 
     # 标题
@@ -817,7 +827,7 @@ def _render_section(slide, slide_data: dict) -> None:
         slide_data["title"],
         font_size=32,
         bold=True,
-        color=COLOR_WHITE,
+        color=t.text_white,
         alignment=PP_ALIGN.CENTER,
         font_name=FONT_TITLE,
     )
@@ -833,7 +843,7 @@ def _render_section(slide, slide_data: dict) -> None:
             Cm(1.5),
             goal,
             font_size=16,
-            color=RGBColor(0xBF, 0xDB, 0xFE),
+            color=t.cover_subtitle,
             alignment=PP_ALIGN.CENTER,
         )
 
@@ -842,7 +852,7 @@ def _render_section(slide, slide_data: dict) -> None:
         MSO_SHAPE.RECTANGLE, Cm(6.0), Cm(12.2), Cm(21.0), Cm(0.08),
     )
     bottom_line.fill.solid()
-    bottom_line.fill.fore_color.rgb = COLOR_ACCENT
+    bottom_line.fill.fore_color.rgb = t.accent
     bottom_line.line.fill.background()
 
 
@@ -886,21 +896,30 @@ _LAYOUT_RENDERERS: dict[str, Any] = {
 def render_slide_spec_to_pptx(
     slide_spec: dict,
     output_path: str | Path,
+    *,
+    theme: str | SlideTheme | None = None,
 ) -> Path:
     """将 slide spec 渲染为可编辑的 .pptx 文件。
 
     参数：
         slide_spec: 符合 slide-spec schema 的 dict
         output_path: 输出 .pptx 文件路径
+        theme: 主题名称字符串或 SlideTheme 实例，None 使用默认主题
 
     返回：
         输出文件的 Path 对象
 
     异常：
-        ValueError: slide_spec 缺少必要字段
+        ValueError: slide_spec 缺少必要字段或主题名称无效
         KeyError: slide 使用了不支持的 layout_type
     """
     output_path = Path(output_path)
+
+    # 解析主题
+    if isinstance(theme, SlideTheme):
+        resolved_theme = theme
+    else:
+        resolved_theme = get_theme(theme)
 
     if "slides" not in slide_spec:
         raise ValueError("slide_spec must contain a 'slides' list")
@@ -927,14 +946,19 @@ def render_slide_spec_to_pptx(
             renderer = _render_summary
 
         slide = prs.slides.add_slide(blank_layout)
-        renderer(slide, slide_data)
+        renderer(slide, slide_data, theme=resolved_theme)
         _add_speaker_notes(slide, slide_data)
 
     # 确保输出目录存在
     output_path.parent.mkdir(parents=True, exist_ok=True)
     prs.save(str(output_path))
 
-    logger.info("rendered %d slides to %s", len(slide_spec["slides"]), output_path)
+    logger.info(
+        "rendered %d slides to %s (theme: %s)",
+        len(slide_spec["slides"]),
+        output_path,
+        resolved_theme.name,
+    )
     return output_path
 
 

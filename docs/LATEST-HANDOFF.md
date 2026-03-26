@@ -2,29 +2,36 @@
 
 ## Session Summary
 
-GroundedDeck now has three diverse sample datasets (strongest-demo Chinese, saas-launch English, tech-review English) covering all 7 layout types. The visual selector rule engine has been significantly improved with heading-priority timeline boost, tightened comparison rules, and expanded chart keywords. A new automatic section divider feature inserts section pages between different sources when decks have 6+ content slides. The tech-review sample produces 11 slides across 7 distinct layouts.
+GroundedDeck now has a pluggable theme system with 5 built-in color schemes (professional-blue, forest-green, warm-sunset, minimal-gray, ocean-teal) that can be applied to any PPTX output. Speaker notes have been enhanced from generic templates to structured, content-aware notes with [开场] opening prompts, [要点] key points, [数据] data references, [过渡] transition suggestions, and [来源] source annotations. The theme system is wired into the pipeline, CLI, and Makefile.
 
 ## What Was Just Completed
 
-- added heading-priority timeline boost in `infer_layout_type`: headings containing `timeline`/`evolution`/`history`/`checkpoint` with year references now override comparison/process signals
-- tightened comparison contrast connector rule: single `but`/`while` no longer independently triggers comparison without a comparison keyword
-- moved `landscape` keyword to heading-only scope to avoid false positives from body text (e.g. "risk landscape")
-- added chart keywords: `latency`, `throughput`, `metric`, `benchmark`, `sla`
-- created `fixtures/source-packs/tech-review-source-pack.json` English source pack (cloud platform migration / technical architecture review theme) with 4 sources and 6 sections
-- generated full tech-review fixture set: 6 normalized units, 11 slides (7 distinct layouts), quality pass
-- tech-review layout distribution: cover, summary, timeline, comparison, section, process, section, chart, section, comparison, timeline — 7 distinct layout types
-- implemented automatic section divider insertion in `DeterministicProvider.draft_slide_spec`:
-  - `_insert_section_dividers` static method inserts section pages between different sources when content slides >= 6
-  - section divider title uses source title, goal uses first claim
-  - strongest-demo (4 units) and saas-launch (5 units) are unaffected
-- updated quality grader to exempt section layout from ungrounded and empty key_points checks
-- updated `total_content_slides` calculation to exclude cover and section layouts
-- added `demo-tech` Makefile target and updated `demo-all` to include tech-review
-- added 15 new tests in `test_diverse_samples.py`:
-  - TechReviewRenderingTests (9): rendering, slide count, 7 distinct layouts, section dividers, all content layouts, heading boost, checkpoint timeline, monolith vs microservices, latency/throughput chart
-  - SectionDividerTests (6): no dividers for small packs, no dividers for 5 units, dividers for 6+ units, dividers between sources, quality passes, end-to-end pipeline
-- total test count: 309 passing
-- eval harness: all passing
+- created `src/renderer/themes.py` with `SlideTheme` frozen dataclass defining 18 color slots
+- implemented 5 built-in themes: professional-blue (default), forest-green, warm-sunset, minimal-gray, ocean-teal
+- `get_theme(name)` and `list_themes()` public API for theme access
+- refactored `src/renderer/pptx_renderer.py` to consume theme colors instead of hardcoded `COLOR_*` constants
+- all 7 layout renderers (`_render_cover`, `_render_summary`, `_render_timeline`, `_render_comparison`, `_render_process`, `_render_chart`, `_render_section`) now accept `theme` parameter
+- `_add_title_block` helper updated to use theme colors
+- `render_slide_spec_to_pptx` now accepts optional `theme` parameter (string name or `SlideTheme` object)
+- updated `src/renderer/__init__.py` to export `SlideTheme`, `get_theme`, `list_themes`
+- wired theme support into `run_pipeline` (`theme` param) in `src/runtime/pipeline.py`
+- wired theme support into CLI (`--theme` flag) in `src/runtime/cli.py`
+- added `demo-themes` Makefile target that renders all 5 theme variants
+- updated `demo-all` to include `demo-themes`
+- enhanced `DeterministicProvider` with `_build_speaker_notes` classmethod:
+  - [开场] layout-specific opening prompt with section heading reference
+  - [要点] numbered key points extracted from unit content (up to 3)
+  - [数据] extracted numeric/percentage/year data references from source text
+  - [过渡] layout-specific transition suggestion for smooth presentation flow
+  - [来源] source binding annotation for auditability
+- regenerated all fixture files (slide-spec, quality-report) to reflect enriched speaker notes
+- added 23 new tests in `tests/test_themes_and_notes.py`:
+  - ThemeRegistryTests (8): list, get, default, invalid, frozen, complete slots
+  - ThemeRenderingTests (6): all themes render, slide count preserved, theme object, backward compat, different files
+  - SpeakerNotesEnhancementTests (6): structure tags, heading, data refs, source binding, layout opener, PPTX notes
+  - PipelineThemeIntegrationTests (3): pipeline with theme, default, all themes quality pass
+- total test count: 332 passing
+- eval harness: 39/39 all passing
 - added [AGENTS.md](../AGENTS.md) as the AI operating contract
 - added [docs/PROJECT-STATE.md](PROJECT-STATE.md) as the canonical current-state record
 - added [docs/ARCHITECTURE-DECISIONS.md](ARCHITECTURE-DECISIONS.md) to prevent architecture drift
@@ -153,6 +160,8 @@ GroundedDeck now has three diverse sample datasets (strongest-demo Chinese, saas
 - 8 new pipeline PPTX integration tests in `PipelinePptxIntegrationTests`
 - total test count: 198 passing, `make eval` 36/36 green
 - end-to-end pipeline: complete (source pack → normalized units → slide spec → quality checks → editable PPTX → artifact grading → narrative grading → continuity grading)
+- theme system: complete (5 built-in themes: professional-blue, forest-green, warm-sunset, minimal-gray, ocean-teal)
+- speaker notes enhancement: complete (structured [开场][要点][数据][过渡][来源] sections)
 - content enrichment: complete (key_points from claims+text, visual_elements with events/column_points/step_labels/labels)
 - cover/summary enrichment: complete (cover has audience+core claim+topic-overview, summary has all-unit claims with [binding] annotations)
 - narrative quality grading: complete (deterministic + model-assisted modes, three-dimensional scoring)

@@ -6,6 +6,14 @@
 
 ## Recently Completed
 
+- implemented theme system in `src/renderer/themes.py` with 5 built-in themes: professional-blue, forest-green, warm-sunset, minimal-gray, ocean-teal
+- `SlideTheme` frozen dataclass with 18 color slots; PPTX renderer refactored to consume theme colors
+- `render_slide_spec_to_pptx` accepts optional `theme` parameter (string or SlideTheme object)
+- wired theme into pipeline (`theme` param), CLI (`--theme` flag), Makefile (`demo-themes` target)
+- enhanced speaker notes with structured `_build_speaker_notes`: [开场] [要点] [数据] [过渡] [来源] sections
+- regenerated all fixture files to reflect enriched speaker notes
+- added 23 new tests: ThemeRegistryTests (8), ThemeRenderingTests (6), SpeakerNotesEnhancementTests (6), PipelineThemeIntegrationTests (3)
+- total 332 tests passing, 39/39 evals green
 - added heading-priority timeline boost: headings with `timeline`/`evolution`/`history`/`checkpoint` + year refs override comparison/process
 - tightened comparison contrast connector rule: single `but`/`while` no longer independently triggers comparison
 - moved `landscape` keyword to heading-only scope; added chart keywords: `latency`, `throughput`, `metric`, `benchmark`, `sla`

@@ -100,6 +100,61 @@ class DeterministicProvider(Provider):
         return key_points
 
     @classmethod
+    def _build_speaker_notes(cls, unit: dict, layout_type: str, key_points: list[str]) -> str:
+        """基于 unit 内容生成结构化的演讲备注。
+
+        策略：
+        1. 开场提示：基于布局类型的演讲引导
+        2. 关键论点：从 key_points 中提取核心要点
+        3. 数据引用：从 text 中提取数字/百分比等关键数据
+        4. 过渡提示：基于布局类型的过渡建议
+        5. 来源标注：source binding 信息
+        """
+        import re as _re
+
+        lines: list[str] = []
+        binding = unit.get("source_binding", "")
+        heading = unit.get("section_heading", "")
+        text = unit.get("text", "")
+
+        # 1. 开场提示
+        openers = {
+            "timeline": f"[开场] 这页展示了「{heading}」的时间演进脉络。",
+            "comparison": f"[开场] 这页对比了「{heading}」中的不同选项。",
+            "process": f"[开场] 这页梳理了「{heading}」的行动路径。",
+            "chart": f"[开场] 这页呈现了「{heading}」的关键数据指标。",
+            "summary": f"[开场] 这页总结了「{heading}」的核心发现。",
+        }
+        lines.append(openers.get(layout_type, f"[开场] 这页聚焦于「{heading}」。"))
+
+        # 2. 关键论点
+        if key_points:
+            lines.append("[要点]")
+            for i, kp in enumerate(key_points[:3], 1):
+                lines.append(f"  {i}. {kp}")
+
+        # 3. 数据引用：提取文本中的数字和百分比
+        data_refs = _re.findall(r"\d+(?:\.\d+)?%|\$[\d,.]+[BMK]?|\d{4}年|\b20\d{2}\b", text)
+        if data_refs:
+            unique_refs = list(dict.fromkeys(data_refs))[:4]
+            lines.append(f"[数据] 关键数据点: {', '.join(unique_refs)}")
+
+        # 4. 过渡提示
+        transitions = {
+            "timeline": "[过渡] 了解了时间线后，接下来看看这些变化带来的具体影响。",
+            "comparison": "[过渡] 对比之后，让我们看看推荐的行动方案。",
+            "process": "[过渡] 明确了步骤后，接下来关注执行中的关键指标。",
+            "chart": "[过渡] 数据说明了现状，接下来看看我们的应对策略。",
+            "summary": "[过渡] 基于以上发现，让我们深入具体分析。",
+        }
+        lines.append(transitions.get(layout_type, "[过渡] 接下来进入下一个主题。"))
+
+        # 5. 来源标注
+        lines.append(f"[来源] {binding}")
+
+        return "\n".join(lines)
+
+    @classmethod
     def build_unit_slide(cls, unit: dict) -> dict:
         layout_type = cls.infer_layout_type(unit)
         key_points = cls._extract_key_points(unit)
@@ -120,7 +175,7 @@ class DeterministicProvider(Provider):
             "visual_elements": cls.build_visual_elements(layout_type, unit),
             "source_bindings": [unit["source_binding"]],
             "must_include_checks": [unit["unit_id"]],
-            "speaker_notes": f'Ground this slide in {unit["source_binding"]} and keep the structure editable.',
+            "speaker_notes": cls._build_speaker_notes(unit, layout_type, key_points),
         }
 
     @staticmethod

@@ -1,6 +1,6 @@
 PYTHON ?= python3
 
-.PHONY: eval report context handoff test example-pipeline strongest-demo render-demo demo-saas demo-tech demo-all grade-artifact verify-online archive-online-verification check-live-env prepare-live-verification report-live-verification live-status init-live-env compare-acceptance
+.PHONY: eval report context handoff test example-pipeline strongest-demo render-demo demo-saas demo-tech demo-themes demo-all grade-artifact verify-online archive-online-verification check-live-env prepare-live-verification report-live-verification live-status init-live-env compare-acceptance
 
 eval:
 	$(PYTHON) harness/self_accept.py
@@ -72,11 +72,26 @@ print(f'Artifact: {result.get(\"artifact_grade\", {}).get(\"status\", \"N/A\")}'
 Path('reports/tech-review/slide-spec.json').write_text(json.dumps(result['slide_spec'], ensure_ascii=False, indent=2), encoding='utf-8'); \
 Path('reports/tech-review/quality-report.json').write_text(json.dumps(result['quality_report'], ensure_ascii=False, indent=2), encoding='utf-8')"
 
-demo-all: render-demo demo-saas demo-tech
+demo-all: render-demo demo-saas demo-tech demo-themes
 	@echo "==> All demos rendered successfully."
 	@echo "  - reports/strongest-demo/strongest-demo.pptx"
 	@echo "  - reports/saas-launch/saas-launch.pptx"
 	@echo "  - reports/tech-review/tech-review.pptx"
+	@echo "  - reports/themes/ (5 themed variants)"
+
+demo-themes:
+	@echo "==> Rendering all theme variants..."
+	@mkdir -p reports/themes
+	$(PYTHON) -c "\
+from pathlib import Path; \
+import json; \
+from src.runtime.pipeline import run_pipeline; \
+from src.renderer.themes import list_themes; \
+raw = json.loads(Path('fixtures/source-packs/strongest-demo-source-pack.json').read_text()); \
+for theme in list_themes(): \
+    result = run_pipeline(raw, render_pptx=Path(f'reports/themes/{theme}.pptx'), theme=theme); \
+    print(f'  {theme}: {result.get(\"pptx_path\", \"N/A\")}'); \
+print(f'All {len(list_themes())} themes rendered.')"
 
 verify-online:
 	$(PYTHON) -m src.runtime.cli \

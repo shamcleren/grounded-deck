@@ -83,6 +83,11 @@ def main() -> int:
         dest="grade_artifact",
         help="Skip PPTX artifact grading.",
     )
+    parser.add_argument(
+        "--theme",
+        default=None,
+        help="PPTX color theme name (e.g. professional-blue, forest-green, warm-sunset, minimal-gray, ocean-teal).",
+    )
     args = parser.parse_args()
 
     raw_pack = json.loads(Path(args.input).read_text(encoding="utf-8"))
@@ -106,6 +111,7 @@ def main() -> int:
             raw_pack,
             provider=provider,
             render_pptx=render_pptx,
+            theme=args.theme,
             grade_artifact=args.grade_artifact,
         )
         write_pipeline_outputs(output_dir, result)

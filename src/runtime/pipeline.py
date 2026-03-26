@@ -16,6 +16,7 @@ def run_pipeline(
     provider: Provider | None = None,
     *,
     render_pptx: str | Path | None = None,
+    theme: str | None = None,
     grade_artifact: bool = True,
     grade_narrative_quality: bool = True,
 ) -> dict:
@@ -25,6 +26,7 @@ def run_pipeline(
         raw_pack: 原始 source pack dict
         provider: LLM provider（默认 DeterministicProvider）
         render_pptx: 如果提供，将 slide spec 渲染为 .pptx 文件并输出到该路径
+        theme: PPTX 主题名称（默认 professional-blue）
         grade_artifact: 如果为 True 且 render_pptx 已提供，则自动执行 PPTX artifact grading
         grade_narrative_quality: 如果为 True，执行叙事质量评分
 
@@ -51,8 +53,10 @@ def run_pipeline(
 
     # 可选的 PPTX 渲染步骤
     if render_pptx is not None:
-        pptx_path = render_slide_spec_to_pptx(slide_spec, render_pptx)
+        pptx_path = render_slide_spec_to_pptx(slide_spec, render_pptx, theme=theme)
         result["pptx_path"] = str(pptx_path)
+        if theme:
+            result["theme"] = theme
 
         # 自动 artifact grading
         if grade_artifact:

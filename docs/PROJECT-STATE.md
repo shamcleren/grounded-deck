@@ -174,6 +174,21 @@ The strongest deterministic planning demo is now curated back onto `main` as a c
 - added `demo-tech` Makefile target and updated `demo-all` to include tech-review
 - added 15 new tests in `test_diverse_samples.py`: TechReviewRenderingTests (9), SectionDividerTests (6)
 - confirmed all 309 tests pass and `make eval` remains green
+- implemented theme system in `src/renderer/themes.py` with 5 built-in themes: professional-blue (default), forest-green, warm-sunset, minimal-gray, ocean-teal
+- `SlideTheme` frozen dataclass defines 18 color slots covering all layout-specific colors
+- refactored PPTX renderer to consume theme colors instead of hardcoded constants
+- `render_slide_spec_to_pptx` now accepts optional `theme` parameter (string name or `SlideTheme` object)
+- updated `src/renderer/__init__.py` to export `SlideTheme`, `get_theme`, `list_themes`
+- wired theme support into `run_pipeline` (`theme` param), CLI (`--theme` flag), and Makefile (`demo-themes` target)
+- enhanced speaker notes generation with structured `_build_speaker_notes` method in `DeterministicProvider`:
+  - [开场] layout-specific opening prompt with section heading
+  - [要点] numbered key points from unit content
+  - [数据] extracted numeric/percentage data references
+  - [过渡] layout-specific transition suggestion
+  - [来源] source binding annotation
+- regenerated all fixture files (slide-spec, quality-report) to reflect enriched speaker notes
+- added 23 new tests in `tests/test_themes_and_notes.py`: ThemeRegistryTests (8), ThemeRenderingTests (6), SpeakerNotesEnhancementTests (6), PipelineThemeIntegrationTests (3)
+- confirmed all 332 tests pass and `make eval` remains 39/39 green
 
 ## Current Next Action
 
@@ -187,7 +202,8 @@ Continue improving provider-backed planning and grading against the strongest-de
 4. ~~upgrade all data-bearing layouts (timeline, process) to native Table objects~~ ✅
 5. ~~diversify sample dataset with English source pack and enhance English keyword coverage~~ ✅
 6. ~~add tech-review source pack with section dividers and heading-priority timeline boost~~ ✅
-7. preserve the repository-owned strongest-demo live acceptance snapshot while keeping `reports/live-verification-latest.*` as the rolling pointer
+7. ~~implement theme system with multiple color schemes and structured speaker notes~~ ✅
+8. preserve the repository-owned strongest-demo live acceptance snapshot while keeping `reports/live-verification-latest.*` as the rolling pointer
 7. compare future strongest-demo live refreshes against the archived acceptance summary instead of treating every passing run as interchangeable
 6. keep provider-backed planning improvements, acceptance-aligned prompt guardrails, and `make verify-online` healthy without weakening deterministic regression coverage
 

@@ -5,3 +5,8 @@ from src.renderer.pptx_renderer import (
     get_supported_layouts,
     render_slide_spec_to_pptx,
 )
+from src.renderer.themes import (
+    SlideTheme,
+    get_theme,
+    list_themes,
+)

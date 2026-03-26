@@ -117,7 +117,7 @@
       "must_include_checks": [
         "src-01:sec-01"
       ],
-      "speaker_notes": "Ground this slide in src-01:sec-01 and keep the structure editable."
+      "speaker_notes": "[开场] 这页展示了「出口增长」的时间演进脉络。\n[要点]\n  1. 中国新能源汽车出口增长正在扩大海外市场覆盖。\n  2. 出口增长 2024 年中国新能源汽车出口继续增长，欧洲和东南亚是重点市场\n[数据] 关键数据点: 2024\n[过渡] 了解了时间线后，接下来看看这些变化带来的具体影响。\n[来源] src-01:sec-01"
     },
     {
       "slide_id": "slide-src-01-sec-02",
@@ -143,7 +143,7 @@
       "must_include_checks": [
         "src-01:sec-02"
       ],
-      "speaker_notes": "Ground this slide in src-01:sec-02 and keep the structure editable."
+      "speaker_notes": "[开场] 这页梳理了「政策影响」的行动路径。\n[要点]\n  1. 政策约束已经成为出海节奏的核心变量。\n  2. 政策影响 各国补贴、关税和本地化要求正在影响企业进入节奏\n[过渡] 明确了步骤后，接下来关注执行中的关键指标。\n[来源] src-01:sec-02"
     },
     {
       "slide_id": "slide-src-02-sec-01",
@@ -167,7 +167,7 @@
       "must_include_checks": [
         "src-02:sec-01"
       ],
-      "speaker_notes": "Ground this slide in src-02:sec-01 and keep the structure editable."
+      "speaker_notes": "[开场] 这页呈现了「成本优势」的关键数据指标。\n[要点]\n  1. 电池成本优势仍是中国品牌国际定价能力的重要基础。\n  2. 成本优势 电池成本下降仍然是中国品牌维持价格竞争力的关键因素\n[过渡] 数据说明了现状，接下来看看我们的应对策略。\n[来源] src-02:sec-01"
     }
   ]
 }

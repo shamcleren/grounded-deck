@@ -145,7 +145,7 @@
       "must_include_checks": [
         "src-01:sec-01"
       ],
-      "speaker_notes": "Ground this slide in src-01:sec-01 and keep the structure editable."
+      "speaker_notes": "[开场] 这页展示了「Market Size Timeline」的时间演进脉络。\n[要点]\n  1. The mid-market analytics TAM reached $3.4B in 2024 with 28% projected CAGR through 2027.\n  2. Market Size Timeline The North American mid-market analytics segment grew from $2.1B in 2022 to $3.4B in 2024, with projected CAGR of 28% through 2027. Self-serve analytics adoption doubled year-over-year in the 100-500 employee segment. The mid-market analytics TAM reached $3.4B in 2024 with 28% projected CAGR through 2027.\n[数据] 关键数据点: $2.1B, 2022, $3.4B, 2024\n[过渡] 了解了时间线后，接下来看看这些变化带来的具体影响。\n[来源] src-01:sec-01"
     },
     {
       "slide_id": "slide-src-01-sec-02",
@@ -175,7 +175,7 @@
       "must_include_checks": [
         "src-01:sec-02"
       ],
-      "speaker_notes": "Ground this slide in src-01:sec-02 and keep the structure editable."
+      "speaker_notes": "[开场] 这页对比了「Competitive Landscape」中的不同选项。\n[要点]\n  1. Mid-market buyers prioritize time-to-value over feature depth, creating an opening for platforms with sub-week onboarding.\n  2. Competitive Landscape Incumbent tools like Tableau and Looker dominate enterprise but leave mid-market underserved on pricing and onboarding speed. New entrants compete on time-to-value: average onboarding dropped from 6 weeks to 3 days for modern platforms. Mid-market buyers prioritize time-to-value over feature depth, creating an opening for platforms with sub-week onboarding.\n[过渡] 对比之后，让我们看看推荐的行动方案。\n[来源] src-01:sec-02"
     },
     {
       "slide_id": "slide-src-02-sec-01",
@@ -203,7 +203,7 @@
       "must_include_checks": [
         "src-02:sec-01"
       ],
-      "speaker_notes": "Ground this slide in src-02:sec-01 and keep the structure editable."
+      "speaker_notes": "[开场] 这页梳理了「Launch Sequence」的行动路径。\n[要点]\n  1. A three-phase launch sequence from beta to PLG to channel partners de-risks market entry while building social proof.\n  2. Launch Sequence Phase 1: invite-only beta with 50 design partners (July). Phase 2: public launch with self-serve signup and PLG motion (September). Phase 3: channel partner enablement and outbound sales overlay (November). A three-phase launch sequence from beta to PLG to channel partners de-risks market entry while building social proof.\n[过渡] 明确了步骤后，接下来关注执行中的关键指标。\n[来源] src-02:sec-01"
     },
     {
       "slide_id": "slide-src-03-sec-01",
@@ -233,7 +233,7 @@
       "must_include_checks": [
         "src-03:sec-01"
       ],
-      "speaker_notes": "Ground this slide in src-03:sec-01 and keep the structure editable."
+      "speaker_notes": "[开场] 这页对比了「Pricing and Margins」中的不同选项。\n[要点]\n  1. An $18K ACV with 82% gross margin and sub-12-month CAC payback creates a sustainable mid-market unit economics profile.\n  2. Pricing and Margins Target ACV of $18K positions AnalyticsPro below enterprise incumbents ($50K+) but above freemium tools ($0-5K). Gross margin at 82% with CAC payback under 12 months at projected conversion rates of 8% from free trial. An $18K ACV with 82% gross margin and sub-12-month CAC payback creates a sustainable mid-market unit economics profile.\n[数据] 关键数据点: $18K, $50K, $0, 82%\n[过渡] 对比之后，让我们看看推荐的行动方案。\n[来源] src-03:sec-01"
     },
     {
       "slide_id": "slide-src-04-sec-01",
@@ -267,7 +267,7 @@
       "must_include_checks": [
         "src-04:sec-01"
       ],
-      "speaker_notes": "Ground this slide in src-04:sec-01 and keep the structure editable."
+      "speaker_notes": "[开场] 这页呈现了「Beta NPS and Feature Requests」的关键数据指标。\n[要点]\n  1. Beta NPS of 62 and 47-minute time-to-first-insight validate the product-market fit hypothesis for mid-market self-serve analytics.\n  2. Beta NPS and Feature Requests Beta cohort NPS averaged 62 across 38 respondents. Top feature requests: Slack integration (71%), scheduled reports (64%), and custom dashboards (58%). Median time-to-first-insight was 47 minutes, beating the 2-hour target by 60%. Beta NPS of 62 and 47-minute time-to-first-insight validate the product-market fit hypothesis for mid-market self-serve analytics.\n[数据] 关键数据点: 71%, 64%, 58%, 60%\n[过渡] 数据说明了现状，接下来看看我们的应对策略。\n[来源] src-04:sec-01"
     }
   ]
 }

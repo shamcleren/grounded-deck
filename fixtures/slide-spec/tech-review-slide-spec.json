@@ -157,7 +157,7 @@
       "must_include_checks": [
         "src-01:sec-01"
       ],
-      "speaker_notes": "Ground this slide in src-01:sec-01 and keep the structure editable."
+      "speaker_notes": "[开场] 这页展示了「System Evolution Timeline」的时间演进脉络。\n[要点]\n  1. The platform evolved from a monolith in 2019 to a partial microservices architecture by 2023, but the core order engine remains monolithic at 340K LOC.\n  2. System Evolution Timeline CloudStack was originally deployed in 2019 as a monolithic Java application. In 2021, the team extracted the auth service and billing module into microservices. By 2023, the API gateway and event bus were added, but the core order-processing engine remains monolithic with 340K lines of code. The platform evolved from a monolith in 2019 to a partial microservices architecture by 2023, but the core order engine remains monolithic at 340K LOC.\n[数据] 关键数据点: 2019, 2021, 2023\n[过渡] 了解了时间线后，接下来看看这些变化带来的具体影响。\n[来源] src-01:sec-01"
     },
     {
       "slide_id": "slide-src-01-sec-02",
@@ -189,7 +189,7 @@
       "must_include_checks": [
         "src-01:sec-02"
       ],
-      "speaker_notes": "Ground this slide in src-01:sec-02 and keep the structure editable."
+      "speaker_notes": "[开场] 这页对比了「Monolith vs Microservices Trade-offs」中的不同选项。\n[要点]\n  1. Microservices improved deploy frequency from weekly to daily but increased infrastructure cost by 35%, while the monolith trades scalability for operational simplicity.\n  2. Monolith vs Microservices Trade-offs The monolithic order engine offers simpler debugging and lower operational overhead, but limits independent scaling and deployment velocity. Microservices for auth and billing improved deploy frequency from weekly to daily, but increased infrastructure cost by 35% and introduced distributed tracing complexity. Microservices improved deploy frequency from weekly to daily but increased infrastructure cost by 35%, while the monolith trades scalability for operational simplicity.\n[数据] 关键数据点: 35%\n[过渡] 对比之后，让我们看看推荐的行动方案。\n[来源] src-01:sec-02"
     },
     {
       "slide_id": "section-1",
@@ -229,7 +229,7 @@
       "must_include_checks": [
         "src-02:sec-01"
       ],
-      "speaker_notes": "Ground this slide in src-02:sec-01 and keep the structure editable."
+      "speaker_notes": "[开场] 这页梳理了「Migration Sequence」的行动路径。\n[要点]\n  1. A four-phase migration sequence from strangler fig extraction through full containerization de-risks the transition while maintaining service continuity.\n  2. Migration Sequence Phase 1: Strangler fig pattern to extract the inventory module (Q4 2025). Phase 2: Event-driven decomposition of the order pipeline with Kafka (Q1 2026). Phase 3: Full containerization and Kubernetes migration with canary deployment gates (Q2 2026). Phase 4: Legacy monolith decommission and data migration validation (Q3 2026). A four-phase migration sequence from strangler fig extraction through full containerization de-risks the transition while maintaining service continuity.\n[数据] 关键数据点: 2025, 2026\n[过渡] 明确了步骤后，接下来关注执行中的关键指标。\n[来源] src-02:sec-01"
     },
     {
       "slide_id": "section-2",
@@ -274,7 +274,7 @@
       "must_include_checks": [
         "src-03:sec-01"
       ],
-      "speaker_notes": "Ground this slide in src-03:sec-01 and keep the structure editable."
+      "speaker_notes": "[开场] 这页呈现了「Latency and Throughput Metrics」的关键数据指标。\n[要点]\n  1. Migration is projected to reduce P99 latency by 57% (420ms to 180ms) and increase throughput 4.3x (2,800 to 12,000 TPS) while cutting per-transaction cost by 44%.\n  2. Latency and Throughput Metrics Current P99 latency is 420ms for order processing, with peak throughput of 2,800 TPS. Post-migration projections show P99 dropping to 180ms and throughput scaling to 12,000 TPS. Infrastructure cost per transaction is expected to decrease from $0.0034 to $0.0019 after containerization. Migration is projected to reduce P99 latency by 57% (420ms to 180ms) and increase throughput 4.3x (2,800 to 12,000 TPS) while cutting per-transaction cost by 44%.\n[数据] 关键数据点: $0.0034, $0.0019, 57%, 44%\n[过渡] 数据说明了现状，接下来看看我们的应对策略。\n[来源] src-03:sec-01"
     },
     {
       "slide_id": "section-3",
@@ -315,7 +315,7 @@
       "must_include_checks": [
         "src-04:sec-01"
       ],
-      "speaker_notes": "Ground this slide in src-04:sec-01 and keep the structure editable."
+      "speaker_notes": "[开场] 这页对比了「Risk Landscape and Mitigation」中的不同选项。\n[要点]\n  1. Data consistency during dual-write is the highest-priority risk, mitigated by CDC-based replication; team upskilling and multi-cloud abstraction address secondary risks.\n  2. Risk Landscape and Mitigation Top risks include data consistency during dual-write period (likelihood: high, impact: critical), team skill gaps in Kubernetes operations (likelihood: medium, impact: high), and vendor lock-in with managed Kafka service (likelihood: low, impact: medium). Mitigation strategies include CDC-based replication, a 12-week upskilling program, and multi-cloud abstraction layers. Data consistency during dual-write is the highest-priority risk, mitigated by CDC-based replication; team upskilling and multi-cloud abstraction address secondary risks.\n[过渡] 对比之后，让我们看看推荐的行动方案。\n[来源] src-04:sec-01"
     },
     {
       "slide_id": "slide-src-04-sec-02",
@@ -343,7 +343,7 @@
       "must_include_checks": [
         "src-04:sec-02"
       ],
-      "speaker_notes": "Ground this slide in src-04:sec-02 and keep the structure editable."
+      "speaker_notes": "[开场] 这页展示了「Risk Timeline and Checkpoints」的时间演进脉络。\n[要点]\n  1. Risk exposure peaks during Q1 2026 dual-write period, with four staged go/no-go checkpoints at weeks 8, 16, 24, and 30 to control migration risk.\n  2. Risk Timeline and Checkpoints Risk exposure peaks during Q1 2026 when the order pipeline runs in dual-write mode. Key checkpoints: Phase 1 go/no-go at week 8, Phase 2 data consistency validation at week 16, Phase 3 load test gate at week 24, and final cutover approval at week 30. Risk exposure peaks during Q1 2026 dual-write period, with four staged go/no-go checkpoints at weeks 8, 16, 24, and 30 to control migration risk.\n[数据] 关键数据点: 2026\n[过渡] 了解了时间线后，接下来看看这些变化带来的具体影响。\n[来源] src-04:sec-02"
     }
   ]
 }
