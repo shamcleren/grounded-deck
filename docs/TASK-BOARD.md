@@ -1,6 +1,6 @@
 # Task Board
 
-[English](TASK-BOARD.md) | [简体中文](TASK-BOARD.zh-CN.md)
+[English](TASK-BOARD.md)
 
 ## In Progress
 
@@ -10,7 +10,6 @@
 ## Recently Completed
 
 - added narrative quality post-validation to `OpenAICompatibleProvider.grade_slide_spec`: deterministic narrative grader results attached as `_narrative_validation` metadata for cross-validation of model grading
-- completed bilingual documentation for all canonical project docs: created `.zh-CN.md` files for evaluation-plan, TASK-BOARD, PROJECT-STATE, LATEST-HANDOFF, AGENTS, and START-HERE; updated all English source files with `| [简体中文]` language switch links
 - automated acceptance delta comparison in `src/runtime/verification.py`
 - `compare_against_accepted_baseline()` function compares any candidate acceptance summary against the accepted baseline
 - `render_acceptance_delta_report()` renders delta results as Markdown

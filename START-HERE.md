@@ -1,6 +1,6 @@
 # Start Here
 
-[English](START-HERE.md) | [简体中文](START-HERE.zh-CN.md)
+[English](START-HERE.md)
 
 Use this file when a new AI session needs to continue GroundedDeck quickly.
 

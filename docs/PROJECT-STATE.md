@@ -1,6 +1,6 @@
 # Project State
 
-[English](PROJECT-STATE.md) | [简体中文](PROJECT-STATE.zh-CN.md)
+[English](PROJECT-STATE.md)
 
 ## North Star
 

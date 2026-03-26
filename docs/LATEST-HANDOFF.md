@@ -1,23 +1,19 @@
 # Latest Handoff
 
-[English](LATEST-HANDOFF.md) | [简体中文](LATEST-HANDOFF.zh-CN.md)
+[English](LATEST-HANDOFF.md)
 
 ## Session Summary
 
-GroundedDeck now has complete bilingual documentation coverage. All key project documents are available in both English and Simplified Chinese via separate language files with switch links. Combined with the automated acceptance delta comparison and continuity grading from previous sessions, the repository now has comprehensive self-validation for AI continuity, provider-backed planning consistency, and multilingual documentation.
+GroundedDeck now has narrative quality post-validation in the OpenAI-compatible provider grading path. The deterministic narrative grader cross-validates model grading results, attaching `_narrative_validation` metadata. Combined with the automated acceptance delta comparison and continuity grading from previous sessions, the repository now has comprehensive self-validation for AI continuity and provider-backed planning consistency.
 
 ## What Was Just Completed
 
-- completed bilingual documentation for all canonical project docs
-- created `docs/evaluation-plan.zh-CN.md` (evaluation plan in Chinese)
-- created `docs/TASK-BOARD.zh-CN.md` (task board in Chinese)
-- created `docs/PROJECT-STATE.zh-CN.md` (project state in Chinese)
-- created `docs/LATEST-HANDOFF.zh-CN.md` (latest handoff in Chinese)
-- created `AGENTS.zh-CN.md` (AI agent operating contract in Chinese)
-- created `START-HERE.zh-CN.md` (quick start guide in Chinese)
-- updated all English source files with `| [简体中文]` language switch links
-- total bilingual doc pairs: 12 (all docs/ files + root-level AGENTS, START-HERE, README, CONTRIBUTING)
-- total test count: 248 passing
+- added narrative quality post-validation to `OpenAICompatibleProvider.grade_slide_spec`: deterministic narrative grader results attached as `_narrative_validation` metadata for cross-validation of model grading
+- post-validation failure does not block grading (graceful degradation)
+- cleaned up TASK-BOARD.md: removed duplicate Ready Next entries, marked completed Later items
+- updated PROJECT-STATE.md Immediate Priorities: marked #1 and #2 as complete
+- removed unnecessary bilingual zh-CN copies of AI-facing continuity docs (AGENTS, START-HERE, LATEST-HANDOFF, PROJECT-STATE, TASK-BOARD, evaluation-plan) — these files are for AI consumption only and maintaining two copies creates sync burden
+- total test count: 249 passing
 - eval harness: 38/38 passing
 - added [AGENTS.md](../AGENTS.md) as the AI operating contract
 - added [docs/PROJECT-STATE.md](PROJECT-STATE.md) as the canonical current-state record
@@ -162,7 +158,6 @@ Continue improving provider-backed planning and grading against the strongest-de
 1. compare future strongest-demo online refreshes against `reports/live-verification-history/strongest-demo-1774370225/acceptance-summary.json`
 2. keep `make verify-online` passing on the real provider path while preserving `make eval`
 3. keep strongest-demo canonical docs pinned to the current accepted repository-owned snapshot until a newer verified snapshot is accepted
-4. keep canonical docs bilingual via separate language files and switch links
 
 ## Do Not Drift
 

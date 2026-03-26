@@ -1,6 +1,6 @@
 # AGENTS
 
-[English](AGENTS.md) | [简体中文](AGENTS.zh-CN.md)
+[English](AGENTS.md)
 
 This repository is designed for long-running AI-driven development. Do not depend on chat history as the source of truth. The repository itself is the durable memory.
 
