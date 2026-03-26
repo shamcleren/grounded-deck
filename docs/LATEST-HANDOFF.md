@@ -1,23 +1,24 @@
 # Latest Handoff
 
-[English](LATEST-HANDOFF.md)
+[English](LATEST-HANDOFF.md) | [简体中文](LATEST-HANDOFF.zh-CN.md)
 
 ## Session Summary
 
-GroundedDeck now has automated acceptance delta comparison that ensures future live verification runs are automatically compared against the accepted strongest-demo baseline. The `archive_verification_summary` flow auto-generates `acceptance-delta.json` and `acceptance-delta.md`, and the eval harness includes an `acceptance-baseline` check. Combined with the continuity grading from the previous session, the repository now has comprehensive self-validation for both AI continuity and provider-backed planning consistency.
+GroundedDeck now has complete bilingual documentation coverage. All key project documents are available in both English and Simplified Chinese via separate language files with switch links. Combined with the automated acceptance delta comparison and continuity grading from previous sessions, the repository now has comprehensive self-validation for AI continuity, provider-backed planning consistency, and multilingual documentation.
 
 ## What Was Just Completed
 
-- automated acceptance delta comparison in `src/runtime/verification.py`
-- `compare_against_accepted_baseline()` function compares any candidate acceptance summary against the accepted baseline, returning status (match/drift/error), differences list, and error details
-- `render_acceptance_delta_report()` renders delta results as Markdown report
-- `ACCEPTED_STRONGEST_DEMO_BASELINE` constant points to the canonical accepted snapshot at `reports/live-verification-history/strongest-demo-1774370225/acceptance-summary.json`
-- `archive_verification_summary` now auto-generates `acceptance-delta.json` and `acceptance-delta.md` when archiving, so every future `make archive-online-verification` automatically compares against the baseline
-- added `acceptance-baseline` check to eval harness: validates baseline exists, is valid JSON, has required fields, self-compares as match, and checks all passing archived snapshots from the baseline timestamp onwards
-- added `make compare-acceptance` Makefile target for independent baseline comparison (compares latest archived snapshot against accepted baseline)
-- added 12 acceptance baseline comparison tests covering: baseline existence, valid JSON, required fields, self-match, drift detection, timestamp-only match, missing candidate/baseline error handling, delta report rendering (match/drift/error), and all-archived-snapshots regression
-- total test count: 248 passing (up from 236)
-- eval harness: 38/38 passing (up from 37)
+- completed bilingual documentation for all canonical project docs
+- created `docs/evaluation-plan.zh-CN.md` (evaluation plan in Chinese)
+- created `docs/TASK-BOARD.zh-CN.md` (task board in Chinese)
+- created `docs/PROJECT-STATE.zh-CN.md` (project state in Chinese)
+- created `docs/LATEST-HANDOFF.zh-CN.md` (latest handoff in Chinese)
+- created `AGENTS.zh-CN.md` (AI agent operating contract in Chinese)
+- created `START-HERE.zh-CN.md` (quick start guide in Chinese)
+- updated all English source files with `| [简体中文]` language switch links
+- total bilingual doc pairs: 12 (all docs/ files + root-level AGENTS, START-HERE, README, CONTRIBUTING)
+- total test count: 248 passing
+- eval harness: 38/38 passing
 - added [AGENTS.md](../AGENTS.md) as the AI operating contract
 - added [docs/PROJECT-STATE.md](PROJECT-STATE.md) as the canonical current-state record
 - added [docs/ARCHITECTURE-DECISIONS.md](ARCHITECTURE-DECISIONS.md) to prevent architecture drift

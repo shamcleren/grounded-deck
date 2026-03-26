@@ -1,14 +1,14 @@
 # Task Board
 
-[English](TASK-BOARD.md)
+[English](TASK-BOARD.md) | [简体中文](TASK-BOARD.zh-CN.md)
 
 ## In Progress
 
 - keep strongest-demo provider prompts and live verification aligned to the archived acceptance snapshot before promoting more provider-backed planning changes
-- keep canonical docs bilingual via separate language files and switch links
 
 ## Recently Completed
 
+- completed bilingual documentation for all canonical project docs: created `.zh-CN.md` files for evaluation-plan, TASK-BOARD, PROJECT-STATE, LATEST-HANDOFF, AGENTS, and START-HERE; updated all English source files with `| [简体中文]` language switch links
 - automated acceptance delta comparison in `src/runtime/verification.py`
 - `compare_against_accepted_baseline()` function compares any candidate acceptance summary against the accepted baseline
 - `render_acceptance_delta_report()` renders delta results as Markdown
@@ -60,8 +60,6 @@
 - compare future strongest-demo live refreshes against `reports/live-verification-history/strongest-demo-1774370225/acceptance-summary.json` before accepting another prompt change
 - keep strongest-demo canonical docs pinned to the current accepted repository-owned snapshot until a newer verified snapshot is accepted
 - compare future strongest-demo live refreshes against `reports/live-verification-history/strongest-demo-1774370225/acceptance-summary.json` before accepting another prompt change
-- keep strongest-demo canonical docs pinned to the current accepted repository-owned snapshot until a newer verified snapshot is accepted
-- keep canonical docs bilingual via separate language files and switch links
 
 ## Later
 

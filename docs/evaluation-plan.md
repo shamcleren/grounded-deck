@@ -1,6 +1,6 @@
 # Evaluation Plan
 
-[English](evaluation-plan.md)
+[English](evaluation-plan.md) | [简体中文](evaluation-plan.zh-CN.md)
 
 ## Principles
 
