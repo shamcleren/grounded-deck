@@ -488,7 +488,60 @@ class PipelineFixtureTests(unittest.TestCase):
             normalized,
             slide_spec,
         )
-        self.assertEqual(report, expected)
+        # 核心 grading 结果（不含 _narrative_validation）应与 expected 一致
+        report_core = {k: v for k, v in report.items() if k != "_narrative_validation"}
+        self.assertEqual(report_core, expected)
+
+        # 验证 _narrative_validation 附加字段存在且结构正确
+        self.assertIn("_narrative_validation", report)
+        nv = report["_narrative_validation"]
+        self.assertIn("mode", nv)
+        self.assertEqual(nv["mode"], "deterministic")
+        self.assertIn("slide_count", nv)
+        self.assertIn("avg_composite", nv)
+        self.assertIn("status", nv)
+        self.assertIn("issues", nv)
+
+    def test_openai_compatible_provider_grade_narrative_validation_with_example_fixture(self) -> None:
+        """grade_slide_spec 对 example fixture 也能正确附加 _narrative_validation。"""
+        expected = {
+            "status": "pass",
+            "failures": [],
+            "coverage": {"required_units": 3, "covered_units": 3},
+            "grounding": {"total_content_slides": 2, "grounded_slides": 2},
+            "visual_form": {"expected_units": 3, "matched_units": 3},
+            "provider": "openai-compatible",
+            "model": "gpt-4.1-mini",
+        }
+
+        def fake_transport(_: dict) -> dict:
+            return {
+                "choices": [
+                    {"message": {"content": json.dumps(expected, ensure_ascii=False)}}
+                ]
+            }
+
+        provider = OpenAICompatibleProvider(
+            ProviderConfig(
+                provider="openai-compatible",
+                model="gpt-4.1-mini",
+                api_key_env="GROUNDED_DECK_API_KEY",
+                base_url="https://api.example.com/v1",
+            ),
+            api_key="secret",
+            transport=fake_transport,
+        )
+
+        report = provider.grade_slide_spec(
+            load_json(NORMALIZED_FIXTURE),
+            load_json(SLIDE_SPEC_FIXTURE),
+        )
+        self.assertIn("_narrative_validation", report)
+        nv = report["_narrative_validation"]
+        self.assertEqual(nv["mode"], "deterministic")
+        self.assertGreater(nv["slide_count"], 0)
+        self.assertGreaterEqual(nv["avg_composite"], 0.0)
+        self.assertLessEqual(nv["avg_composite"], 1.0)
 
     def test_openai_compatible_provider_build_layout_callback(self) -> None:
         """build_layout_callback 返回的 callback 向 LLM 发送单 unit 请求并解析布局字符串。"""
@@ -622,6 +675,8 @@ class PipelineFixtureTests(unittest.TestCase):
         self.assertEqual(report["coverage"]["required_units_ids"], ["u1", "u2"])
         self.assertEqual(report["visual_form"]["expected_units"], 2)
         self.assertEqual(report["visual_form"]["matched_units"], 1)
+        # _narrative_validation 也应存在
+        self.assertIn("_narrative_validation", report)
 
     def test_openai_compatible_provider_rejects_invalid_quality_report_shape(self) -> None:
         def fake_transport(_: dict) -> dict:

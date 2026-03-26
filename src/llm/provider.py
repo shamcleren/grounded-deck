@@ -853,6 +853,25 @@ class OpenAICompatibleProvider(Provider):
         parsed = self.parse_json_response(self.transport(request_payload))
         parsed = self._normalize_quality_report(parsed)
         validate_quality_report_like(parsed)
+
+        # 确定性 narrative quality 后验证：交叉验证模型 grading 结果
+        try:
+            from src.quality.narrative_grader import grade_narrative_deterministic
+            narrative_report = grade_narrative_deterministic(normalized_pack, slide_spec)
+            parsed["_narrative_validation"] = {
+                "mode": narrative_report.mode,
+                "slide_count": narrative_report.slide_count,
+                "avg_coherence": narrative_report.avg_coherence,
+                "avg_grounding": narrative_report.avg_grounding,
+                "avg_visual_fit": narrative_report.avg_visual_fit,
+                "avg_composite": narrative_report.avg_composite,
+                "status": narrative_report.status,
+                "issues": narrative_report.all_issues,
+            }
+        except Exception:
+            # 后验证失败不应阻塞 grading 结果
+            parsed["_narrative_validation"] = {"error": "narrative validation unavailable"}
+
         return parsed
 
     def _default_transport(self, prepared_request: dict) -> dict:

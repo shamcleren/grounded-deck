@@ -5,9 +5,11 @@
 ## In Progress
 
 - keep strongest-demo provider prompts and live verification aligned to the archived acceptance snapshot before promoting more provider-backed planning changes
+- narrative quality post-validation in `OpenAICompatibleProvider.grade_slide_spec` — deterministic narrative grader cross-validates model grading results
 
 ## Recently Completed
 
+- added narrative quality post-validation to `OpenAICompatibleProvider.grade_slide_spec`: deterministic narrative grader results attached as `_narrative_validation` metadata for cross-validation of model grading
 - completed bilingual documentation for all canonical project docs: created `.zh-CN.md` files for evaluation-plan, TASK-BOARD, PROJECT-STATE, LATEST-HANDOFF, AGENTS, and START-HERE; updated all English source files with `| [简体中文]` language switch links
 - automated acceptance delta comparison in `src/runtime/verification.py`
 - `compare_against_accepted_baseline()` function compares any candidate acceptance summary against the accepted baseline
@@ -59,11 +61,9 @@
 - continue improving provider-backed planning and grading against the strongest-demo path without weakening deterministic coverage
 - compare future strongest-demo live refreshes against `reports/live-verification-history/strongest-demo-1774370225/acceptance-summary.json` before accepting another prompt change
 - keep strongest-demo canonical docs pinned to the current accepted repository-owned snapshot until a newer verified snapshot is accepted
-- compare future strongest-demo live refreshes against `reports/live-verification-history/strongest-demo-1774370225/acceptance-summary.json` before accepting another prompt change
 
 ## Later
 
-- add model-assisted narrative and visual-form grading via OpenAI-compatible provider
 - add a public comparison case against generic AI PPT tools after the strongest demo exists
 
 ## Blockers

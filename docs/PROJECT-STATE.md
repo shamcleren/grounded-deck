@@ -143,8 +143,8 @@ Continue improving provider-backed planning and grading against the strongest-de
 
 ## Immediate Priorities
 
-1. grade continuity artifacts so future agents can safely resume from repository state alone
-2. grade handoff completeness and task-board freshness
+1. ~~grade continuity artifacts so future agents can safely resume from repository state alone~~ ✅
+2. ~~grade handoff completeness and task-board freshness~~ ✅
 3. preserve the repository-owned strongest-demo live acceptance snapshot while keeping `reports/live-verification-latest.*` as the rolling pointer
 4. compare future strongest-demo live refreshes against the archived acceptance summary instead of treating every passing run as interchangeable
 5. keep provider-backed planning improvements, acceptance-aligned prompt guardrails, and `make verify-online` healthy without weakening deterministic regression coverage
