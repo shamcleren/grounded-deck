@@ -192,7 +192,14 @@ The strongest deterministic planning demo is now curated back onto `main` as a c
 
 ## Current Next Action
 
-Continue improving provider-backed planning and grading against the strongest-demo path without weakening deterministic coverage.
+Implement the Markdown Ingest module with LLM deep comprehension. This is the critical missing piece that enables the project owner to test with real Markdown documents. The module should:
+
+1. Parse Markdown structure (headings, paragraphs, lists, code blocks, tables)
+2. Use LLM to deeply understand the content — extracting conclusions, claims, data, logical relationships, and candidate visual structures
+3. Produce the internal source pack JSON format that the existing pipeline consumes
+4. Be accessible via CLI: `python -m src.runtime.cli --input doc.md --output-dir reports/my-deck`
+
+This aligns with the architecture doc's "来源理解" layer, which was designed to accept raw documents and extract structured information.
 
 ## Immediate Priorities
 
@@ -203,7 +210,11 @@ Continue improving provider-backed planning and grading against the strongest-de
 5. ~~diversify sample dataset with English source pack and enhance English keyword coverage~~ ✅
 6. ~~add tech-review source pack with section dividers and heading-priority timeline boost~~ ✅
 7. ~~implement theme system with multiple color schemes and structured speaker notes~~ ✅
-8. preserve the repository-owned strongest-demo live acceptance snapshot while keeping `reports/live-verification-latest.*` as the rolling pointer
+8. **implement Markdown Ingest module with LLM deep comprehension** ← current focus
+9. implement dual diagram capability: data charts (bar/line/pie) + concept diagrams (flowcharts/architecture diagrams)
+10. add PDF ingest adapter
+11. add DOCX ingest adapter
+12. preserve the repository-owned strongest-demo live acceptance snapshot while keeping `reports/live-verification-latest.*` as the rolling pointer
 7. compare future strongest-demo live refreshes against the archived acceptance summary instead of treating every passing run as interchangeable
 6. keep provider-backed planning improvements, acceptance-aligned prompt guardrails, and `make verify-online` healthy without weakening deterministic regression coverage
 

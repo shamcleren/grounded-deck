@@ -2,6 +2,7 @@
 
 ## In Progress
 
+- implement Markdown Ingest module: parse Markdown documents and use LLM to deeply understand content, producing internal source pack JSON
 - keep strongest-demo provider prompts and live verification aligned to the archived acceptance snapshot before promoting more provider-backed planning changes
 
 ## Recently Completed
@@ -88,6 +89,10 @@
 
 ## Ready Next
 
+- implement data chart generation (bar, line, pie charts) in PPTX renderer based on numeric data from source understanding
+- implement concept diagram generation (flowcharts, architecture diagrams) in PPTX renderer based on structural/relational information
+- add PDF ingest adapter as the second supported input format
+- add DOCX ingest adapter as the third supported input format
 - continue improving provider-backed planning and grading against the strongest-demo path without weakening deterministic coverage
 - compare future strongest-demo live refreshes against `reports/live-verification-history/strongest-demo-1774370225/acceptance-summary.json` before accepting another prompt change
 - keep strongest-demo canonical docs pinned to the current accepted repository-owned snapshot until a newer verified snapshot is accepted

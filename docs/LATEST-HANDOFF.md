@@ -170,13 +170,23 @@ GroundedDeck now has a pluggable theme system with 5 built-in color schemes (pro
 
 ## Immediate Next Action
 
-Continue improving provider-backed planning and grading against the strongest-demo path without weakening deterministic coverage.
+Implement the Markdown Ingest module with LLM deep comprehension — the critical missing piece that enables the project owner to test with real Markdown documents.
 
 ## First Concrete Tasks
 
-1. compare future strongest-demo online refreshes against `reports/live-verification-history/strongest-demo-1774370225/acceptance-summary.json`
-2. keep `make verify-online` passing on the real provider path while preserving `make eval`
-3. keep strongest-demo canonical docs pinned to the current accepted repository-owned snapshot until a newer verified snapshot is accepted
+1. implement `src/ingest/markdown_reader.py` — parse Markdown structure (headings, paragraphs, lists, code blocks, tables)
+2. implement `src/ingest/source_understanding.py` — use LLM to deeply understand content, extracting conclusions, claims, data, logical relationships, and candidate visual structures
+3. wire Markdown ingest into CLI: `python -m src.runtime.cli --input doc.md --output-dir reports/my-deck`
+4. add tests for Markdown parsing and LLM-based source understanding
+5. compare future strongest-demo online refreshes against `reports/live-verification-history/strongest-demo-1774370225/acceptance-summary.json`
+
+## Design Decisions Confirmed (AD-0004 through AD-0008)
+
+- **AD-0004**: Source understanding via LLM deep comprehension — the JSON source pack is an internal intermediate format, users provide raw documents
+- **AD-0005**: Progressive format support starting with Markdown — simplest text structure first, then PDF, DOCX, etc.
+- **AD-0006**: Dual diagram capability — both data charts (bar/line/pie) and concept diagrams (flowcharts/architecture diagrams) are required
+- **AD-0007**: LLM-driven planning strategy — single-pass vs multi-step determined by quality, not convenience
+- **AD-0008**: Testing strategy — user tests via CLI end-to-end (A), developer tests step-by-step (B)
 
 ## Do Not Drift
 
