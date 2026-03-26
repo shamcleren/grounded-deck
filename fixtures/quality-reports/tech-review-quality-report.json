@@ -2,27 +2,27 @@
   "status": "pass",
   "failures": [],
   "coverage": {
-    "required_units": 5,
-    "covered_units": 5,
+    "required_units": 6,
+    "covered_units": 6,
     "coverage_ratio": 1.0
   },
   "grounding": {
-    "total_content_slides": 6,
-    "grounded_slides": 6,
+    "total_content_slides": 7,
+    "grounded_slides": 7,
     "ungrounded_slide_ids": [],
     "grounding_ratio": 1.0
   },
   "visual_form": {
-    "expected_units": 5,
-    "matched_units": 5,
+    "expected_units": 6,
+    "matched_units": 6,
     "mismatches": [],
     "match_ratio": 1.0
   },
   "narrative_quality": {
-    "total_key_points": 18,
+    "total_key_points": 21,
     "slides_with_empty_key_points": [],
     "slides_with_generic_key_points": [],
-    "source_annotated_points": 5,
+    "source_annotated_points": 6,
     "issues": [],
     "quality_ratio": 1.0
   },

@@ -6,6 +6,15 @@
 
 ## Recently Completed
 
+- added heading-priority timeline boost: headings with `timeline`/`evolution`/`history`/`checkpoint` + year refs override comparison/process
+- tightened comparison contrast connector rule: single `but`/`while` no longer independently triggers comparison
+- moved `landscape` keyword to heading-only scope; added chart keywords: `latency`, `throughput`, `metric`, `benchmark`, `sla`
+- created `tech-review-source-pack.json` English source pack (cloud platform migration theme) with 4 sources and 6 sections
+- generated full tech-review fixture set: 6 normalized units, 11 slides (7 distinct layouts including section dividers), quality pass
+- implemented automatic section divider insertion for long decks (content slides >= 6)
+- updated quality grader to exempt section layout from ungrounded and empty key_points checks
+- added `demo-tech` Makefile target and updated `demo-all`
+- added 15 new tests: TechReviewRenderingTests (9) + SectionDividerTests (6), total 309 passing
 - enhanced visual selector English keyword coverage for comparison, process, and timeline layout inference
 - enhanced comparison column name extraction with English "X vs Y" and "incumbent vs new entrant" patterns
 - enhanced process step extraction with English "Phase 1: ... Phase 2: ..." pattern
@@ -71,7 +80,6 @@
 
 ## Ready Next
 
-- diversify sample dataset further with additional source packs (e.g. technical architecture review, quarterly business review)
 - continue improving provider-backed planning and grading against the strongest-demo path without weakening deterministic coverage
 - compare future strongest-demo live refreshes against `reports/live-verification-history/strongest-demo-1774370225/acceptance-summary.json` before accepting another prompt change
 - keep strongest-demo canonical docs pinned to the current accepted repository-owned snapshot until a newer verified snapshot is accepted

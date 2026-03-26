@@ -2,27 +2,29 @@
 
 ## Session Summary
 
-GroundedDeck visual selector now has comprehensive English keyword coverage for layout inference. A new English-language `saas-launch` source pack (SaaS product launch / go-to-market theme) has been added as a second diverse sample, producing 7 slides across 5 distinct layout types. The `make demo-all` target renders all sample PPTX files in one command. 20 new tests in `test_diverse_samples.py` cover rendering, pipeline, fixture compatibility, and English keyword inference regression.
+GroundedDeck now has three diverse sample datasets (strongest-demo Chinese, saas-launch English, tech-review English) covering all 7 layout types. The visual selector rule engine has been significantly improved with heading-priority timeline boost, tightened comparison rules, and expanded chart keywords. A new automatic section divider feature inserts section pages between different sources when decks have 6+ content slides. The tech-review sample produces 11 slides across 7 distinct layouts.
 
 ## What Was Just Completed
 
-- enhanced visual selector English keyword coverage:
-  - comparison: added `landscape`, `incumbent`, `versus`, `compete`, `tradeoff`, `trade-off` keywords and `but/while/however/whereas` contrast connector detection
-  - process: added `sequence`, `phase`, `step `, `workflow`, `playbook` keywords and `Phase N/Step N/Stage N` numbering pattern detection
-  - timeline: added `timeline`, `grew from`, `growth` keywords
-- enhanced comparison column name extraction with English "X vs Y" and "incumbent vs new entrant" patterns
-- enhanced process step extraction with English "Phase 1: ... Phase 2: ..." pattern
-- created `fixtures/source-packs/saas-launch-source-pack.json` English source pack with 4 sources (market research, product brief, financial model, customer research)
-- generated full saas-launch fixture set: normalized-source-units (5 units), slide-spec (7 slides), quality-report (pass)
-- saas-launch layout distribution: cover, summary, timeline, comparison, process, comparison, chart — 5 distinct layout types
-- added `demo-saas` and `demo-all` Makefile targets for multi-sample PPTX rendering
-- created `tests/test_diverse_samples.py` with 20 new tests:
-  - SaasLaunchRenderingTests (8): rendering, slide count, layout diversity, individual layout presence, English content
-  - SaasLaunchPipelineTests (3): quality check, end-to-end pipeline, narrative grade
-  - AllFixturesCompatibilityTests (2): all fixtures render, all source packs pass quality
-  - EnglishKeywordInferenceTests (7): landscape→comparison, phase→process, sequence→process, grew from→timeline, step extraction, Chinese regression
-- total test count: 294 passing
-- eval harness: 38/38 passing
+- added heading-priority timeline boost in `infer_layout_type`: headings containing `timeline`/`evolution`/`history`/`checkpoint` with year references now override comparison/process signals
+- tightened comparison contrast connector rule: single `but`/`while` no longer independently triggers comparison without a comparison keyword
+- moved `landscape` keyword to heading-only scope to avoid false positives from body text (e.g. "risk landscape")
+- added chart keywords: `latency`, `throughput`, `metric`, `benchmark`, `sla`
+- created `fixtures/source-packs/tech-review-source-pack.json` English source pack (cloud platform migration / technical architecture review theme) with 4 sources and 6 sections
+- generated full tech-review fixture set: 6 normalized units, 11 slides (7 distinct layouts), quality pass
+- tech-review layout distribution: cover, summary, timeline, comparison, section, process, section, chart, section, comparison, timeline — 7 distinct layout types
+- implemented automatic section divider insertion in `DeterministicProvider.draft_slide_spec`:
+  - `_insert_section_dividers` static method inserts section pages between different sources when content slides >= 6
+  - section divider title uses source title, goal uses first claim
+  - strongest-demo (4 units) and saas-launch (5 units) are unaffected
+- updated quality grader to exempt section layout from ungrounded and empty key_points checks
+- updated `total_content_slides` calculation to exclude cover and section layouts
+- added `demo-tech` Makefile target and updated `demo-all` to include tech-review
+- added 15 new tests in `test_diverse_samples.py`:
+  - TechReviewRenderingTests (9): rendering, slide count, 7 distinct layouts, section dividers, all content layouts, heading boost, checkpoint timeline, monolith vs microservices, latency/throughput chart
+  - SectionDividerTests (6): no dividers for small packs, no dividers for 5 units, dividers for 6+ units, dividers between sources, quality passes, end-to-end pipeline
+- total test count: 309 passing
+- eval harness: all passing
 - added [AGENTS.md](../AGENTS.md) as the AI operating contract
 - added [docs/PROJECT-STATE.md](PROJECT-STATE.md) as the canonical current-state record
 - added [docs/ARCHITECTURE-DECISIONS.md](ARCHITECTURE-DECISIONS.md) to prevent architecture drift
@@ -159,13 +161,13 @@ GroundedDeck visual selector now has comprehensive English keyword coverage for 
 
 ## Immediate Next Action
 
-Continue diversifying sample dataset or improving provider-backed planning and grading against the strongest-demo path without weakening deterministic coverage.
+Continue improving provider-backed planning and grading against the strongest-demo path without weakening deterministic coverage.
 
 ## First Concrete Tasks
 
-1. add more diverse source packs (e.g. technical architecture review, quarterly business review) to further validate pipeline generalization
-2. compare future strongest-demo online refreshes against `reports/live-verification-history/strongest-demo-1774370225/acceptance-summary.json`
-3. keep `make verify-online` passing on the real provider path while preserving `make eval`
+1. compare future strongest-demo online refreshes against `reports/live-verification-history/strongest-demo-1774370225/acceptance-summary.json`
+2. keep `make verify-online` passing on the real provider path while preserving `make eval`
+3. keep strongest-demo canonical docs pinned to the current accepted repository-owned snapshot until a newer verified snapshot is accepted
 
 ## Do Not Drift
 

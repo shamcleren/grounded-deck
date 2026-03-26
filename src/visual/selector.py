@@ -64,21 +64,39 @@ def infer_layout_type(unit: dict) -> LayoutSelection:
     """基于规则推断 source unit 对应的最佳 slide 布局类型。
 
     规则优先级：
+    0. 标题强信号提升：标题含 timeline/evolution/history + 年份 → timeline 优先
     1. 包含 "vs" / "对比" / "差异" -> comparison
     2. 包含 "路径" / "步骤" / "进入" / "落地" -> process
     3. 包含 "时间线" / "阶段" / 年份数字 -> timeline
     4. 包含 "成本" / "利润" / "指标" / "份额" / 百分比或数字 -> chart
     5. 其他 -> summary
     """
+    heading = unit["section_heading"].lower()
     text = f'{unit["section_heading"]} {unit["text"]}'.lower()
     signals: list[str] = []
 
-    # comparison 信号
-    comparison_keywords = ("vs", "对比", "差异", "versus", "tradeoff", "trade-off", "compete", "incumbent", "landscape")
+    # ── 标题强信号提升：标题明确含 timeline/evolution/history/checkpoint 且有年份 → timeline 优先 ──
+    heading_timeline_keywords = ("timeline", "时间线", "evolution", "history", "checkpoint", "里程碑")
+    heading_has_timeline = any(kw in heading for kw in heading_timeline_keywords)
+    year_matches = re.findall(r"\b20\d{2}\b", text)
+    if heading_has_timeline and year_matches:
+        signals.append(f"heading_timeline_boost:{heading.strip()}")
+        signals.append(f"year_refs:{','.join(unique_preserving_order(year_matches))}")
+        return LayoutSelection(
+            layout_type=LAYOUT_TIMELINE,
+            matched_signals=signals,
+        )
+
+    # ── comparison 信号 ──
+    comparison_keywords = ("vs", "对比", "差异", "versus", "tradeoff", "trade-off", "compete", "incumbent")
     for kw in comparison_keywords:
         if kw in text:
             signals.append(f"keyword:{kw}")
+    # "landscape" 仅在标题中出现时才作为 comparison 信号（避免正文中的 "risk landscape" 误触发）
+    if "landscape" in heading:
+        signals.append("keyword:landscape")
     # 英文对比结构："X but Y", "X while Y", "X however Y"
+    # 对比连接词仅在已有 comparison 关键词时才增强信号（避免单独的 but 误触发）
     if re.search(r"\b(?:but|while|however|whereas)\b", text):
         contrast_count = len(re.findall(r"\b(?:but|while|however|whereas)\b", text))
         if contrast_count >= 2 or (contrast_count >= 1 and signals):
@@ -89,14 +107,20 @@ def infer_layout_type(unit: dict) -> LayoutSelection:
             matched_signals=signals,
         )
 
-    # process 信号
-    process_keywords = ("路径", "步骤", "进入", "落地", "sequence", "phase", "step ", "workflow", "playbook")
+    # ── process 信号 ──
+    process_keywords = ("路径", "步骤", "进入", "落地", "sequence", "workflow", "playbook")
     for kw in process_keywords:
         if kw in text:
             signals.append(f"keyword:{kw}")
+    # "phase" 和 "step " 仅在非 timeline 标题中触发 process（避免 "Phase 1 checkpoint" 误触发）
+    phase_step_keywords = ("phase", "step ")
+    if not heading_has_timeline:
+        for kw in phase_step_keywords:
+            if kw in text:
+                signals.append(f"keyword:{kw}")
     # 英文分阶段模式："Phase 1 ... Phase 2" 或 "Step 1 ... Step 2"
     phase_matches = re.findall(r"\b(?:phase|step|stage)\s*\d", text, re.IGNORECASE)
-    if len(phase_matches) >= 2:
+    if len(phase_matches) >= 2 and not heading_has_timeline:
         signals.append(f"phase_refs:{len(phase_matches)}")
     if signals:
         return LayoutSelection(
@@ -104,12 +128,11 @@ def infer_layout_type(unit: dict) -> LayoutSelection:
             matched_signals=signals,
         )
 
-    # timeline 信号
+    # ── timeline 信号 ──
     timeline_keywords = ("时间线", "阶段", "timeline", "grew from", "growth")
     for kw in timeline_keywords:
         if kw in text:
             signals.append(f"keyword:{kw}")
-    year_matches = re.findall(r"\b20\d{2}\b", text)
     if year_matches:
         signals.append(f"year_refs:{','.join(unique_preserving_order(year_matches))}")
     if signals:
@@ -118,8 +141,8 @@ def infer_layout_type(unit: dict) -> LayoutSelection:
             matched_signals=signals,
         )
 
-    # chart 信号
-    chart_keywords = ("成本", "利润", "指标", "份额")
+    # ── chart 信号 ──
+    chart_keywords = ("成本", "利润", "指标", "份额", "latency", "throughput", "metric", "benchmark", "sla")
     for kw in chart_keywords:
         if kw in text:
             signals.append(f"keyword:{kw}")

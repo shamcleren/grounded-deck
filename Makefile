@@ -1,6 +1,6 @@
 PYTHON ?= python3
 
-.PHONY: eval report context handoff test example-pipeline strongest-demo render-demo demo-saas demo-all grade-artifact verify-online archive-online-verification check-live-env prepare-live-verification report-live-verification live-status init-live-env compare-acceptance
+.PHONY: eval report context handoff test example-pipeline strongest-demo render-demo demo-saas demo-tech demo-all grade-artifact verify-online archive-online-verification check-live-env prepare-live-verification report-live-verification live-status init-live-env compare-acceptance
 
 eval:
 	$(PYTHON) harness/self_accept.py
@@ -55,10 +55,28 @@ print(f'Artifact: {result.get(\"artifact_grade\", {}).get(\"status\", \"N/A\")}'
 Path('reports/saas-launch/slide-spec.json').write_text(json.dumps(result['slide_spec'], ensure_ascii=False, indent=2), encoding='utf-8'); \
 Path('reports/saas-launch/quality-report.json').write_text(json.dumps(result['quality_report'], ensure_ascii=False, indent=2), encoding='utf-8')"
 
-demo-all: render-demo demo-saas
+demo-tech:
+	@echo "==> Running tech-review pipeline and rendering PPTX..."
+	@mkdir -p reports/tech-review
+	$(PYTHON) -c "\
+from pathlib import Path; \
+import json; \
+from src.runtime.pipeline import run_pipeline; \
+from src.renderer.pptx_renderer import render_slide_spec_to_pptx; \
+raw = json.loads(Path('fixtures/source-packs/tech-review-source-pack.json').read_text()); \
+result = run_pipeline(raw, render_pptx=Path('reports/tech-review/tech-review.pptx')); \
+print(f'PPTX: {result.get(\"pptx_path\", \"N/A\")}'); \
+print(f'Slides: {len(result[\"slide_spec\"][\"slides\"])}'); \
+print(f'Quality: {result[\"quality_report\"][\"status\"]}'); \
+print(f'Artifact: {result.get(\"artifact_grade\", {}).get(\"status\", \"N/A\")}'); \
+Path('reports/tech-review/slide-spec.json').write_text(json.dumps(result['slide_spec'], ensure_ascii=False, indent=2), encoding='utf-8'); \
+Path('reports/tech-review/quality-report.json').write_text(json.dumps(result['quality_report'], ensure_ascii=False, indent=2), encoding='utf-8')"
+
+demo-all: render-demo demo-saas demo-tech
 	@echo "==> All demos rendered successfully."
 	@echo "  - reports/strongest-demo/strongest-demo.pptx"
 	@echo "  - reports/saas-launch/saas-launch.pptx"
+	@echo "  - reports/tech-review/tech-review.pptx"
 
 verify-online:
 	$(PYTHON) -m src.runtime.cli \

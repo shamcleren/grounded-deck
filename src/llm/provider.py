@@ -123,6 +123,40 @@ class DeterministicProvider(Provider):
             "speaker_notes": f'Ground this slide in {unit["source_binding"]} and keep the structure editable.',
         }
 
+    @staticmethod
+    def _insert_section_dividers(source_units: list[dict], content_slides: list[dict]) -> list[dict]:
+        """在不同 source 的 content slides 之间插入 section 分隔页。
+
+        当 content slides 数量 >= 6 时调用，为长 deck 增加结构层次。
+        分隔页标题使用 source title，goal 使用 source 的第一条 claim。
+        """
+        result: list[dict] = []
+        prev_source_id: str | None = None
+        divider_count = 0
+
+        for unit, slide in zip(source_units, content_slides):
+            current_source_id = unit["source_id"]
+            if prev_source_id is not None and current_source_id != prev_source_id:
+                divider_count += 1
+                # 使用 source title 作为分隔页标题
+                source_title = unit.get("source_title", f"Section {divider_count}")
+                first_claim = unit.get("claims", [""])[0] if unit.get("claims") else ""
+                result.append({
+                    "slide_id": f"section-{divider_count}",
+                    "title": source_title,
+                    "goal": first_claim,
+                    "layout_type": "section",
+                    "key_points": [],
+                    "visual_elements": [],
+                    "source_bindings": [],
+                    "must_include_checks": [],
+                    "speaker_notes": f"Section divider: transitioning to {source_title}.",
+                })
+            result.append(slide)
+            prev_source_id = current_source_id
+
+        return result
+
     @classmethod
     def _build_cover_key_points(cls, normalized_pack: dict) -> list[str]:
         """为 cover slide 构建 source-grounded 的 key_points。
@@ -197,6 +231,10 @@ class DeterministicProvider(Provider):
 
         content_slides = [self.build_unit_slide(unit) for unit in source_units]
 
+        # 当 content slides 数量 >= 6 时，在不同 source 之间插入 section 分隔页
+        if len(content_slides) >= 6:
+            content_slides = self._insert_section_dividers(source_units, content_slides)
+
         return {
             "deck_goal": normalized_pack["deck_goal"],
             "audience": normalized_pack["audience"],
@@ -243,7 +281,7 @@ class DeterministicProvider(Provider):
 
             covered_units.update(slide.get("must_include_checks", []))
 
-            if slide["layout_type"] == "cover":
+            if slide["layout_type"] in ("cover", "section"):
                 continue
 
             if slide.get("source_bindings"):
@@ -270,8 +308,8 @@ class DeterministicProvider(Provider):
             kp = slide.get("key_points", [])
             total_key_points += len(kp)
 
-            # 检查空 key_points（cover 除外）
-            if slide["layout_type"] != "cover" and not kp:
+            # 检查空 key_points（cover 和 section 除外）
+            if slide["layout_type"] not in ("cover", "section") and not kp:
                 slides_with_empty_kp.append(sid)
 
             # 检查通用/非 grounded key_points
@@ -347,7 +385,11 @@ class DeterministicProvider(Provider):
                 )
             )
 
-        total_content_slides = len(slide_spec["slides"]) - 1 if slide_spec["slides"] else 0
+        # content slides 排除 cover 和 section 分隔页
+        non_content_types = ("cover", "section")
+        total_content_slides = sum(
+            1 for s in slide_spec["slides"] if s["layout_type"] not in non_content_types
+        )
 
         return {
             "status": "pass" if not failures else "fail",

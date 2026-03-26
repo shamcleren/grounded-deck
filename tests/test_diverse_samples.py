@@ -21,6 +21,10 @@ from src.renderer.pptx_renderer import render_slide_spec_to_pptx
 ROOT = Path(__file__).resolve().parent.parent
 SAAS_SPEC = ROOT / "fixtures" / "slide-spec" / "saas-launch-slide-spec.json"
 SAAS_PACK = ROOT / "fixtures" / "source-packs" / "saas-launch-source-pack.json"
+TECH_SPEC = ROOT / "fixtures" / "slide-spec" / "tech-review-slide-spec.json"
+TECH_PACK = ROOT / "fixtures" / "source-packs" / "tech-review-source-pack.json"
+TECH_SPEC = ROOT / "fixtures" / "slide-spec" / "tech-review-slide-spec.json"
+TECH_PACK = ROOT / "fixtures" / "source-packs" / "tech-review-source-pack.json"
 
 
 def load_json(p: Path) -> dict:
@@ -225,3 +229,143 @@ class EnglishKeywordInferenceTests(unittest.TestCase):
             "text": "进入路径 建议先以东南亚市场建立经销，再把验证过的运营模型迁移到欧洲。",
         }
         self.assertEqual(infer_layout_type(unit).layout_type, "process")
+
+
+# ── Tech Review 渲染测试 ──────────────────────────────────────────────
+
+
+class TechReviewRenderingTests(unittest.TestCase):
+    """tech-review 英文样本渲染测试。"""
+
+    def test_renders_successfully(self) -> None:
+        spec = load_json(TECH_SPEC)
+        with tempfile.TemporaryDirectory() as tmpdir:
+            out = render_slide_spec_to_pptx(spec, Path(tmpdir) / "t.pptx")
+            self.assertTrue(out.exists())
+            self.assertGreater(out.stat().st_size, 10_000)
+
+    def test_correct_slide_count(self) -> None:
+        spec = load_json(TECH_SPEC)
+        with tempfile.TemporaryDirectory() as tmpdir:
+            out = render_slide_spec_to_pptx(spec, Path(tmpdir) / "t.pptx")
+            prs = Presentation(str(out))
+            self.assertEqual(len(prs.slides), 11)
+
+    def test_seven_distinct_layouts(self) -> None:
+        spec = load_json(TECH_SPEC)
+        layouts = {s["layout_type"] for s in spec["slides"]}
+        self.assertEqual(len(layouts), 7, f"Expected 7 distinct layouts, got: {layouts}")
+
+    def test_has_section_dividers(self) -> None:
+        spec = load_json(TECH_SPEC)
+        section_slides = [s for s in spec["slides"] if s["layout_type"] == "section"]
+        self.assertEqual(len(section_slides), 3)
+
+    def test_has_all_content_layouts(self) -> None:
+        spec = load_json(TECH_SPEC)
+        layouts = {s["layout_type"] for s in spec["slides"]}
+        for expected in ("timeline", "comparison", "process", "chart", "section"):
+            self.assertIn(expected, layouts, f"Missing layout: {expected}")
+
+    def test_heading_boost_timeline(self) -> None:
+        """标题含 'Timeline' + 年份应优先匹配 timeline 而非 comparison。"""
+        from src.visual.selector import infer_layout_type
+
+        unit = {
+            "section_heading": "System Evolution Timeline",
+            "text": "System Evolution Timeline CloudStack was originally deployed in 2019. In 2021 the team extracted auth. By 2023 the API gateway was added but the core remains monolithic.",
+        }
+        self.assertEqual(infer_layout_type(unit).layout_type, "timeline")
+
+    def test_checkpoint_heading_infers_timeline(self) -> None:
+        """标题含 'Checkpoint' + 年份应匹配 timeline。"""
+        from src.visual.selector import infer_layout_type
+
+        unit = {
+            "section_heading": "Risk Timeline and Checkpoints",
+            "text": "Risk Timeline and Checkpoints Risk exposure peaks during Q1 2026 when the order pipeline runs in dual-write mode.",
+        }
+        self.assertEqual(infer_layout_type(unit).layout_type, "timeline")
+
+    def test_monolith_vs_microservices_infers_comparison(self) -> None:
+        """'Monolith vs Microservices' 应匹配 comparison。"""
+        from src.visual.selector import infer_layout_type
+
+        unit = {
+            "section_heading": "Monolith vs Microservices Trade-offs",
+            "text": "Monolith vs Microservices Trade-offs The monolithic order engine offers simpler debugging but limits independent scaling.",
+        }
+        self.assertEqual(infer_layout_type(unit).layout_type, "comparison")
+
+    def test_latency_throughput_infers_chart(self) -> None:
+        """含 latency/throughput 关键词应匹配 chart。"""
+        from src.visual.selector import infer_layout_type
+
+        unit = {
+            "section_heading": "Latency and Throughput Metrics",
+            "text": "Latency and Throughput Metrics Current P99 latency is 420ms with peak throughput of 2800 TPS.",
+        }
+        self.assertEqual(infer_layout_type(unit).layout_type, "chart")
+
+
+# ── Section 分隔页测试 ────────────────────────────────────────────────
+
+
+class SectionDividerTests(unittest.TestCase):
+    """section 分隔页自动插入测试。"""
+
+    def test_no_section_dividers_for_small_packs(self) -> None:
+        """4 个 content slides 不应插入 section 分隔页。"""
+        from src.runtime.pipeline import run_pipeline
+
+        raw = load_json(ROOT / "fixtures" / "source-packs" / "strongest-demo-source-pack.json")
+        result = run_pipeline(raw)
+        layouts = [s["layout_type"] for s in result["slide_spec"]["slides"]]
+        self.assertNotIn("section", layouts)
+
+    def test_no_section_dividers_for_5_units(self) -> None:
+        """5 个 content slides 不应插入 section 分隔页。"""
+        from src.runtime.pipeline import run_pipeline
+
+        raw = load_json(SAAS_PACK)
+        result = run_pipeline(raw)
+        layouts = [s["layout_type"] for s in result["slide_spec"]["slides"]]
+        self.assertNotIn("section", layouts)
+
+    def test_section_dividers_for_6_plus_units(self) -> None:
+        """6+ 个 content slides 应自动插入 section 分隔页。"""
+        from src.runtime.pipeline import run_pipeline
+
+        raw = load_json(TECH_PACK)
+        result = run_pipeline(raw)
+        layouts = [s["layout_type"] for s in result["slide_spec"]["slides"]]
+        self.assertIn("section", layouts)
+
+    def test_section_dividers_between_different_sources(self) -> None:
+        """section 分隔页应出现在不同 source 之间。"""
+        from src.runtime.pipeline import run_pipeline
+
+        raw = load_json(TECH_PACK)
+        result = run_pipeline(raw)
+        slides = result["slide_spec"]["slides"]
+        section_titles = [s["title"] for s in slides if s["layout_type"] == "section"]
+        self.assertEqual(len(section_titles), 3)
+
+    def test_section_quality_passes(self) -> None:
+        """含 section 分隔页的 deck 应通过质量检查。"""
+        from src.runtime.pipeline import run_pipeline
+
+        raw = load_json(TECH_PACK)
+        result = run_pipeline(raw)
+        self.assertEqual(result["quality_report"]["status"], "pass")
+
+    def test_tech_review_pipeline_end_to_end(self) -> None:
+        """tech-review 端到端管线测试。"""
+        from src.runtime.pipeline import run_pipeline
+
+        raw = load_json(TECH_PACK)
+        with tempfile.TemporaryDirectory() as tmpdir:
+            result = run_pipeline(raw, render_pptx=Path(tmpdir) / "t.pptx")
+            self.assertIn("pptx_path", result)
+            self.assertEqual(result["quality_report"]["status"], "pass")
+            self.assertIn("artifact_grade", result)

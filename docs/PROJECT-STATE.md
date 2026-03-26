@@ -161,6 +161,19 @@ The strongest deterministic planning demo is now curated back onto `main` as a c
 - added `demo-saas` and `demo-all` Makefile targets for multi-sample PPTX rendering
 - created `tests/test_diverse_samples.py` with 20 new tests: SaasLaunchRenderingTests (8), SaasLaunchPipelineTests (3), AllFixturesCompatibilityTests (2), EnglishKeywordInferenceTests (7)
 - confirmed all 294 tests pass and `make eval` remains 38/38 green
+- added heading-priority timeline boost: headings containing `timeline`/`evolution`/`history`/`checkpoint` with year references now override comparison/process signals
+- tightened comparison contrast connector rule: single `but`/`while` no longer independently triggers comparison without a comparison keyword
+- moved `landscape` keyword to heading-only scope to avoid false positives from body text
+- added chart keywords: `latency`, `throughput`, `metric`, `benchmark`, `sla`
+- created `tech-review-source-pack.json` English source pack (cloud platform migration / technical architecture review theme) with 4 sources and 6 sections
+- generated full tech-review fixture set: normalized-source-units (6 units), slide-spec (11 slides with 7 distinct layouts including section dividers), quality-report (pass)
+- implemented automatic section divider insertion in `DeterministicProvider.draft_slide_spec`: when content slides >= 6, section dividers are inserted between different sources
+- added `_insert_section_dividers` static method to `DeterministicProvider`
+- updated quality grader to exempt section layout from ungrounded and empty key_points checks
+- updated `total_content_slides` calculation to exclude cover and section layouts
+- added `demo-tech` Makefile target and updated `demo-all` to include tech-review
+- added 15 new tests in `test_diverse_samples.py`: TechReviewRenderingTests (9), SectionDividerTests (6)
+- confirmed all 309 tests pass and `make eval` remains green
 
 ## Current Next Action
 
@@ -173,8 +186,9 @@ Continue improving provider-backed planning and grading against the strongest-de
 3. ~~enhance PPTX renderer with CJK font safety and native Table objects~~ ✅
 4. ~~upgrade all data-bearing layouts (timeline, process) to native Table objects~~ ✅
 5. ~~diversify sample dataset with English source pack and enhance English keyword coverage~~ ✅
-6. preserve the repository-owned strongest-demo live acceptance snapshot while keeping `reports/live-verification-latest.*` as the rolling pointer
-6. compare future strongest-demo live refreshes against the archived acceptance summary instead of treating every passing run as interchangeable
+6. ~~add tech-review source pack with section dividers and heading-priority timeline boost~~ ✅
+7. preserve the repository-owned strongest-demo live acceptance snapshot while keeping `reports/live-verification-latest.*` as the rolling pointer
+7. compare future strongest-demo live refreshes against the archived acceptance summary instead of treating every passing run as interchangeable
 6. keep provider-backed planning improvements, acceptance-aligned prompt guardrails, and `make verify-online` healthy without weakening deterministic regression coverage
 
 External feedback has been absorbed as a prioritization change, not an architecture change. The environment-variable configuration contract is documented in `docs/runtime-config.md`, placeholder values are rejected during live preflight, and the strongest-demo live path has now been proven once against a real provider while preserving the deterministic baseline.

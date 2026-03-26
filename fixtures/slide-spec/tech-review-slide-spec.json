@@ -1,0 +1,349 @@
+{
+  "deck_goal": "Present the technical architecture review and migration roadmap for CloudStack platform modernization.",
+  "audience": "CTO and engineering leadership evaluating Q4 migration timeline and risk posture",
+  "slides": [
+    {
+      "slide_id": "s1-cover",
+      "title": "Present the technical architecture review and migration roadmap for CloudStack platform modernization.",
+      "goal": "Orient the audience to the presentation goal and source scope.",
+      "layout_type": "cover",
+      "key_points": [
+        "CTO and engineering leadership evaluating Q4 migration timeline and risk posture",
+        "The platform evolved from a monolith in 2019 to a partial microservices architecture by 2023, but the core order engine remains monolithic at 340K LOC.",
+        "6 grounded source units"
+      ],
+      "visual_elements": [
+        {
+          "type": "title-block"
+        },
+        {
+          "type": "source-count",
+          "value": 6
+        },
+        {
+          "type": "topic-overview",
+          "topics": [
+            "System Evolution Timeline",
+            "Monolith vs Microservices Trade-offs",
+            "Migration Sequence",
+            "Latency and Throughput Metrics",
+            "Risk Landscape and Mitigation",
+            "Risk Timeline and Checkpoints"
+          ]
+        }
+      ],
+      "source_bindings": [
+        "src-01:sec-01",
+        "src-01:sec-02",
+        "src-02:sec-01",
+        "src-03:sec-01",
+        "src-04:sec-01",
+        "src-04:sec-02"
+      ],
+      "must_include_checks": [
+        "src-01:sec-01",
+        "src-01:sec-02",
+        "src-02:sec-01",
+        "src-03:sec-01",
+        "src-04:sec-01",
+        "src-04:sec-02"
+      ],
+      "speaker_notes": "Introduce the deck goal and emphasize that claims stay grounded to source material."
+    },
+    {
+      "slide_id": "s2-summary",
+      "title": "Decision Backbone",
+      "goal": "Compress the source pack into the minimum grounded claims the deck must preserve.",
+      "layout_type": "summary",
+      "key_points": [
+        "The platform evolved from a monolith in 2019 to a partial microservices architecture by 2023, but the core order engine remains monolithic at 340K LOC. [src-01:sec-01]",
+        "Microservices improved deploy frequency from weekly to daily but increased infrastructure cost by 35%, while the monolith trades scalability for operational simplicity. [src-01:sec-02]",
+        "A four-phase migration sequence from strangler fig extraction through full containerization de-risks the transition while maintaining service continuity. [src-02:sec-01]",
+        "Migration is projected to reduce P99 latency by 57% (420ms to 180ms) and increase throughput 4.3x (2,800 to 12,000 TPS) while cutting per-transaction cost by 44%. [src-03:sec-01]",
+        "Data consistency during dual-write is the highest-priority risk, mitigated by CDC-based replication; team upskilling and multi-cloud abstraction address secondary risks. [src-04:sec-01]",
+        "Risk exposure peaks during Q1 2026 dual-write period, with four staged go/no-go checkpoints at weeks 8, 16, 24, and 30 to control migration risk. [src-04:sec-02]"
+      ],
+      "visual_elements": [
+        {
+          "type": "bullet-list"
+        },
+        {
+          "type": "claim-source-map",
+          "entries": [
+            {
+              "unit_id": "src-01:sec-01",
+              "section": "System Evolution Timeline",
+              "claim": "The platform evolved from a monolith in 2019 to a partial microservices architecture by 2023, but the core order engine remains monolithic at 340K LOC.",
+              "source_binding": "src-01:sec-01"
+            },
+            {
+              "unit_id": "src-01:sec-02",
+              "section": "Monolith vs Microservices Trade-offs",
+              "claim": "Microservices improved deploy frequency from weekly to daily but increased infrastructure cost by 35%, while the monolith trades scalability for operational simplicity.",
+              "source_binding": "src-01:sec-02"
+            },
+            {
+              "unit_id": "src-02:sec-01",
+              "section": "Migration Sequence",
+              "claim": "A four-phase migration sequence from strangler fig extraction through full containerization de-risks the transition while maintaining service continuity.",
+              "source_binding": "src-02:sec-01"
+            },
+            {
+              "unit_id": "src-03:sec-01",
+              "section": "Latency and Throughput Metrics",
+              "claim": "Migration is projected to reduce P99 latency by 57% (420ms to 180ms) and increase throughput 4.3x (2,800 to 12,000 TPS) while cutting per-transaction cost by 44%.",
+              "source_binding": "src-03:sec-01"
+            },
+            {
+              "unit_id": "src-04:sec-01",
+              "section": "Risk Landscape and Mitigation",
+              "claim": "Data consistency during dual-write is the highest-priority risk, mitigated by CDC-based replication; team upskilling and multi-cloud abstraction address secondary risks.",
+              "source_binding": "src-04:sec-01"
+            },
+            {
+              "unit_id": "src-04:sec-02",
+              "section": "Risk Timeline and Checkpoints",
+              "claim": "Risk exposure peaks during Q1 2026 dual-write period, with four staged go/no-go checkpoints at weeks 8, 16, 24, and 30 to control migration risk.",
+              "source_binding": "src-04:sec-02"
+            }
+          ]
+        }
+      ],
+      "source_bindings": [
+        "src-01:sec-01",
+        "src-01:sec-02",
+        "src-02:sec-01",
+        "src-03:sec-01",
+        "src-04:sec-01",
+        "src-04:sec-02"
+      ],
+      "must_include_checks": [
+        "src-01:sec-01",
+        "src-01:sec-02",
+        "src-02:sec-01",
+        "src-03:sec-01",
+        "src-04:sec-01",
+        "src-04:sec-02"
+      ],
+      "speaker_notes": "This slide compresses the source pack into the minimum set of claims the deck must retain."
+    },
+    {
+      "slide_id": "slide-src-01-sec-01",
+      "title": "System Evolution Timeline",
+      "goal": "Show how the grounded evidence changes over time.",
+      "layout_type": "timeline",
+      "key_points": [
+        "The platform evolved from a monolith in 2019 to a partial microservices architecture by 2023, but the core order engine remains monolithic at 340K LOC.",
+        "System Evolution Timeline CloudStack was originally deployed in 2019 as a monolithic Java application. In 2021, the team extracted the auth service and billing module into microservices. By 2023, the API gateway and event bus were added, but the core order-processing engine remains monolithic with 340K lines of code. The platform evolved from a monolith in 2019 to a partial microservices architecture by 2023, but the core order engine remains monolithic at 340K LOC."
+      ],
+      "visual_elements": [
+        {
+          "type": "timeline",
+          "milestones": [
+            "2019",
+            "2021",
+            "2023"
+          ],
+          "events": [
+            "2019: as a monolithic Java application. In",
+            "2021: the team extracted the auth service and billing module into microservices. By",
+            "2023: the API gateway and event bus were added, but the core order-processing engine remains monolithic with 340K lines of code. The platform evolved from a monolith in"
+          ]
+        }
+      ],
+      "source_bindings": [
+        "src-01:sec-01"
+      ],
+      "must_include_checks": [
+        "src-01:sec-01"
+      ],
+      "speaker_notes": "Ground this slide in src-01:sec-01 and keep the structure editable."
+    },
+    {
+      "slide_id": "slide-src-01-sec-02",
+      "title": "Monolith vs Microservices Trade-offs",
+      "goal": "Contrast grounded market options without losing source traceability.",
+      "layout_type": "comparison",
+      "key_points": [
+        "Microservices improved deploy frequency from weekly to daily but increased infrastructure cost by 35%, while the monolith trades scalability for operational simplicity.",
+        "Monolith vs Microservices Trade-offs The monolithic order engine offers simpler debugging and lower operational overhead, but limits independent scaling and deployment velocity. Microservices for auth and billing improved deploy frequency from weekly to daily, but increased infrastructure cost by 35% and introduced distributed tracing complexity. Microservices improved deploy frequency from weekly to daily but increased infrastructure cost by 35%, while the monolith trades scalability for operational simplicity."
+      ],
+      "visual_elements": [
+        {
+          "type": "comparison-columns",
+          "columns": [
+            "Monolith",
+            "Microservices Trade"
+          ],
+          "column_points": {
+            "Monolith": [
+              "Monolith vs Microservices Trade-offs The monolithic order engine offers simpler debugging and lower operational overhead, but limits independent scaling and deployment velocity. Microservices for auth and billing improved deploy frequency from weekly to daily, but increased infrastructure cost by 35% and introduced distributed tracing complexity. Microservices improved deploy frequency from weekly to daily but increased infrastructure cost by 35%, while the monolith trades scalability for operational simplicity."
+            ],
+            "Microservices Trade": []
+          }
+        }
+      ],
+      "source_bindings": [
+        "src-01:sec-02"
+      ],
+      "must_include_checks": [
+        "src-01:sec-02"
+      ],
+      "speaker_notes": "Ground this slide in src-01:sec-02 and keep the structure editable."
+    },
+    {
+      "slide_id": "section-1",
+      "title": "Migration Execution Playbook",
+      "goal": "A four-phase migration sequence from strangler fig extraction through full containerization de-risks the transition while maintaining service continuity.",
+      "layout_type": "section",
+      "key_points": [],
+      "visual_elements": [],
+      "source_bindings": [],
+      "must_include_checks": [],
+      "speaker_notes": "Section divider: transitioning to Migration Execution Playbook."
+    },
+    {
+      "slide_id": "slide-src-02-sec-01",
+      "title": "Migration Sequence",
+      "goal": "Turn grounded evidence into an ordered action path.",
+      "layout_type": "process",
+      "key_points": [
+        "A four-phase migration sequence from strangler fig extraction through full containerization de-risks the transition while maintaining service continuity.",
+        "Migration Sequence Phase 1: Strangler fig pattern to extract the inventory module (Q4 2025). Phase 2: Event-driven decomposition of the order pipeline with Kafka (Q1 2026). Phase 3: Full containerization and Kubernetes migration with canary deployment gates (Q2 2026). Phase 4: Legacy monolith decommission and data migration validation (Q3 2026). A four-phase migration sequence from strangler fig extraction through full containerization de-risks the transition while maintaining service continuity."
+      ],
+      "visual_elements": [
+        {
+          "type": "process-flow",
+          "steps": 4,
+          "step_labels": [
+            "Strangler fig pattern to extract the inventory module (Q4 2025)",
+            "Event-driven decomposition of the order pipeline with Kafka (Q1 2026)",
+            "Full containerization and Kubernetes migration with canary deployment gates (Q2 2026)",
+            "Legacy monolith decommission and data migration validation (Q3 2026)"
+          ]
+        }
+      ],
+      "source_bindings": [
+        "src-02:sec-01"
+      ],
+      "must_include_checks": [
+        "src-02:sec-01"
+      ],
+      "speaker_notes": "Ground this slide in src-02:sec-01 and keep the structure editable."
+    },
+    {
+      "slide_id": "section-2",
+      "title": "Performance Benchmarks and SLA Impact",
+      "goal": "Migration is projected to reduce P99 latency by 57% (420ms to 180ms) and increase throughput 4.3x (2,800 to 12,000 TPS) while cutting per-transaction cost by 44%.",
+      "layout_type": "section",
+      "key_points": [],
+      "visual_elements": [],
+      "source_bindings": [],
+      "must_include_checks": [],
+      "speaker_notes": "Section divider: transitioning to Performance Benchmarks and SLA Impact."
+    },
+    {
+      "slide_id": "slide-src-03-sec-01",
+      "title": "Latency and Throughput Metrics",
+      "goal": "Surface the grounded numeric signal that should shape the decision.",
+      "layout_type": "chart",
+      "key_points": [
+        "Migration is projected to reduce P99 latency by 57% (420ms to 180ms) and increase throughput 4.3x (2,800 to 12,000 TPS) while cutting per-transaction cost by 44%.",
+        "Latency and Throughput Metrics Current P99 latency is 420ms for order processing, with peak throughput of 2,800 TPS. Post-migration projections show P99 dropping to 180ms and throughput scaling to 12,000 TPS. Infrastructure cost per transaction is expected to decrease from $0.0034 to $0.0019 after containerization. Migration is projected to reduce P99 latency by 57% (420ms to 180ms) and increase throughput 4.3x (2,800 to 12,000 TPS) while cutting per-transaction cost by 44%."
+      ],
+      "visual_elements": [
+        {
+          "type": "metric-cards",
+          "metrics": [
+            "99",
+            "420",
+            "2",
+            "800"
+          ],
+          "labels": [
+            "trics Current P99 latency is 420",
+            "P99 latency is 420ms for order pr",
+            "99 latency is 420ms for order p",
+            "hroughput of 2,800 TPS. Post-migr"
+          ]
+        }
+      ],
+      "source_bindings": [
+        "src-03:sec-01"
+      ],
+      "must_include_checks": [
+        "src-03:sec-01"
+      ],
+      "speaker_notes": "Ground this slide in src-03:sec-01 and keep the structure editable."
+    },
+    {
+      "slide_id": "section-3",
+      "title": "Migration Risk Register",
+      "goal": "Data consistency during dual-write is the highest-priority risk, mitigated by CDC-based replication; team upskilling and multi-cloud abstraction address secondary risks.",
+      "layout_type": "section",
+      "key_points": [],
+      "visual_elements": [],
+      "source_bindings": [],
+      "must_include_checks": [],
+      "speaker_notes": "Section divider: transitioning to Migration Risk Register."
+    },
+    {
+      "slide_id": "slide-src-04-sec-01",
+      "title": "Risk Landscape and Mitigation",
+      "goal": "Contrast grounded market options without losing source traceability.",
+      "layout_type": "comparison",
+      "key_points": [
+        "Data consistency during dual-write is the highest-priority risk, mitigated by CDC-based replication; team upskilling and multi-cloud abstraction address secondary risks.",
+        "Risk Landscape and Mitigation Top risks include data consistency during dual-write period (likelihood: high, impact: critical), team skill gaps in Kubernetes operations (likelihood: medium, impact: high), and vendor lock-in with managed Kafka service (likelihood: low, impact: medium). Mitigation strategies include CDC-based replication, a 12-week upskilling program, and multi-cloud abstraction layers. Data consistency during dual-write is the highest-priority risk, mitigated by CDC-based replication; team upskilling and multi-cloud abstraction address secondary risks."
+      ],
+      "visual_elements": [
+        {
+          "type": "comparison-columns",
+          "columns": [
+            "Option A",
+            "Option B"
+          ],
+          "column_points": {
+            "Option A": [],
+            "Option B": []
+          }
+        }
+      ],
+      "source_bindings": [
+        "src-04:sec-01"
+      ],
+      "must_include_checks": [
+        "src-04:sec-01"
+      ],
+      "speaker_notes": "Ground this slide in src-04:sec-01 and keep the structure editable."
+    },
+    {
+      "slide_id": "slide-src-04-sec-02",
+      "title": "Risk Timeline and Checkpoints",
+      "goal": "Show how the grounded evidence changes over time.",
+      "layout_type": "timeline",
+      "key_points": [
+        "Risk exposure peaks during Q1 2026 dual-write period, with four staged go/no-go checkpoints at weeks 8, 16, 24, and 30 to control migration risk.",
+        "Risk Timeline and Checkpoints Risk exposure peaks during Q1 2026 when the order pipeline runs in dual-write mode. Key checkpoints: Phase 1 go/no-go at week 8, Phase 2 data consistency validation at week 16, Phase 3 load test gate at week 24, and final cutover approval at week 30. Risk exposure peaks during Q1 2026 dual-write period, with four staged go/no-go checkpoints at weeks 8, 16, 24, and 30 to control migration risk."
+      ],
+      "visual_elements": [
+        {
+          "type": "timeline",
+          "milestones": [
+            "2026"
+          ],
+          "events": [
+            "2026: when the order pipeline runs in dual-write mode. Key checkpoints: Phase 1 go/no-go at week 8, Phase 2 data consistency validation at week 16, Phase 3 load test gate at week 24, and final cutover approval at week 30. Risk exposure peaks during Q1"
+          ]
+        }
+      ],
+      "source_bindings": [
+        "src-04:sec-02"
+      ],
+      "must_include_checks": [
+        "src-04:sec-02"
+      ],
+      "speaker_notes": "Ground this slide in src-04:sec-02 and keep the structure editable."
+    }
+  ]
+}

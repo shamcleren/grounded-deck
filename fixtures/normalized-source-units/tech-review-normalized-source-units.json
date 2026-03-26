@@ -1,0 +1,91 @@
+{
+  "pack_id": "tech-architecture-review",
+  "deck_goal": "Present the technical architecture review and migration roadmap for CloudStack platform modernization.",
+  "audience": "CTO and engineering leadership evaluating Q4 migration timeline and risk posture",
+  "source_units": [
+    {
+      "unit_id": "src-01:sec-01",
+      "source_id": "src-01",
+      "source_title": "Current State Architecture Audit",
+      "section_id": "sec-01",
+      "section_heading": "System Evolution Timeline",
+      "unit_kind": "section-summary",
+      "language": "en",
+      "text": "System Evolution Timeline CloudStack was originally deployed in 2019 as a monolithic Java application. In 2021, the team extracted the auth service and billing module into microservices. By 2023, the API gateway and event bus were added, but the core order-processing engine remains monolithic with 340K lines of code. The platform evolved from a monolith in 2019 to a partial microservices architecture by 2023, but the core order engine remains monolithic at 340K LOC.",
+      "claims": [
+        "The platform evolved from a monolith in 2019 to a partial microservices architecture by 2023, but the core order engine remains monolithic at 340K LOC."
+      ],
+      "source_binding": "src-01:sec-01"
+    },
+    {
+      "unit_id": "src-01:sec-02",
+      "source_id": "src-01",
+      "source_title": "Current State Architecture Audit",
+      "section_id": "sec-02",
+      "section_heading": "Monolith vs Microservices Trade-offs",
+      "unit_kind": "section-summary",
+      "language": "en",
+      "text": "Monolith vs Microservices Trade-offs The monolithic order engine offers simpler debugging and lower operational overhead, but limits independent scaling and deployment velocity. Microservices for auth and billing improved deploy frequency from weekly to daily, but increased infrastructure cost by 35% and introduced distributed tracing complexity. Microservices improved deploy frequency from weekly to daily but increased infrastructure cost by 35%, while the monolith trades scalability for operational simplicity.",
+      "claims": [
+        "Microservices improved deploy frequency from weekly to daily but increased infrastructure cost by 35%, while the monolith trades scalability for operational simplicity."
+      ],
+      "source_binding": "src-01:sec-02"
+    },
+    {
+      "unit_id": "src-02:sec-01",
+      "source_id": "src-02",
+      "source_title": "Migration Execution Playbook",
+      "section_id": "sec-01",
+      "section_heading": "Migration Sequence",
+      "unit_kind": "section-summary",
+      "language": "en",
+      "text": "Migration Sequence Phase 1: Strangler fig pattern to extract the inventory module (Q4 2025). Phase 2: Event-driven decomposition of the order pipeline with Kafka (Q1 2026). Phase 3: Full containerization and Kubernetes migration with canary deployment gates (Q2 2026). Phase 4: Legacy monolith decommission and data migration validation (Q3 2026). A four-phase migration sequence from strangler fig extraction through full containerization de-risks the transition while maintaining service continuity.",
+      "claims": [
+        "A four-phase migration sequence from strangler fig extraction through full containerization de-risks the transition while maintaining service continuity."
+      ],
+      "source_binding": "src-02:sec-01"
+    },
+    {
+      "unit_id": "src-03:sec-01",
+      "source_id": "src-03",
+      "source_title": "Performance Benchmarks and SLA Impact",
+      "section_id": "sec-01",
+      "section_heading": "Latency and Throughput Metrics",
+      "unit_kind": "section-summary",
+      "language": "en",
+      "text": "Latency and Throughput Metrics Current P99 latency is 420ms for order processing, with peak throughput of 2,800 TPS. Post-migration projections show P99 dropping to 180ms and throughput scaling to 12,000 TPS. Infrastructure cost per transaction is expected to decrease from $0.0034 to $0.0019 after containerization. Migration is projected to reduce P99 latency by 57% (420ms to 180ms) and increase throughput 4.3x (2,800 to 12,000 TPS) while cutting per-transaction cost by 44%.",
+      "claims": [
+        "Migration is projected to reduce P99 latency by 57% (420ms to 180ms) and increase throughput 4.3x (2,800 to 12,000 TPS) while cutting per-transaction cost by 44%."
+      ],
+      "source_binding": "src-03:sec-01"
+    },
+    {
+      "unit_id": "src-04:sec-01",
+      "source_id": "src-04",
+      "source_title": "Migration Risk Register",
+      "section_id": "sec-01",
+      "section_heading": "Risk Landscape and Mitigation",
+      "unit_kind": "section-summary",
+      "language": "en",
+      "text": "Risk Landscape and Mitigation Top risks include data consistency during dual-write period (likelihood: high, impact: critical), team skill gaps in Kubernetes operations (likelihood: medium, impact: high), and vendor lock-in with managed Kafka service (likelihood: low, impact: medium). Mitigation strategies include CDC-based replication, a 12-week upskilling program, and multi-cloud abstraction layers. Data consistency during dual-write is the highest-priority risk, mitigated by CDC-based replication; team upskilling and multi-cloud abstraction address secondary risks.",
+      "claims": [
+        "Data consistency during dual-write is the highest-priority risk, mitigated by CDC-based replication; team upskilling and multi-cloud abstraction address secondary risks."
+      ],
+      "source_binding": "src-04:sec-01"
+    },
+    {
+      "unit_id": "src-04:sec-02",
+      "source_id": "src-04",
+      "source_title": "Migration Risk Register",
+      "section_id": "sec-02",
+      "section_heading": "Risk Timeline and Checkpoints",
+      "unit_kind": "section-summary",
+      "language": "en",
+      "text": "Risk Timeline and Checkpoints Risk exposure peaks during Q1 2026 when the order pipeline runs in dual-write mode. Key checkpoints: Phase 1 go/no-go at week 8, Phase 2 data consistency validation at week 16, Phase 3 load test gate at week 24, and final cutover approval at week 30. Risk exposure peaks during Q1 2026 dual-write period, with four staged go/no-go checkpoints at weeks 8, 16, 24, and 30 to control migration risk.",
+      "claims": [
+        "Risk exposure peaks during Q1 2026 dual-write period, with four staged go/no-go checkpoints at weeks 8, 16, 24, and 30 to control migration risk."
+      ],
+      "source_binding": "src-04:sec-02"
+    }
+  ]
+}
