@@ -1,0 +1,17 @@
+{
+  "mode": "offline-example",
+  "provider": "deterministic",
+  "model": "MiniMax-M2.7",
+  "input_path": "fixtures/test-documents/ev-strategy-analysis.md",
+  "generated_at_unix": 1774498083,
+  "artifacts": {
+    "normalized_pack": "reports/ev-strategy/normalized-pack.json",
+    "slide_spec": "reports/ev-strategy/slide-spec.json",
+    "quality_report": "reports/ev-strategy/quality-report.json",
+    "artifact_grade": "reports/ev-strategy/artifact-grade.json",
+    "narrative_grade": "reports/ev-strategy/narrative-grade.json"
+  },
+  "quality_status": "fail",
+  "artifact_grade_status": "pass",
+  "narrative_grade_status": "fail"
+}

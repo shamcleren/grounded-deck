@@ -1,0 +1,195 @@
+{
+  "status": "fail",
+  "mode": "deterministic",
+  "slide_count": 16,
+  "avg_coherence": 0.62,
+  "avg_grounding": 0.59,
+  "avg_visual_fit": 0.69,
+  "avg_composite": 0.64,
+  "issues": [
+    "[section-1] no key_points",
+    "[section-1] no source_bindings",
+    "[section-1] no visual_elements",
+    "[slide-src-02-sec-02] no key_points",
+    "[section-2] no key_points",
+    "[section-2] no source_bindings",
+    "[section-2] no visual_elements",
+    "[section-3] no key_points",
+    "[section-3] no source_bindings",
+    "[section-3] no visual_elements",
+    "[section-4] no key_points",
+    "[section-4] no source_bindings",
+    "[section-4] no visual_elements",
+    "[section-5] no key_points",
+    "[section-5] no source_bindings",
+    "[section-5] no visual_elements"
+  ],
+  "slides": [
+    {
+      "slide_id": "s1-cover",
+      "layout_type": "cover",
+      "coherence_score": 1.0,
+      "grounding_score": 0.85,
+      "visual_fit_score": 1.0,
+      "composite_score": 0.96,
+      "issues": []
+    },
+    {
+      "slide_id": "s2-summary",
+      "layout_type": "summary",
+      "coherence_score": 1.0,
+      "grounding_score": 1.0,
+      "visual_fit_score": 1.0,
+      "composite_score": 1.0,
+      "issues": []
+    },
+    {
+      "slide_id": "slide-src-01-sec-01",
+      "layout_type": "process",
+      "coherence_score": 1.0,
+      "grounding_score": 0.85,
+      "visual_fit_score": 1.0,
+      "composite_score": 0.96,
+      "issues": []
+    },
+    {
+      "slide_id": "section-1",
+      "layout_type": "section",
+      "coherence_score": 0.0,
+      "grounding_score": 0.0,
+      "visual_fit_score": 0.0,
+      "composite_score": 0.0,
+      "issues": [
+        "no key_points",
+        "no source_bindings",
+        "no visual_elements"
+      ]
+    },
+    {
+      "slide_id": "slide-src-02-sec-01",
+      "layout_type": "chart",
+      "coherence_score": 1.0,
+      "grounding_score": 0.85,
+      "visual_fit_score": 1.0,
+      "composite_score": 0.96,
+      "issues": []
+    },
+    {
+      "slide_id": "slide-src-02-sec-02",
+      "layout_type": "summary",
+      "coherence_score": 0.0,
+      "grounding_score": 0.85,
+      "visual_fit_score": 1.0,
+      "composite_score": 0.55,
+      "issues": [
+        "no key_points"
+      ]
+    },
+    {
+      "slide_id": "section-2",
+      "layout_type": "section",
+      "coherence_score": 0.0,
+      "grounding_score": 0.0,
+      "visual_fit_score": 0.0,
+      "composite_score": 0.0,
+      "issues": [
+        "no key_points",
+        "no source_bindings",
+        "no visual_elements"
+      ]
+    },
+    {
+      "slide_id": "slide-src-03-sec-01",
+      "layout_type": "chart",
+      "coherence_score": 1.0,
+      "grounding_score": 0.85,
+      "visual_fit_score": 1.0,
+      "composite_score": 0.96,
+      "issues": []
+    },
+    {
+      "slide_id": "slide-src-03-sec-02",
+      "layout_type": "chart",
+      "coherence_score": 1.0,
+      "grounding_score": 0.85,
+      "visual_fit_score": 1.0,
+      "composite_score": 0.96,
+      "issues": []
+    },
+    {
+      "slide_id": "section-3",
+      "layout_type": "section",
+      "coherence_score": 0.0,
+      "grounding_score": 0.0,
+      "visual_fit_score": 0.0,
+      "composite_score": 0.0,
+      "issues": [
+        "no key_points",
+        "no source_bindings",
+        "no visual_elements"
+      ]
+    },
+    {
+      "slide_id": "slide-src-04-sec-01",
+      "layout_type": "chart",
+      "coherence_score": 1.0,
+      "grounding_score": 0.85,
+      "visual_fit_score": 1.0,
+      "composite_score": 0.96,
+      "issues": []
+    },
+    {
+      "slide_id": "slide-src-04-sec-02",
+      "layout_type": "process",
+      "coherence_score": 1.0,
+      "grounding_score": 0.85,
+      "visual_fit_score": 1.0,
+      "composite_score": 0.96,
+      "issues": []
+    },
+    {
+      "slide_id": "section-4",
+      "layout_type": "section",
+      "coherence_score": 0.0,
+      "grounding_score": 0.0,
+      "visual_fit_score": 0.0,
+      "composite_score": 0.0,
+      "issues": [
+        "no key_points",
+        "no source_bindings",
+        "no visual_elements"
+      ]
+    },
+    {
+      "slide_id": "slide-src-05-sec-01",
+      "layout_type": "chart",
+      "coherence_score": 1.0,
+      "grounding_score": 0.85,
+      "visual_fit_score": 1.0,
+      "composite_score": 0.96,
+      "issues": []
+    },
+    {
+      "slide_id": "section-5",
+      "layout_type": "section",
+      "coherence_score": 0.0,
+      "grounding_score": 0.0,
+      "visual_fit_score": 0.0,
+      "composite_score": 0.0,
+      "issues": [
+        "no key_points",
+        "no source_bindings",
+        "no visual_elements"
+      ]
+    },
+    {
+      "slide_id": "slide-src-06-sec-01",
+      "layout_type": "summary",
+      "coherence_score": 1.0,
+      "grounding_score": 0.85,
+      "visual_fit_score": 1.0,
+      "composite_score": 0.96,
+      "issues": []
+    }
+  ]
+}

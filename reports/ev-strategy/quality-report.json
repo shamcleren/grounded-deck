@@ -1,0 +1,39 @@
+{
+  "status": "fail",
+  "failures": [
+    "narrative: empty key_points on slide-src-02-sec-02"
+  ],
+  "coverage": {
+    "required_units": 9,
+    "covered_units": 9,
+    "coverage_ratio": 1.0
+  },
+  "grounding": {
+    "total_content_slides": 10,
+    "grounded_slides": 10,
+    "ungrounded_slide_ids": [],
+    "grounding_ratio": 1.0
+  },
+  "visual_form": {
+    "expected_units": 9,
+    "matched_units": 9,
+    "mismatches": [],
+    "match_ratio": 1.0
+  },
+  "narrative_quality": {
+    "total_key_points": 43,
+    "slides_with_empty_key_points": [
+      "slide-src-02-sec-02"
+    ],
+    "slides_with_generic_key_points": [],
+    "source_annotated_points": 18,
+    "issues": [
+      "slides with empty key_points: slide-src-02-sec-02",
+      "summary 'slide-src-02-sec-02' has 0 key_points but 9 source units exist",
+      "summary 'slide-src-06-sec-01' has 2 key_points but 9 source units exist"
+    ],
+    "quality_ratio": 0.94
+  },
+  "provider": "deterministic",
+  "model": "MiniMax-M2.7"
+}

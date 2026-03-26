@@ -1,0 +1,494 @@
+{
+  "deck_goal": "基于「中国新能源汽车出海策略分析」生成结构化演示",
+  "audience": "需要了解该主题的决策者和利益相关方",
+  "slides": [
+    {
+      "slide_id": "s1-cover",
+      "title": "基于「中国新能源汽车出海策略分析」生成结构化演示",
+      "goal": "Orient the audience to the presentation goal and source scope.",
+      "layout_type": "cover",
+      "key_points": [
+        "需要了解该主题的决策者和利益相关方",
+        "本报告分析中国新能源汽车企业在欧洲和东南亚市场的出海策略，为决策者提供市场进入建议",
+        "9 grounded source units"
+      ],
+      "visual_elements": [
+        {
+          "type": "title-block"
+        },
+        {
+          "type": "source-count",
+          "value": 9
+        },
+        {
+          "type": "topic-overview",
+          "topics": [
+            "中国新能源汽车出海策略分析",
+            "全球新能源汽车市场趋势",
+            "竞争格局",
+            "机遇",
+            "挑战",
+            "市场特点",
+            "进入策略",
+            "成本与定价分析",
+            "总结与建议"
+          ]
+        }
+      ],
+      "source_bindings": [
+        "src-01:sec-01",
+        "src-02:sec-01",
+        "src-02:sec-02",
+        "src-03:sec-01",
+        "src-03:sec-02",
+        "src-04:sec-01",
+        "src-04:sec-02",
+        "src-05:sec-01",
+        "src-06:sec-01"
+      ],
+      "must_include_checks": [
+        "src-01:sec-01",
+        "src-02:sec-01",
+        "src-02:sec-02",
+        "src-03:sec-01",
+        "src-03:sec-02",
+        "src-04:sec-01",
+        "src-04:sec-02",
+        "src-05:sec-01",
+        "src-06:sec-01"
+      ],
+      "speaker_notes": "Introduce the deck goal and emphasize that claims stay grounded to source material."
+    },
+    {
+      "slide_id": "s2-summary",
+      "title": "Decision Backbone",
+      "goal": "Compress the source pack into the minimum grounded claims the deck must preserve.",
+      "layout_type": "summary",
+      "key_points": [
+        "本报告分析中国新能源汽车企业在欧洲和东南亚市场的出海策略，为决策者提供市场进入建议 [src-01:sec-01]",
+        "中国已成为全球最大的新能源汽车出口国，2023年出口量超过120万辆。 [src-02:sec-01]",
+        "2023年全球新能源汽车销量达到1400万辆，同比增长35% [src-02:sec-01]",
+        "中国品牌在全球市场的份额从2021年的15%提升至2023年的28% [src-02:sec-01]",
+        "2023年中国新能源汽车出口量：120.3万辆 [src-02:sec-01]",
+        "同比增长：77.6% [src-02:sec-01]",
+        "主要出口目的地：欧洲（45%）、东南亚（25%）、中东（15%） [src-02:sec-01]",
+        "欧洲是全球第二大新能源汽车市场，2023年销量达到310万辆 [src-03:sec-01]",
+        "因此，欧洲市场为中国品牌提供了巨大的增长空间，特别是在15-30万元价格带 [src-03:sec-01]",
+        "建议采取\"先建品牌认知，再扩大销量\"的策略，避免陷入价格战。 [src-03:sec-02]",
+        "关税壁垒：欧盟对中国电动汽车加征17.4%-38.1%的反补贴关税 [src-03:sec-02]",
+        "东南亚新能源汽车市场正处于快速增长期，2023年销量约50万辆，同比增长85% [src-04:sec-01]",
+        "泰国：政府补贴力度大，2023年EV渗透率达12% [src-04:sec-01]",
+        "建议采取分阶段进入策略： [src-04:sec-02]",
+        "关键成功因素是本地化合作伙伴的选择和供应链的本地化程度 [src-04:sec-02]",
+        "过去12个月动力电池包成本下降18%，为海外定价提供了更大的灵活空间 [src-05:sec-01]",
+        "因此，18%的电池成本降幅为价格带竞争和渠道投入提供了缓冲空间 [src-05:sec-01]",
+        "综合分析，建议中国新能源汽车企业采取以下策略： [src-06:sec-01]"
+      ],
+      "visual_elements": [
+        {
+          "type": "bullet-list"
+        },
+        {
+          "type": "claim-source-map",
+          "entries": [
+            {
+              "unit_id": "src-01:sec-01",
+              "section": "中国新能源汽车出海策略分析",
+              "claim": "本报告分析中国新能源汽车企业在欧洲和东南亚市场的出海策略，为决策者提供市场进入建议",
+              "source_binding": "src-01:sec-01"
+            },
+            {
+              "unit_id": "src-02:sec-01",
+              "section": "全球新能源汽车市场趋势",
+              "claim": "中国已成为全球最大的新能源汽车出口国，2023年出口量超过120万辆。",
+              "source_binding": "src-02:sec-01"
+            },
+            {
+              "unit_id": "src-02:sec-02",
+              "section": "竞争格局",
+              "claim": "竞争格局",
+              "source_binding": "src-02:sec-02"
+            },
+            {
+              "unit_id": "src-03:sec-01",
+              "section": "机遇",
+              "claim": "欧洲是全球第二大新能源汽车市场，2023年销量达到310万辆",
+              "source_binding": "src-03:sec-01"
+            },
+            {
+              "unit_id": "src-03:sec-02",
+              "section": "挑战",
+              "claim": "建议采取\"先建品牌认知，再扩大销量\"的策略，避免陷入价格战。",
+              "source_binding": "src-03:sec-02"
+            },
+            {
+              "unit_id": "src-04:sec-01",
+              "section": "市场特点",
+              "claim": "东南亚新能源汽车市场正处于快速增长期，2023年销量约50万辆，同比增长85%",
+              "source_binding": "src-04:sec-01"
+            },
+            {
+              "unit_id": "src-04:sec-02",
+              "section": "进入策略",
+              "claim": "建议采取分阶段进入策略：",
+              "source_binding": "src-04:sec-02"
+            },
+            {
+              "unit_id": "src-05:sec-01",
+              "section": "成本与定价分析",
+              "claim": "过去12个月动力电池包成本下降18%，为海外定价提供了更大的灵活空间",
+              "source_binding": "src-05:sec-01"
+            },
+            {
+              "unit_id": "src-06:sec-01",
+              "section": "总结与建议",
+              "claim": "综合分析，建议中国新能源汽车企业采取以下策略：",
+              "source_binding": "src-06:sec-01"
+            }
+          ]
+        }
+      ],
+      "source_bindings": [
+        "src-01:sec-01",
+        "src-02:sec-01",
+        "src-02:sec-02",
+        "src-03:sec-01",
+        "src-03:sec-02",
+        "src-04:sec-01",
+        "src-04:sec-02",
+        "src-05:sec-01",
+        "src-06:sec-01"
+      ],
+      "must_include_checks": [
+        "src-01:sec-01",
+        "src-02:sec-01",
+        "src-02:sec-02",
+        "src-03:sec-01",
+        "src-03:sec-02",
+        "src-04:sec-01",
+        "src-04:sec-02",
+        "src-05:sec-01",
+        "src-06:sec-01"
+      ],
+      "speaker_notes": "This slide compresses the source pack into the minimum set of claims the deck must retain."
+    },
+    {
+      "slide_id": "slide-src-01-sec-01",
+      "title": "中国新能源汽车出海策略分析",
+      "goal": "Turn grounded evidence into an ordered action path.",
+      "layout_type": "process",
+      "key_points": [
+        "本报告分析中国新能源汽车企业在欧洲和东南亚市场的出海策略，为决策者提供市场进入建议",
+        "中国新能源汽车出海策略分析 本报告分析中国新能源汽车企业在欧洲和东南亚市场的出海策略，为决策者提供市场进入建议"
+      ],
+      "visual_elements": [
+        {
+          "type": "process-flow",
+          "steps": 3,
+          "step_labels": [
+            "中国新能源汽车出海策略分析 本报告分析中国新能源汽车企业在欧洲和东南亚市场的出海策略",
+            "为决策者提供市场进入建议。 本报告分析中国新能源汽车企业在欧洲和东南亚市场的出海策略",
+            "为决策者提供市场进入建议"
+          ]
+        }
+      ],
+      "source_bindings": [
+        "src-01:sec-01"
+      ],
+      "must_include_checks": [
+        "src-01:sec-01"
+      ],
+      "speaker_notes": "[开场] 这页梳理了「中国新能源汽车出海策略分析」的行动路径。\n[要点]\n  1. 本报告分析中国新能源汽车企业在欧洲和东南亚市场的出海策略，为决策者提供市场进入建议\n  2. 中国新能源汽车出海策略分析 本报告分析中国新能源汽车企业在欧洲和东南亚市场的出海策略，为决策者提供市场进入建议\n[过渡] 明确了步骤后，接下来关注执行中的关键指标。\n[来源] src-01:sec-01"
+    },
+    {
+      "slide_id": "section-1",
+      "title": "市场概况",
+      "goal": "中国已成为全球最大的新能源汽车出口国，2023年出口量超过120万辆。",
+      "layout_type": "section",
+      "key_points": [],
+      "visual_elements": [],
+      "source_bindings": [],
+      "must_include_checks": [],
+      "speaker_notes": "Section divider: transitioning to 市场概况."
+    },
+    {
+      "slide_id": "slide-src-02-sec-01",
+      "title": "全球新能源汽车市场趋势",
+      "goal": "Surface the grounded numeric signal that should shape the decision.",
+      "layout_type": "chart",
+      "key_points": [
+        "中国已成为全球最大的新能源汽车出口国，2023年出口量超过120万辆。",
+        "2023年全球新能源汽车销量达到1400万辆，同比增长35%",
+        "中国品牌在全球市场的份额从2021年的15%提升至2023年的28%"
+      ],
+      "visual_elements": [
+        {
+          "type": "metric-cards",
+          "metrics": [
+            "2023",
+            "1400",
+            "35%",
+            "2021"
+          ],
+          "labels": [
+            "全球新能源汽车市场趋势 2023年全球新能源汽车销量达到140",
+            "023年全球新能源汽车销量达到1400万辆，同比增长35%。中国品牌",
+            "销量达到1400万辆，同比增长35%。中国品牌在全球市场的份额从2",
+            "%。中国品牌在全球市场的份额从2021年的15%提升至2023年的2"
+          ]
+        }
+      ],
+      "source_bindings": [
+        "src-02:sec-01"
+      ],
+      "must_include_checks": [
+        "src-02:sec-01"
+      ],
+      "speaker_notes": "[开场] 这页呈现了「全球新能源汽车市场趋势」的关键数据指标。\n[要点]\n  1. 中国已成为全球最大的新能源汽车出口国，2023年出口量超过120万辆。\n  2. 2023年全球新能源汽车销量达到1400万辆，同比增长35%\n  3. 中国品牌在全球市场的份额从2021年的15%提升至2023年的28%\n[数据] 关键数据点: 2023年, 35%, 2021年, 15%\n[过渡] 数据说明了现状，接下来看看我们的应对策略。\n[来源] src-02:sec-01"
+    },
+    {
+      "slide_id": "slide-src-02-sec-02",
+      "title": "竞争格局",
+      "goal": "Retain the grounded claim in a compact, editable form.",
+      "layout_type": "summary",
+      "key_points": [],
+      "visual_elements": [
+        {
+          "type": "bullet-list"
+        }
+      ],
+      "source_bindings": [
+        "src-02:sec-02"
+      ],
+      "must_include_checks": [
+        "src-02:sec-02"
+      ],
+      "speaker_notes": "[开场] 这页总结了「竞争格局」的核心发现。\n[过渡] 基于以上发现，让我们深入具体分析。\n[来源] src-02:sec-02"
+    },
+    {
+      "slide_id": "section-2",
+      "title": "欧洲市场分析",
+      "goal": "欧洲是全球第二大新能源汽车市场，2023年销量达到310万辆",
+      "layout_type": "section",
+      "key_points": [],
+      "visual_elements": [],
+      "source_bindings": [],
+      "must_include_checks": [],
+      "speaker_notes": "Section divider: transitioning to 欧洲市场分析."
+    },
+    {
+      "slide_id": "slide-src-03-sec-01",
+      "title": "机遇",
+      "goal": "Surface the grounded numeric signal that should shape the decision.",
+      "layout_type": "chart",
+      "key_points": [
+        "欧洲是全球第二大新能源汽车市场，2023年销量达到310万辆",
+        "因此，欧洲市场为中国品牌提供了巨大的增长空间，特别是在15-30万元价格带",
+        "机遇 欧洲是全球第二大新能源汽车市场，2023年销量达到310万辆"
+      ],
+      "visual_elements": [
+        {
+          "type": "metric-cards",
+          "metrics": [
+            "2023",
+            "310",
+            "15",
+            "30"
+          ],
+          "labels": [
+            "洲是全球第二大新能源汽车市场，2023年销量达到310万辆。欧盟的碳",
+            "源汽车市场，2023年销量达到310万辆。欧盟的碳排放法规持续收紧",
+            "提供了巨大的增长空间，特别是在15-30万元价格带。 欧洲是全球",
+            "巨大的增长空间，特别是在15-30万元价格带。 欧洲是全球第二大"
+          ]
+        }
+      ],
+      "source_bindings": [
+        "src-03:sec-01"
+      ],
+      "must_include_checks": [
+        "src-03:sec-01"
+      ],
+      "speaker_notes": "[开场] 这页呈现了「机遇」的关键数据指标。\n[要点]\n  1. 欧洲是全球第二大新能源汽车市场，2023年销量达到310万辆\n  2. 因此，欧洲市场为中国品牌提供了巨大的增长空间，特别是在15-30万元价格带\n  3. 机遇 欧洲是全球第二大新能源汽车市场，2023年销量达到310万辆\n[数据] 关键数据点: 2023年\n[过渡] 数据说明了现状，接下来看看我们的应对策略。\n[来源] src-03:sec-01"
+    },
+    {
+      "slide_id": "slide-src-03-sec-02",
+      "title": "挑战",
+      "goal": "Surface the grounded numeric signal that should shape the decision.",
+      "layout_type": "chart",
+      "key_points": [
+        "建议采取\"先建品牌认知，再扩大销量\"的策略，避免陷入价格战。",
+        "关税壁垒：欧盟对中国电动汽车加征17.4%-38.1%的反补贴关税",
+        "挑战 欧洲市场面临多重挑战： 建议采取\"先建品牌认知，再扩大销量\"的策略，避免陷入价格战"
+      ],
+      "visual_elements": [
+        {
+          "type": "metric-cards",
+          "metrics": [
+            "17.4%",
+            "38.1%"
+          ],
+          "labels": [
+            "税壁垒：欧盟对中国电动汽车加征17.4%-38.1%的反补贴关税",
+            "对中国电动汽车加征17.4%-38.1%的反补贴关税"
+          ]
+        }
+      ],
+      "source_bindings": [
+        "src-03:sec-02"
+      ],
+      "must_include_checks": [
+        "src-03:sec-02"
+      ],
+      "speaker_notes": "[开场] 这页呈现了「挑战」的关键数据指标。\n[要点]\n  1. 建议采取\"先建品牌认知，再扩大销量\"的策略，避免陷入价格战。\n  2. 关税壁垒：欧盟对中国电动汽车加征17.4%-38.1%的反补贴关税\n  3. 挑战 欧洲市场面临多重挑战： 建议采取\"先建品牌认知，再扩大销量\"的策略，避免陷入价格战\n[数据] 关键数据点: 17.4%, 38.1%\n[过渡] 数据说明了现状，接下来看看我们的应对策略。\n[来源] src-03:sec-02"
+    },
+    {
+      "slide_id": "section-3",
+      "title": "东南亚市场分析",
+      "goal": "东南亚新能源汽车市场正处于快速增长期，2023年销量约50万辆，同比增长85%",
+      "layout_type": "section",
+      "key_points": [],
+      "visual_elements": [],
+      "source_bindings": [],
+      "must_include_checks": [],
+      "speaker_notes": "Section divider: transitioning to 东南亚市场分析."
+    },
+    {
+      "slide_id": "slide-src-04-sec-01",
+      "title": "市场特点",
+      "goal": "Surface the grounded numeric signal that should shape the decision.",
+      "layout_type": "chart",
+      "key_points": [
+        "东南亚新能源汽车市场正处于快速增长期，2023年销量约50万辆，同比增长85%",
+        "泰国：政府补贴力度大，2023年EV渗透率达12%",
+        "市场特点 东南亚新能源汽车市场正处于快速增长期，2023年销量约50万辆，同比增长85%"
+      ],
+      "visual_elements": [
+        {
+          "type": "metric-cards",
+          "metrics": [
+            "2023",
+            "50",
+            "85%",
+            "12%"
+          ],
+          "labels": [
+            "能源汽车市场正处于快速增长期，2023年销量约50万辆，同比增长85",
+            "于快速增长期，2023年销量约50万辆，同比增长85%。泰国和印",
+            "23年销量约50万辆，同比增长85%。泰国和印尼是最大的两个市场。",
+            "力度大，2023年EV渗透率达12%"
+          ]
+        }
+      ],
+      "source_bindings": [
+        "src-04:sec-01"
+      ],
+      "must_include_checks": [
+        "src-04:sec-01"
+      ],
+      "speaker_notes": "[开场] 这页呈现了「市场特点」的关键数据指标。\n[要点]\n  1. 东南亚新能源汽车市场正处于快速增长期，2023年销量约50万辆，同比增长85%\n  2. 泰国：政府补贴力度大，2023年EV渗透率达12%\n  3. 市场特点 东南亚新能源汽车市场正处于快速增长期，2023年销量约50万辆，同比增长85%\n[数据] 关键数据点: 2023年, 85%, 12%\n[过渡] 数据说明了现状，接下来看看我们的应对策略。\n[来源] src-04:sec-01"
+    },
+    {
+      "slide_id": "slide-src-04-sec-02",
+      "title": "进入策略",
+      "goal": "Turn grounded evidence into an ordered action path.",
+      "layout_type": "process",
+      "key_points": [
+        "建议采取分阶段进入策略：",
+        "关键成功因素是本地化合作伙伴的选择和供应链的本地化程度",
+        "进入策略 建议采取分阶段进入策略： 关键成功因素是本地化合作伙伴的选择和供应链的本地化程度"
+      ],
+      "visual_elements": [
+        {
+          "type": "process-flow",
+          "steps": 1,
+          "step_labels": [
+            "进入策略 建议采取分阶段进入策略： 关键成功因素是本地化合作伙伴的选择和供应链的本地化程度。 建议采取分阶段进入策略： 关键成功因素是本地化合作伙伴的选择和供应链的本地化程度"
+          ]
+        }
+      ],
+      "source_bindings": [
+        "src-04:sec-02"
+      ],
+      "must_include_checks": [
+        "src-04:sec-02"
+      ],
+      "speaker_notes": "[开场] 这页梳理了「进入策略」的行动路径。\n[要点]\n  1. 建议采取分阶段进入策略：\n  2. 关键成功因素是本地化合作伙伴的选择和供应链的本地化程度\n  3. 进入策略 建议采取分阶段进入策略： 关键成功因素是本地化合作伙伴的选择和供应链的本地化程度\n[过渡] 明确了步骤后，接下来关注执行中的关键指标。\n[来源] src-04:sec-02"
+    },
+    {
+      "slide_id": "section-4",
+      "title": "成本与定价分析",
+      "goal": "过去12个月动力电池包成本下降18%，为海外定价提供了更大的灵活空间",
+      "layout_type": "section",
+      "key_points": [],
+      "visual_elements": [],
+      "source_bindings": [],
+      "must_include_checks": [],
+      "speaker_notes": "Section divider: transitioning to 成本与定价分析."
+    },
+    {
+      "slide_id": "slide-src-05-sec-01",
+      "title": "成本与定价分析",
+      "goal": "Surface the grounded numeric signal that should shape the decision.",
+      "layout_type": "chart",
+      "key_points": [
+        "过去12个月动力电池包成本下降18%，为海外定价提供了更大的灵活空间",
+        "因此，18%的电池成本降幅为价格带竞争和渠道投入提供了缓冲空间",
+        "成本与定价分析 过去12个月动力电池包成本下降18%，为海外定价提供了更大的灵活空间"
+      ],
+      "visual_elements": [
+        {
+          "type": "metric-cards",
+          "metrics": [
+            "12",
+            "18%"
+          ],
+          "labels": [
+            "成本与定价分析 过去12个月动力电池包成本下降18%，",
+            "过去12个月动力电池包成本下降18%，为海外定价提供了更大的灵活空"
+          ]
+        }
+      ],
+      "source_bindings": [
+        "src-05:sec-01"
+      ],
+      "must_include_checks": [
+        "src-05:sec-01"
+      ],
+      "speaker_notes": "[开场] 这页呈现了「成本与定价分析」的关键数据指标。\n[要点]\n  1. 过去12个月动力电池包成本下降18%，为海外定价提供了更大的灵活空间\n  2. 因此，18%的电池成本降幅为价格带竞争和渠道投入提供了缓冲空间\n  3. 成本与定价分析 过去12个月动力电池包成本下降18%，为海外定价提供了更大的灵活空间\n[数据] 关键数据点: 18%\n[过渡] 数据说明了现状，接下来看看我们的应对策略。\n[来源] src-05:sec-01"
+    },
+    {
+      "slide_id": "section-5",
+      "title": "总结与建议",
+      "goal": "综合分析，建议中国新能源汽车企业采取以下策略：",
+      "layout_type": "section",
+      "key_points": [],
+      "visual_elements": [],
+      "source_bindings": [],
+      "must_include_checks": [],
+      "speaker_notes": "Section divider: transitioning to 总结与建议."
+    },
+    {
+      "slide_id": "slide-src-06-sec-01",
+      "title": "总结与建议",
+      "goal": "Retain the grounded claim in a compact, editable form.",
+      "layout_type": "summary",
+      "key_points": [
+        "综合分析，建议中国新能源汽车企业采取以下策略：",
+        "总结与建议 综合分析，建议中国新能源汽车企业采取以下策略： 综合分析，建议中国新能源汽车企业采取以下策略："
+      ],
+      "visual_elements": [
+        {
+          "type": "bullet-list"
+        }
+      ],
+      "source_bindings": [
+        "src-06:sec-01"
+      ],
+      "must_include_checks": [
+        "src-06:sec-01"
+      ],
+      "speaker_notes": "[开场] 这页总结了「总结与建议」的核心发现。\n[要点]\n  1. 综合分析，建议中国新能源汽车企业采取以下策略：\n  2. 总结与建议 综合分析，建议中国新能源汽车企业采取以下策略： 综合分析，建议中国新能源汽车企业采取以下策略：\n[过渡] 基于以上发现，让我们深入具体分析。\n[来源] src-06:sec-01"
+    }
+  ]
+}

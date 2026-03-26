@@ -12,6 +12,12 @@ from src.runtime.verification import build_failure_summary
 
 def write_pipeline_outputs(output_dir: Path, result: dict) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
+    # 如果有 source_pack（从原始文档摄取生成的），也保存
+    if "source_pack" in result:
+        (output_dir / "source-pack.json").write_text(
+            json.dumps(result["source_pack"], ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
     (output_dir / "normalized-pack.json").write_text(
         json.dumps(result["normalized_pack"], ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
@@ -58,8 +64,18 @@ def write_verification_summary(
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Run the grounded-deck pipeline on a source-pack JSON file.")
-    parser.add_argument("--input", required=True, help="Path to a source-pack JSON file.")
+    parser = argparse.ArgumentParser(description="Run the grounded-deck pipeline on a source document or source-pack JSON file.")
+    parser.add_argument("--input", required=True, help="Path to a source document (.md) or source-pack JSON file (.json).")
+    parser.add_argument(
+        "--deck-goal",
+        default="",
+        help="Override the deck goal (only used when input is a raw document, not a source-pack JSON).",
+    )
+    parser.add_argument(
+        "--audience",
+        default="",
+        help="Override the target audience (only used when input is a raw document, not a source-pack JSON).",
+    )
     parser.add_argument("--output-dir", required=True, help="Directory for normalized, slide-spec, and quality outputs.")
     parser.add_argument(
         "--require-live-provider",
@@ -90,7 +106,7 @@ def main() -> int:
     )
     args = parser.parse_args()
 
-    raw_pack = json.loads(Path(args.input).read_text(encoding="utf-8"))
+    input_path = Path(args.input)
     provider = build_provider_from_env()
     if args.require_live_provider and provider.name == "deterministic":
         raise SystemExit(
@@ -107,13 +123,36 @@ def main() -> int:
             # 如果没有显式指定 --render-pptx，默认输出到 output_dir
             render_pptx = str(output_dir / "output.pptx")
 
-        result = run_pipeline(
-            raw_pack,
-            provider=provider,
-            render_pptx=render_pptx,
-            theme=args.theme,
-            grade_artifact=args.grade_artifact,
-        )
+        # 检测输入格式：JSON 直接加载，其他格式走 ingest 流程
+        from src.runtime.pipeline import detect_input_format
+        from src.ingest.source_understanding import IngestConfig
+
+        input_format = detect_input_format(input_path)
+
+        if input_format == "source-pack-json":
+            # 传统路径：直接加载 JSON source pack
+            raw_pack = json.loads(input_path.read_text(encoding="utf-8"))
+            result = run_pipeline(
+                raw_pack,
+                provider=provider,
+                render_pptx=render_pptx,
+                theme=args.theme,
+                grade_artifact=args.grade_artifact,
+            )
+        else:
+            # 新路径：从原始文档摄取
+            ingest_config = IngestConfig(
+                deck_goal=args.deck_goal,
+                audience=args.audience,
+            )
+            result = run_pipeline(
+                provider=provider,
+                input_path=input_path,
+                ingest_config=ingest_config,
+                render_pptx=render_pptx,
+                theme=args.theme,
+                grade_artifact=args.grade_artifact,
+            )
         write_pipeline_outputs(output_dir, result)
         write_verification_summary(
             output_dir=output_dir,

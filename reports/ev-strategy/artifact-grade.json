@@ -1,0 +1,18 @@
+{
+  "status": "pass",
+  "failures": [],
+  "warnings": [],
+  "metrics": {
+    "file_size_bytes": 74816,
+    "slide_count": 16,
+    "total_shapes": 71,
+    "total_text_boxes": 64,
+    "editable_text_boxes": 64,
+    "editability_ratio": 1.0,
+    "slides_with_notes": 16,
+    "slides_with_source_bindings": 11,
+    "notes_coverage_ratio": 1.0,
+    "source_binding_coverage_ratio": 0.69,
+    "chinese_text_found": true
+  }
+}

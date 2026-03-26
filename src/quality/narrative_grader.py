@@ -217,6 +217,12 @@ def _score_visual_fit_deterministic(slide: dict, unit: dict | None = None) -> tu
         issues.append("no visual_elements")
         return 0.0, issues
 
+    # 确保 elements 中的每个元素都是 dict（兼容字符串列表等非标准格式）
+    dict_elements = [e for e in elements if isinstance(e, dict)]
+    if not dict_elements:
+        issues.append("visual_elements contains no dict entries")
+        return 0.4, issues  # 有元素但格式不标准，给基础分
+
     score += 0.4
 
     # 类型一致性检查
@@ -230,7 +236,7 @@ def _score_visual_fit_deterministic(slide: dict, unit: dict | None = None) -> tu
     }
     expected_type = expected_types.get(layout, "")
     has_matching_type = any(
-        e.get("type", "") == expected_type for e in elements
+        e.get("type", "") == expected_type for e in dict_elements
     )
     if has_matching_type:
         score += 0.3
@@ -243,7 +249,7 @@ def _score_visual_fit_deterministic(slide: dict, unit: dict | None = None) -> tu
 
     # source-grounded 内容丰富度
     has_rich_content = False
-    for elem in elements:
+    for elem in dict_elements:
         etype = elem.get("type", "")
         if etype == "timeline" and elem.get("milestones"):
             has_rich_content = True
