@@ -2,10 +2,19 @@
 
 ## In Progress
 
-- implement Markdown Ingest module: parse Markdown documents and use LLM to deeply understand content, producing internal source pack JSON
 - keep strongest-demo provider prompts and live verification aligned to the archived acceptance snapshot before promoting more provider-backed planning changes
 
 ## Recently Completed
+
+- implemented Markdown Ingest module with LLM deep comprehension support
+- `src/ingest/markdown_reader.py`: Markdown parser supporting headings, paragraphs, lists, code blocks, tables, blockquotes, and YAML front matter
+- `src/ingest/source_understanding.py`: deterministic + LLM-backed source understanding that converts parsed Markdown into source pack JSON
+- updated `src/runtime/pipeline.py` with `ingest_from_file()`, `detect_input_format()`, and `input_path` parameter
+- updated `src/runtime/cli.py` to accept `.md` files with `--deck-goal` and `--audience` flags
+- hardened `src/quality/narrative_grader.py` visual_elements type checking
+- added `demo-markdown` Makefile target and test document `fixtures/test-documents/ev-strategy-analysis.md`
+- 58 new tests in `tests/test_markdown_ingest.py`, total 390 passing, 39/39 evals green
+- `make demo-markdown` produces 16-slide PPTX (74KB) from Markdown document
 
 - implemented theme system in `src/renderer/themes.py` with 5 built-in themes: professional-blue, forest-green, warm-sunset, minimal-gray, ocean-teal
 - `SlideTheme` frozen dataclass with 18 color slots; PPTX renderer refactored to consume theme colors
