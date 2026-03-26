@@ -153,6 +153,14 @@ The strongest deterministic planning demo is now curated back onto `main` as a c
 - added 10 NativeTableRenderingTests for timeline and process (table structure, header content, event text, step numbers, step labels, strongest-demo regression)
 - added 2 SectionEnhancementTests for decorative lines (with and without goal)
 - confirmed all 274 tests pass and `make eval` remains 38/38 green
+- enhanced visual selector English keyword coverage for comparison (`landscape`, `incumbent`, `versus`, `compete`, contrast connectors), process (`sequence`, `phase`, `step`, `workflow`, Phase/Step numbering pattern), and timeline (`timeline`, `grew from`, `growth`)
+- enhanced comparison column name extraction with English "X vs Y" and "incumbent vs new entrant" patterns
+- enhanced process step extraction with English "Phase 1: ... Phase 2: ..." pattern
+- created `saas-launch-source-pack.json` English source pack (SaaS product launch / go-to-market theme) with 4 sources covering market research, product brief, financial model, and customer research
+- generated full saas-launch fixture set: normalized-source-units, slide-spec (7 slides with 5 distinct layouts: cover, summary, timeline, comparison, process, chart), quality-report
+- added `demo-saas` and `demo-all` Makefile targets for multi-sample PPTX rendering
+- created `tests/test_diverse_samples.py` with 20 new tests: SaasLaunchRenderingTests (8), SaasLaunchPipelineTests (3), AllFixturesCompatibilityTests (2), EnglishKeywordInferenceTests (7)
+- confirmed all 294 tests pass and `make eval` remains 38/38 green
 
 ## Current Next Action
 
@@ -164,8 +172,9 @@ Continue improving provider-backed planning and grading against the strongest-de
 2. ~~grade handoff completeness and task-board freshness~~ ✅
 3. ~~enhance PPTX renderer with CJK font safety and native Table objects~~ ✅
 4. ~~upgrade all data-bearing layouts (timeline, process) to native Table objects~~ ✅
-5. preserve the repository-owned strongest-demo live acceptance snapshot while keeping `reports/live-verification-latest.*` as the rolling pointer
-5. compare future strongest-demo live refreshes against the archived acceptance summary instead of treating every passing run as interchangeable
+5. ~~diversify sample dataset with English source pack and enhance English keyword coverage~~ ✅
+6. preserve the repository-owned strongest-demo live acceptance snapshot while keeping `reports/live-verification-latest.*` as the rolling pointer
+6. compare future strongest-demo live refreshes against the archived acceptance summary instead of treating every passing run as interchangeable
 6. keep provider-backed planning improvements, acceptance-aligned prompt guardrails, and `make verify-online` healthy without weakening deterministic regression coverage
 
 External feedback has been absorbed as a prioritization change, not an architecture change. The environment-variable configuration contract is documented in `docs/runtime-config.md`, placeholder values are rejected during live preflight, and the strongest-demo live path has now been proven once against a real provider while preserving the deterministic baseline.

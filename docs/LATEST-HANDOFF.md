@@ -2,17 +2,26 @@
 
 ## Session Summary
 
-GroundedDeck PPTX renderer now uses native python-pptx Table objects for all 4 data-bearing layouts (comparison, chart, timeline, process). Timeline layout combines a decorative axis with dot nodes above a structured milestone/event table. Process layout uses a step number/content table with decorative arrows below. Section layout now has accent-colored separator lines flanking the title. All output remains fully editable in PowerPoint.
+GroundedDeck visual selector now has comprehensive English keyword coverage for layout inference. A new English-language `saas-launch` source pack (SaaS product launch / go-to-market theme) has been added as a second diverse sample, producing 7 slides across 5 distinct layout types. The `make demo-all` target renders all sample PPTX files in one command. 20 new tests in `test_diverse_samples.py` cover rendering, pipeline, fixture compatibility, and English keyword inference regression.
 
 ## What Was Just Completed
 
-- upgraded timeline layout from text-box labels to native python-pptx Table (2 rows x n columns: milestone row + event row) with decorative timeline axis and dot nodes preserved above the table
-- upgraded process layout from text-box step cards to native python-pptx Table (2 rows x n columns: step number row + content row) with decorative arrows below the table
-- enhanced section layout with decorative separator lines (top and bottom accent lines flanking the title)
-- all 4 data-bearing layouts (comparison, chart, timeline, process) now use native Table objects for full PowerPoint editability
-- added 10 NativeTableRenderingTests for timeline and process (table structure, header content, event text, step numbers, step labels, strongest-demo regression)
-- added 2 SectionEnhancementTests for decorative lines (with and without goal)
-- total test count: 274 passing
+- enhanced visual selector English keyword coverage:
+  - comparison: added `landscape`, `incumbent`, `versus`, `compete`, `tradeoff`, `trade-off` keywords and `but/while/however/whereas` contrast connector detection
+  - process: added `sequence`, `phase`, `step `, `workflow`, `playbook` keywords and `Phase N/Step N/Stage N` numbering pattern detection
+  - timeline: added `timeline`, `grew from`, `growth` keywords
+- enhanced comparison column name extraction with English "X vs Y" and "incumbent vs new entrant" patterns
+- enhanced process step extraction with English "Phase 1: ... Phase 2: ..." pattern
+- created `fixtures/source-packs/saas-launch-source-pack.json` English source pack with 4 sources (market research, product brief, financial model, customer research)
+- generated full saas-launch fixture set: normalized-source-units (5 units), slide-spec (7 slides), quality-report (pass)
+- saas-launch layout distribution: cover, summary, timeline, comparison, process, comparison, chart — 5 distinct layout types
+- added `demo-saas` and `demo-all` Makefile targets for multi-sample PPTX rendering
+- created `tests/test_diverse_samples.py` with 20 new tests:
+  - SaasLaunchRenderingTests (8): rendering, slide count, layout diversity, individual layout presence, English content
+  - SaasLaunchPipelineTests (3): quality check, end-to-end pipeline, narrative grade
+  - AllFixturesCompatibilityTests (2): all fixtures render, all source packs pass quality
+  - EnglishKeywordInferenceTests (7): landscape→comparison, phase→process, sequence→process, grew from→timeline, step extraction, Chinese regression
+- total test count: 294 passing
 - eval harness: 38/38 passing
 - added [AGENTS.md](../AGENTS.md) as the AI operating contract
 - added [docs/PROJECT-STATE.md](PROJECT-STATE.md) as the canonical current-state record
@@ -150,13 +159,13 @@ GroundedDeck PPTX renderer now uses native python-pptx Table objects for all 4 d
 
 ## Immediate Next Action
 
-Continue improving provider-backed planning and grading against the strongest-demo path without weakening deterministic coverage.
+Continue diversifying sample dataset or improving provider-backed planning and grading against the strongest-demo path without weakening deterministic coverage.
 
 ## First Concrete Tasks
 
-1. compare future strongest-demo online refreshes against `reports/live-verification-history/strongest-demo-1774370225/acceptance-summary.json`
-2. keep `make verify-online` passing on the real provider path while preserving `make eval`
-3. keep strongest-demo canonical docs pinned to the current accepted repository-owned snapshot until a newer verified snapshot is accepted
+1. add more diverse source packs (e.g. technical architecture review, quarterly business review) to further validate pipeline generalization
+2. compare future strongest-demo online refreshes against `reports/live-verification-history/strongest-demo-1774370225/acceptance-summary.json`
+3. keep `make verify-online` passing on the real provider path while preserving `make eval`
 
 ## Do Not Drift
 

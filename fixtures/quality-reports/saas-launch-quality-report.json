@@ -1,0 +1,31 @@
+{
+  "status": "pass",
+  "failures": [],
+  "coverage": {
+    "required_units": 5,
+    "covered_units": 5,
+    "coverage_ratio": 1.0
+  },
+  "grounding": {
+    "total_content_slides": 6,
+    "grounded_slides": 6,
+    "ungrounded_slide_ids": [],
+    "grounding_ratio": 1.0
+  },
+  "visual_form": {
+    "expected_units": 5,
+    "matched_units": 5,
+    "mismatches": [],
+    "match_ratio": 1.0
+  },
+  "narrative_quality": {
+    "total_key_points": 18,
+    "slides_with_empty_key_points": [],
+    "slides_with_generic_key_points": [],
+    "source_annotated_points": 5,
+    "issues": [],
+    "quality_ratio": 1.0
+  },
+  "provider": "deterministic",
+  "model": "baseline-fixture"
+}

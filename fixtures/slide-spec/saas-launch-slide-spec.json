@@ -1,0 +1,273 @@
+{
+  "deck_goal": "Present a data-driven go-to-market plan for launching AnalyticsPro in the North American mid-market segment.",
+  "audience": "VP of Product and Growth leadership deciding Q3 launch sequencing",
+  "slides": [
+    {
+      "slide_id": "s1-cover",
+      "title": "Present a data-driven go-to-market plan for launching AnalyticsPro in the North American mid-market segment.",
+      "goal": "Orient the audience to the presentation goal and source scope.",
+      "layout_type": "cover",
+      "key_points": [
+        "VP of Product and Growth leadership deciding Q3 launch sequencing",
+        "The mid-market analytics TAM reached $3.4B in 2024 with 28% projected CAGR through 2027.",
+        "5 grounded source units"
+      ],
+      "visual_elements": [
+        {
+          "type": "title-block"
+        },
+        {
+          "type": "source-count",
+          "value": 5
+        },
+        {
+          "type": "topic-overview",
+          "topics": [
+            "Market Size Timeline",
+            "Competitive Landscape",
+            "Launch Sequence",
+            "Pricing and Margins",
+            "Beta NPS and Feature Requests"
+          ]
+        }
+      ],
+      "source_bindings": [
+        "src-01:sec-01",
+        "src-01:sec-02",
+        "src-02:sec-01",
+        "src-03:sec-01",
+        "src-04:sec-01"
+      ],
+      "must_include_checks": [
+        "src-01:sec-01",
+        "src-01:sec-02",
+        "src-02:sec-01",
+        "src-03:sec-01",
+        "src-04:sec-01"
+      ],
+      "speaker_notes": "Introduce the deck goal and emphasize that claims stay grounded to source material."
+    },
+    {
+      "slide_id": "s2-summary",
+      "title": "Decision Backbone",
+      "goal": "Compress the source pack into the minimum grounded claims the deck must preserve.",
+      "layout_type": "summary",
+      "key_points": [
+        "The mid-market analytics TAM reached $3.4B in 2024 with 28% projected CAGR through 2027. [src-01:sec-01]",
+        "Mid-market buyers prioritize time-to-value over feature depth, creating an opening for platforms with sub-week onboarding. [src-01:sec-02]",
+        "A three-phase launch sequence from beta to PLG to channel partners de-risks market entry while building social proof. [src-02:sec-01]",
+        "An $18K ACV with 82% gross margin and sub-12-month CAC payback creates a sustainable mid-market unit economics profile. [src-03:sec-01]",
+        "Beta NPS of 62 and 47-minute time-to-first-insight validate the product-market fit hypothesis for mid-market self-serve analytics. [src-04:sec-01]"
+      ],
+      "visual_elements": [
+        {
+          "type": "bullet-list"
+        },
+        {
+          "type": "claim-source-map",
+          "entries": [
+            {
+              "unit_id": "src-01:sec-01",
+              "section": "Market Size Timeline",
+              "claim": "The mid-market analytics TAM reached $3.4B in 2024 with 28% projected CAGR through 2027.",
+              "source_binding": "src-01:sec-01"
+            },
+            {
+              "unit_id": "src-01:sec-02",
+              "section": "Competitive Landscape",
+              "claim": "Mid-market buyers prioritize time-to-value over feature depth, creating an opening for platforms with sub-week onboarding.",
+              "source_binding": "src-01:sec-02"
+            },
+            {
+              "unit_id": "src-02:sec-01",
+              "section": "Launch Sequence",
+              "claim": "A three-phase launch sequence from beta to PLG to channel partners de-risks market entry while building social proof.",
+              "source_binding": "src-02:sec-01"
+            },
+            {
+              "unit_id": "src-03:sec-01",
+              "section": "Pricing and Margins",
+              "claim": "An $18K ACV with 82% gross margin and sub-12-month CAC payback creates a sustainable mid-market unit economics profile.",
+              "source_binding": "src-03:sec-01"
+            },
+            {
+              "unit_id": "src-04:sec-01",
+              "section": "Beta NPS and Feature Requests",
+              "claim": "Beta NPS of 62 and 47-minute time-to-first-insight validate the product-market fit hypothesis for mid-market self-serve analytics.",
+              "source_binding": "src-04:sec-01"
+            }
+          ]
+        }
+      ],
+      "source_bindings": [
+        "src-01:sec-01",
+        "src-01:sec-02",
+        "src-02:sec-01",
+        "src-03:sec-01",
+        "src-04:sec-01"
+      ],
+      "must_include_checks": [
+        "src-01:sec-01",
+        "src-01:sec-02",
+        "src-02:sec-01",
+        "src-03:sec-01",
+        "src-04:sec-01"
+      ],
+      "speaker_notes": "This slide compresses the source pack into the minimum set of claims the deck must retain."
+    },
+    {
+      "slide_id": "slide-src-01-sec-01",
+      "title": "Market Size Timeline",
+      "goal": "Show how the grounded evidence changes over time.",
+      "layout_type": "timeline",
+      "key_points": [
+        "The mid-market analytics TAM reached $3.4B in 2024 with 28% projected CAGR through 2027.",
+        "Market Size Timeline The North American mid-market analytics segment grew from $2.1B in 2022 to $3.4B in 2024, with projected CAGR of 28% through 2027. Self-serve analytics adoption doubled year-over-year in the 100-500 employee segment. The mid-market analytics TAM reached $3.4B in 2024 with 28% projected CAGR through 2027."
+      ],
+      "visual_elements": [
+        {
+          "type": "timeline",
+          "milestones": [
+            "2022",
+            "2024",
+            "2027"
+          ],
+          "events": [
+            "2022: to $3.4B in",
+            "2024: with projected CAGR of 28% through",
+            "2027: . Self-serve analytics adoption doubled year-over-year in the 100-500 employee segment. The mid-market analytics TAM reached $3.4B in"
+          ]
+        }
+      ],
+      "source_bindings": [
+        "src-01:sec-01"
+      ],
+      "must_include_checks": [
+        "src-01:sec-01"
+      ],
+      "speaker_notes": "Ground this slide in src-01:sec-01 and keep the structure editable."
+    },
+    {
+      "slide_id": "slide-src-01-sec-02",
+      "title": "Competitive Landscape",
+      "goal": "Contrast grounded market options without losing source traceability.",
+      "layout_type": "comparison",
+      "key_points": [
+        "Mid-market buyers prioritize time-to-value over feature depth, creating an opening for platforms with sub-week onboarding.",
+        "Competitive Landscape Incumbent tools like Tableau and Looker dominate enterprise but leave mid-market underserved on pricing and onboarding speed. New entrants compete on time-to-value: average onboarding dropped from 6 weeks to 3 days for modern platforms. Mid-market buyers prioritize time-to-value over feature depth, creating an opening for platforms with sub-week onboarding."
+      ],
+      "visual_elements": [
+        {
+          "type": "comparison-columns",
+          "columns": [
+            "Incumbents",
+            "New Entrants"
+          ],
+          "column_points": {
+            "Incumbents": [],
+            "New Entrants": []
+          }
+        }
+      ],
+      "source_bindings": [
+        "src-01:sec-02"
+      ],
+      "must_include_checks": [
+        "src-01:sec-02"
+      ],
+      "speaker_notes": "Ground this slide in src-01:sec-02 and keep the structure editable."
+    },
+    {
+      "slide_id": "slide-src-02-sec-01",
+      "title": "Launch Sequence",
+      "goal": "Turn grounded evidence into an ordered action path.",
+      "layout_type": "process",
+      "key_points": [
+        "A three-phase launch sequence from beta to PLG to channel partners de-risks market entry while building social proof.",
+        "Launch Sequence Phase 1: invite-only beta with 50 design partners (July). Phase 2: public launch with self-serve signup and PLG motion (September). Phase 3: channel partner enablement and outbound sales overlay (November). A three-phase launch sequence from beta to PLG to channel partners de-risks market entry while building social proof."
+      ],
+      "visual_elements": [
+        {
+          "type": "process-flow",
+          "steps": 3,
+          "step_labels": [
+            "invite-only beta with 50 design partners (July)",
+            "public launch with self-serve signup and PLG motion (September)",
+            "channel partner enablement and outbound sales overlay (November)"
+          ]
+        }
+      ],
+      "source_bindings": [
+        "src-02:sec-01"
+      ],
+      "must_include_checks": [
+        "src-02:sec-01"
+      ],
+      "speaker_notes": "Ground this slide in src-02:sec-01 and keep the structure editable."
+    },
+    {
+      "slide_id": "slide-src-03-sec-01",
+      "title": "Pricing and Margins",
+      "goal": "Contrast grounded market options without losing source traceability.",
+      "layout_type": "comparison",
+      "key_points": [
+        "An $18K ACV with 82% gross margin and sub-12-month CAC payback creates a sustainable mid-market unit economics profile.",
+        "Pricing and Margins Target ACV of $18K positions AnalyticsPro below enterprise incumbents ($50K+) but above freemium tools ($0-5K). Gross margin at 82% with CAC payback under 12 months at projected conversion rates of 8% from free trial. An $18K ACV with 82% gross margin and sub-12-month CAC payback creates a sustainable mid-market unit economics profile."
+      ],
+      "visual_elements": [
+        {
+          "type": "comparison-columns",
+          "columns": [
+            "Option A",
+            "Option B"
+          ],
+          "column_points": {
+            "Option A": [],
+            "Option B": []
+          }
+        }
+      ],
+      "source_bindings": [
+        "src-03:sec-01"
+      ],
+      "must_include_checks": [
+        "src-03:sec-01"
+      ],
+      "speaker_notes": "Ground this slide in src-03:sec-01 and keep the structure editable."
+    },
+    {
+      "slide_id": "slide-src-04-sec-01",
+      "title": "Beta NPS and Feature Requests",
+      "goal": "Surface the grounded numeric signal that should shape the decision.",
+      "layout_type": "chart",
+      "key_points": [
+        "Beta NPS of 62 and 47-minute time-to-first-insight validate the product-market fit hypothesis for mid-market self-serve analytics.",
+        "Beta NPS and Feature Requests Beta cohort NPS averaged 62 across 38 respondents. Top feature requests: Slack integration (71%), scheduled reports (64%), and custom dashboards (58%). Median time-to-first-insight was 47 minutes, beating the 2-hour target by 60%. Beta NPS of 62 and 47-minute time-to-first-insight validate the product-market fit hypothesis for mid-market self-serve analytics."
+      ],
+      "visual_elements": [
+        {
+          "type": "metric-cards",
+          "metrics": [
+            "62",
+            "38",
+            "71%",
+            "64%"
+          ],
+          "labels": [
+            "t NPS averaged 62 across 38 resp",
+            "aged 62 across 38 respondents. T",
+            "k integration (71%), scheduled re",
+            "duled reports (64%), and custom d"
+          ]
+        }
+      ],
+      "source_bindings": [
+        "src-04:sec-01"
+      ],
+      "must_include_checks": [
+        "src-04:sec-01"
+      ],
+      "speaker_notes": "Ground this slide in src-04:sec-01 and keep the structure editable."
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "pack_id": "saas-product-launch",
+  "language": "en",
+  "deck_goal": "Present a data-driven go-to-market plan for launching AnalyticsPro in the North American mid-market segment.",
+  "audience": "VP of Product and Growth leadership deciding Q3 launch sequencing",
+  "sources": [
+    {
+      "source_id": "src-01",
+      "type": "market-research",
+      "title": "Mid-Market Analytics TAM Report",
+      "language": "en",
+      "sections": [
+        {
+          "section_id": "sec-01",
+          "heading": "Market Size Timeline",
+          "paragraphs": [
+            "The North American mid-market analytics segment grew from $2.1B in 2022 to $3.4B in 2024, with projected CAGR of 28% through 2027. Self-serve analytics adoption doubled year-over-year in the 100-500 employee segment."
+          ],
+          "claims": [
+            "The mid-market analytics TAM reached $3.4B in 2024 with 28% projected CAGR through 2027."
+          ]
+        },
+        {
+          "section_id": "sec-02",
+          "heading": "Competitive Landscape",
+          "paragraphs": [
+            "Incumbent tools like Tableau and Looker dominate enterprise but leave mid-market underserved on pricing and onboarding speed. New entrants compete on time-to-value: average onboarding dropped from 6 weeks to 3 days for modern platforms."
+          ],
+          "claims": [
+            "Mid-market buyers prioritize time-to-value over feature depth, creating an opening for platforms with sub-week onboarding."
+          ]
+        }
+      ]
+    },
+    {
+      "source_id": "src-02",
+      "type": "product-brief",
+      "title": "AnalyticsPro Launch Readiness",
+      "language": "en",
+      "sections": [
+        {
+          "section_id": "sec-01",
+          "heading": "Launch Sequence",
+          "paragraphs": [
+            "Phase 1: invite-only beta with 50 design partners (July). Phase 2: public launch with self-serve signup and PLG motion (September). Phase 3: channel partner enablement and outbound sales overlay (November)."
+          ],
+          "claims": [
+            "A three-phase launch sequence from beta to PLG to channel partners de-risks market entry while building social proof."
+          ]
+        }
+      ]
+    },
+    {
+      "source_id": "src-03",
+      "type": "financial-model",
+      "title": "Unit Economics and Pricing",
+      "language": "en",
+      "sections": [
+        {
+          "section_id": "sec-01",
+          "heading": "Pricing and Margins",
+          "paragraphs": [
+            "Target ACV of $18K positions AnalyticsPro below enterprise incumbents ($50K+) but above freemium tools ($0-5K). Gross margin at 82% with CAC payback under 12 months at projected conversion rates of 8% from free trial."
+          ],
+          "claims": [
+            "An $18K ACV with 82% gross margin and sub-12-month CAC payback creates a sustainable mid-market unit economics profile."
+          ]
+        }
+      ]
+    },
+    {
+      "source_id": "src-04",
+      "type": "customer-research",
+      "title": "Beta Feedback Synthesis",
+      "language": "en",
+      "sections": [
+        {
+          "section_id": "sec-01",
+          "heading": "Beta NPS and Feature Requests",
+          "paragraphs": [
+            "Beta cohort NPS averaged 62 across 38 respondents. Top feature requests: Slack integration (71%), scheduled reports (64%), and custom dashboards (58%). Median time-to-first-insight was 47 minutes, beating the 2-hour target by 60%."
+          ],
+          "claims": [
+            "Beta NPS of 62 and 47-minute time-to-first-insight validate the product-market fit hypothesis for mid-market self-serve analytics."
+          ]
+        }
+      ]
+    }
+  ]
+}

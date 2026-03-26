@@ -6,6 +6,14 @@
 
 ## Recently Completed
 
+- enhanced visual selector English keyword coverage for comparison, process, and timeline layout inference
+- enhanced comparison column name extraction with English "X vs Y" and "incumbent vs new entrant" patterns
+- enhanced process step extraction with English "Phase 1: ... Phase 2: ..." pattern
+- created `saas-launch-source-pack.json` English source pack (SaaS product launch theme) with full fixture set
+- saas-launch slide spec covers 5 distinct layouts: cover, summary, timeline, comparison, process, chart
+- added `demo-saas` and `demo-all` Makefile targets for multi-sample PPTX rendering
+- created `tests/test_diverse_samples.py` with 20 new tests covering rendering, pipeline, fixture compatibility, and English keyword inference
+- total test count: 294 passing, 38/38 evals green
 - upgraded timeline layout from text-box labels to native python-pptx Table with decorative axis and dot nodes
 - upgraded process layout from text-box step cards to native python-pptx Table with decorative arrows
 - enhanced section layout with decorative separator lines (top and bottom accent lines)
@@ -63,6 +71,7 @@
 
 ## Ready Next
 
+- diversify sample dataset further with additional source packs (e.g. technical architecture review, quarterly business review)
 - continue improving provider-backed planning and grading against the strongest-demo path without weakening deterministic coverage
 - compare future strongest-demo live refreshes against `reports/live-verification-history/strongest-demo-1774370225/acceptance-summary.json` before accepting another prompt change
 - keep strongest-demo canonical docs pinned to the current accepted repository-owned snapshot until a newer verified snapshot is accepted

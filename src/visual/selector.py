@@ -74,10 +74,15 @@ def infer_layout_type(unit: dict) -> LayoutSelection:
     signals: list[str] = []
 
     # comparison 信号
-    comparison_keywords = ("vs", "对比", "差异")
+    comparison_keywords = ("vs", "对比", "差异", "versus", "tradeoff", "trade-off", "compete", "incumbent", "landscape")
     for kw in comparison_keywords:
         if kw in text:
             signals.append(f"keyword:{kw}")
+    # 英文对比结构："X but Y", "X while Y", "X however Y"
+    if re.search(r"\b(?:but|while|however|whereas)\b", text):
+        contrast_count = len(re.findall(r"\b(?:but|while|however|whereas)\b", text))
+        if contrast_count >= 2 or (contrast_count >= 1 and signals):
+            signals.append(f"contrast_connectors:{contrast_count}")
     if signals:
         return LayoutSelection(
             layout_type=LAYOUT_COMPARISON,
@@ -85,10 +90,14 @@ def infer_layout_type(unit: dict) -> LayoutSelection:
         )
 
     # process 信号
-    process_keywords = ("路径", "步骤", "进入", "落地")
+    process_keywords = ("路径", "步骤", "进入", "落地", "sequence", "phase", "step ", "workflow", "playbook")
     for kw in process_keywords:
         if kw in text:
             signals.append(f"keyword:{kw}")
+    # 英文分阶段模式："Phase 1 ... Phase 2" 或 "Step 1 ... Step 2"
+    phase_matches = re.findall(r"\b(?:phase|step|stage)\s*\d", text, re.IGNORECASE)
+    if len(phase_matches) >= 2:
+        signals.append(f"phase_refs:{len(phase_matches)}")
     if signals:
         return LayoutSelection(
             layout_type=LAYOUT_PROCESS,
@@ -96,7 +105,7 @@ def infer_layout_type(unit: dict) -> LayoutSelection:
         )
 
     # timeline 信号
-    timeline_keywords = ("时间线", "阶段")
+    timeline_keywords = ("时间线", "阶段", "timeline", "grew from", "growth")
     for kw in timeline_keywords:
         if kw in text:
             signals.append(f"keyword:{kw}")
@@ -152,9 +161,22 @@ def _extract_comparison_points(text: str, columns: list[str]) -> dict[str, list[
 def _extract_process_steps(text: str) -> list[str]:
     """从文本中提取流程步骤描述。
 
-    策略：识别 "先...再..." / "第一步...第二步..." / 逗号分隔的动作序列。
+    策略：
+    1. 中文：识别 "先...再..." / "第一步...第二步..." 模式
+    2. 英文：识别 "Phase 1: ... Phase 2: ..." / "Step 1: ... Step 2: ..." 模式
+    3. 回退：逗号/句号分隔的动作序列
     """
-    # 先...再... 模式
+    # 英文 Phase/Step 模式："Phase 1: xxx. Phase 2: yyy."
+    phase_pattern = re.findall(
+        r"(?:Phase|Step|Stage)\s*\d+[:\s]+([^.]+)",
+        text,
+        re.IGNORECASE,
+    )
+    if len(phase_pattern) >= 2:
+        steps = [p.strip().rstrip("，,。.；;、") for p in phase_pattern if p.strip()]
+        return steps[:5]
+
+    # 中文 先...再... 模式
     parts = re.split(r"(?:先|再|然后|接着|最后|随后)", text)
     if len(parts) >= 3:
         # parts[0] 是分隔符前的引导语（通常是标题），跳过它
@@ -235,9 +257,25 @@ def build_visual_elements(layout_type: str, unit: dict) -> list[dict]:
 
     if layout_type == LAYOUT_COMPARISON:
         columns: list[str] = []
+        # 中文对比列名
         for label in ("欧洲", "东南亚"):
             if label in text and label not in columns:
                 columns.append(label)
+        # 英文对比列名：尝试从 "X vs Y" 或 "X but Y" 模式提取
+        if not columns:
+            vs_match = re.search(r"(\b[A-Z][a-z]+(?:\s+[A-Z]?[a-z]+)*)\s+(?:vs\.?|versus)\s+([A-Z][a-z]+(?:\s+[A-Z]?[a-z]+)*)", text, re.IGNORECASE)
+            if vs_match:
+                columns = [vs_match.group(1).strip(), vs_match.group(2).strip()]
+        # 从 heading 中提取 "X vs Y" 模式
+        if not columns:
+            heading = unit.get("section_heading", "")
+            heading_vs = re.search(r"(\w+(?:\s+\w+)*)\s+(?:vs\.?|versus)\s+(\w+(?:\s+\w+)*)", heading, re.IGNORECASE)
+            if heading_vs:
+                columns = [heading_vs.group(1).strip(), heading_vs.group(2).strip()]
+        # 从 "incumbent" / "new entrant" 等对比结构提取
+        if not columns:
+            if re.search(r"\bincumbent", text, re.IGNORECASE) and re.search(r"\bnew\s+entrant", text, re.IGNORECASE):
+                columns = ["Incumbents", "New Entrants"]
         if not columns:
             columns = ["Option A", "Option B"]
         column_points = _extract_comparison_points(text, columns)
