@@ -2,21 +2,17 @@
 
 ## Session Summary
 
-GroundedDeck PPTX renderer now has cross-platform CJK font safety and native Table rendering for comparison and chart layouts. The font system auto-detects the operating system and selects the best available Chinese font (PingFang SC on macOS, Microsoft YaHei on Windows, Noto Sans CJK SC on Linux), with East Asian font attributes written at the XML level to ensure correct rendering. Comparison and chart layouts now use python-pptx native Table objects instead of text-box cards, making the output fully editable in PowerPoint (column resize, row add, cell style changes).
+GroundedDeck PPTX renderer now uses native python-pptx Table objects for all 4 data-bearing layouts (comparison, chart, timeline, process). Timeline layout combines a decorative axis with dot nodes above a structured milestone/event table. Process layout uses a step number/content table with decorative arrows below. Section layout now has accent-colored separator lines flanking the title. All output remains fully editable in PowerPoint.
 
 ## What Was Just Completed
 
-- enhanced PPTX renderer with cross-platform CJK font fallback chain:
-  - `_detect_cjk_font()` auto-detects platform and returns appropriate Chinese font pair
-  - `_set_east_asian_font()` writes East Asian font attributes via lxml to ensure Chinese characters render correctly
-  - `CJK_FONT_FALLBACK_CHAIN` constant provides ordered fallback list for all major platforms
-  - `FONT_LATIN_TITLE` and `FONT_LATIN_BODY` constants for Western text fallback
-- upgraded comparison layout from text-box cards to native python-pptx Table with colored header row and alternating row backgrounds
-- upgraded chart layout from text-box metric cards to native python-pptx Table (2 rows x n columns: metric values + labels)
-- native Table objects are fully editable in PowerPoint (column resize, row add, cell style changes)
-- added 5 ChineseFontFallbackTests covering: font detection, fallback chain, platform-specific fonts, East Asian XML attributes, Latin font constants
-- added 8 NativeTableRenderingTests covering: comparison native table, column count, header row content, chart native table, chart table structure, metric values, strongest-demo comparison table, strongest-demo chart table
-- total test count: 262 passing
+- upgraded timeline layout from text-box labels to native python-pptx Table (2 rows x n columns: milestone row + event row) with decorative timeline axis and dot nodes preserved above the table
+- upgraded process layout from text-box step cards to native python-pptx Table (2 rows x n columns: step number row + content row) with decorative arrows below the table
+- enhanced section layout with decorative separator lines (top and bottom accent lines flanking the title)
+- all 4 data-bearing layouts (comparison, chart, timeline, process) now use native Table objects for full PowerPoint editability
+- added 10 NativeTableRenderingTests for timeline and process (table structure, header content, event text, step numbers, step labels, strongest-demo regression)
+- added 2 SectionEnhancementTests for decorative lines (with and without goal)
+- total test count: 274 passing
 - eval harness: 38/38 passing
 - added [AGENTS.md](../AGENTS.md) as the AI operating contract
 - added [docs/PROJECT-STATE.md](PROJECT-STATE.md) as the canonical current-state record

@@ -776,6 +776,223 @@ class NativeTableRenderingTests(unittest.TestCase):
             table_found = any(shape.has_table for shape in chart_slide.shapes)
             self.assertTrue(table_found, "strongest-demo chart slide should have a native Table")
 
+    def test_timeline_uses_native_table(self) -> None:
+        """timeline 布局应使用原生 Table 展示里程碑和事件。"""
+        spec = _make_minimal_spec([
+            _make_slide(
+                layout_type="timeline",
+                visual_elements=[{
+                    "type": "timeline",
+                    "milestones": ["2022", "2023", "2024"],
+                    "events": [
+                        "2022: 试点市场为主",
+                        "2023: 欧洲与东南亚双主线",
+                        "2024: 分区域深化",
+                    ],
+                }],
+                key_points=["出口节奏变化"],
+            ),
+        ])
+        with tempfile.TemporaryDirectory() as tmpdir:
+            out = render_slide_spec_to_pptx(spec, Path(tmpdir) / "test.pptx")
+            prs = Presentation(str(out))
+            slide = prs.slides[0]
+            table_found = any(shape.has_table for shape in slide.shapes)
+            self.assertTrue(table_found, "timeline layout should contain a native Table")
 
-if __name__ == "__main__":
-    unittest.main()
+    def test_timeline_table_has_correct_structure(self) -> None:
+        """timeline 表格应有 2 行（里程碑行 + 事件行）x n 列。"""
+        spec = _make_minimal_spec([
+            _make_slide(
+                layout_type="timeline",
+                visual_elements=[{
+                    "type": "timeline",
+                    "milestones": ["Q1", "Q2", "Q3"],
+                    "events": ["启动", "扩展", "收尾"],
+                }],
+            ),
+        ])
+        with tempfile.TemporaryDirectory() as tmpdir:
+            out = render_slide_spec_to_pptx(spec, Path(tmpdir) / "test.pptx")
+            prs = Presentation(str(out))
+            slide = prs.slides[0]
+            table_shape = next(s for s in slide.shapes if s.has_table)
+            table = table_shape.table
+            self.assertEqual(len(table.rows), 2)
+            self.assertEqual(len(table.columns), 3)
+
+    def test_timeline_table_header_contains_milestones(self) -> None:
+        """timeline 表格第一行应包含里程碑标签。"""
+        spec = _make_minimal_spec([
+            _make_slide(
+                layout_type="timeline",
+                visual_elements=[{
+                    "type": "timeline",
+                    "milestones": ["2022", "2023"],
+                    "events": ["试点", "扩展"],
+                }],
+            ),
+        ])
+        with tempfile.TemporaryDirectory() as tmpdir:
+            out = render_slide_spec_to_pptx(spec, Path(tmpdir) / "test.pptx")
+            prs = Presentation(str(out))
+            slide = prs.slides[0]
+            table_shape = next(s for s in slide.shapes if s.has_table)
+            table = table_shape.table
+            self.assertIn("2022", table.cell(0, 0).text)
+            self.assertIn("2023", table.cell(0, 1).text)
+
+    def test_timeline_table_events_strip_year_prefix(self) -> None:
+        """timeline 表格事件行应去掉年份前缀。"""
+        spec = _make_minimal_spec([
+            _make_slide(
+                layout_type="timeline",
+                visual_elements=[{
+                    "type": "timeline",
+                    "milestones": ["2022"],
+                    "events": ["2022: 试点市场为主"],
+                }],
+            ),
+        ])
+        with tempfile.TemporaryDirectory() as tmpdir:
+            out = render_slide_spec_to_pptx(spec, Path(tmpdir) / "test.pptx")
+            prs = Presentation(str(out))
+            slide = prs.slides[0]
+            table_shape = next(s for s in slide.shapes if s.has_table)
+            table = table_shape.table
+            event_text = table.cell(1, 0).text
+            self.assertNotIn("2022:", event_text)
+            self.assertIn("试点市场为主", event_text)
+
+    def test_strongest_demo_timeline_has_table(self) -> None:
+        """strongest-demo 的 timeline slide 应包含原生表格。"""
+        spec = load_json(STRONGEST_DEMO_SLIDE_SPEC)
+        with tempfile.TemporaryDirectory() as tmpdir:
+            out = render_slide_spec_to_pptx(spec, Path(tmpdir) / "test.pptx")
+            prs = Presentation(str(out))
+            # timeline 是第 3 个 slide（index 2）
+            timeline_slide = prs.slides[2]
+            table_found = any(shape.has_table for shape in timeline_slide.shapes)
+            self.assertTrue(table_found, "strongest-demo timeline slide should have a native Table")
+
+    def test_process_uses_native_table(self) -> None:
+        """process 布局应使用原生 Table 展示步骤。"""
+        spec = _make_minimal_spec([
+            _make_slide(
+                layout_type="process",
+                visual_elements=[{
+                    "type": "process-flow",
+                    "steps": 3,
+                    "step_labels": ["建立渠道", "验证模型", "进入欧洲"],
+                }],
+                key_points=["市场进入路径"],
+            ),
+        ])
+        with tempfile.TemporaryDirectory() as tmpdir:
+            out = render_slide_spec_to_pptx(spec, Path(tmpdir) / "test.pptx")
+            prs = Presentation(str(out))
+            slide = prs.slides[0]
+            table_found = any(shape.has_table for shape in slide.shapes)
+            self.assertTrue(table_found, "process layout should contain a native Table")
+
+    def test_process_table_has_correct_structure(self) -> None:
+        """process 表格应有 2 行（序号行 + 内容行）x n 列。"""
+        spec = _make_minimal_spec([
+            _make_slide(
+                layout_type="process",
+                visual_elements=[{
+                    "type": "process-flow",
+                    "steps": 3,
+                    "step_labels": ["A", "B", "C"],
+                }],
+            ),
+        ])
+        with tempfile.TemporaryDirectory() as tmpdir:
+            out = render_slide_spec_to_pptx(spec, Path(tmpdir) / "test.pptx")
+            prs = Presentation(str(out))
+            slide = prs.slides[0]
+            table_shape = next(s for s in slide.shapes if s.has_table)
+            table = table_shape.table
+            self.assertEqual(len(table.rows), 2)
+            self.assertEqual(len(table.columns), 3)
+
+    def test_process_table_header_has_step_numbers(self) -> None:
+        """process 表格第一行应包含步骤序号。"""
+        spec = _make_minimal_spec([
+            _make_slide(
+                layout_type="process",
+                visual_elements=[{
+                    "type": "process-flow",
+                    "steps": 2,
+                    "step_labels": ["开始", "结束"],
+                }],
+            ),
+        ])
+        with tempfile.TemporaryDirectory() as tmpdir:
+            out = render_slide_spec_to_pptx(spec, Path(tmpdir) / "test.pptx")
+            prs = Presentation(str(out))
+            slide = prs.slides[0]
+            table_shape = next(s for s in slide.shapes if s.has_table)
+            table = table_shape.table
+            self.assertIn("Step 1", table.cell(0, 0).text)
+            self.assertIn("Step 2", table.cell(0, 1).text)
+
+    def test_process_table_content_has_labels(self) -> None:
+        """process 表格第二行应包含步骤内容。"""
+        spec = _make_minimal_spec([
+            _make_slide(
+                layout_type="process",
+                visual_elements=[{
+                    "type": "process-flow",
+                    "steps": 2,
+                    "step_labels": ["建立渠道", "进入欧洲"],
+                }],
+            ),
+        ])
+        with tempfile.TemporaryDirectory() as tmpdir:
+            out = render_slide_spec_to_pptx(spec, Path(tmpdir) / "test.pptx")
+            prs = Presentation(str(out))
+            slide = prs.slides[0]
+            table_shape = next(s for s in slide.shapes if s.has_table)
+            table = table_shape.table
+            self.assertIn("建立渠道", table.cell(1, 0).text)
+            self.assertIn("进入欧洲", table.cell(1, 1).text)
+
+    def test_strongest_demo_process_has_table(self) -> None:
+        """strongest-demo 的 process slide 应包含原生表格。"""
+        spec = load_json(STRONGEST_DEMO_SLIDE_SPEC)
+        with tempfile.TemporaryDirectory() as tmpdir:
+            out = render_slide_spec_to_pptx(spec, Path(tmpdir) / "test.pptx")
+            prs = Presentation(str(out))
+            # process 是第 5 个 slide（index 4）
+            process_slide = prs.slides[4]
+            table_found = any(shape.has_table for shape in process_slide.shapes)
+            self.assertTrue(table_found, "strongest-demo process slide should have a native Table")
+
+
+class SectionEnhancementTests(unittest.TestCase):
+    """section 布局增强测试。"""
+
+    def test_section_has_decorative_lines(self) -> None:
+        """section 布局应包含装饰性分隔线。"""
+        spec = _make_minimal_spec([
+            _make_slide(layout_type="section", title="新章节", goal="章节描述"),
+        ])
+        with tempfile.TemporaryDirectory() as tmpdir:
+            out = render_slide_spec_to_pptx(spec, Path(tmpdir) / "test.pptx")
+            prs = Presentation(str(out))
+            slide = prs.slides[0]
+            # section: 背景色块 + 上装饰线 + 标题 + 目标 + 下装饰线 = 至少 5 个 shapes
+            self.assertGreaterEqual(len(slide.shapes), 5)
+
+    def test_section_without_goal_still_has_lines(self) -> None:
+        """section 布局没有 goal 时仍有装饰线。"""
+        spec = _make_minimal_spec([
+            _make_slide(layout_type="section", title="分隔页", goal=""),
+        ])
+        with tempfile.TemporaryDirectory() as tmpdir:
+            out = render_slide_spec_to_pptx(spec, Path(tmpdir) / "test.pptx")
+            prs = Presentation(str(out))
+            slide = prs.slides[0]
+            # 背景 + 上装饰线 + 标题 + 下装饰线 = 至少 4 个 shapes
+            self.assertGreaterEqual(len(slide.shapes), 4)

@@ -146,6 +146,13 @@ The strongest deterministic planning demo is now curated back onto `main` as a c
 - native Table objects are fully editable in PowerPoint (column resize, row add, cell style changes)
 - added 5 ChineseFontFallbackTests and 8 NativeTableRenderingTests in `tests/test_pptx_renderer.py`
 - confirmed all 262 tests pass and `make eval` remains 38/38 green
+- upgraded timeline layout from text-box labels to native python-pptx Table (2 rows x n columns: milestone row + event row) with decorative timeline axis and dot nodes preserved above the table
+- upgraded process layout from text-box step cards to native python-pptx Table (2 rows x n columns: step number row + content row) with decorative arrows below the table
+- enhanced section layout with decorative separator lines (top and bottom accent lines flanking the title)
+- all 4 data-bearing layouts (comparison, chart, timeline, process) now use native Table objects for full PowerPoint editability
+- added 10 NativeTableRenderingTests for timeline and process (table structure, header content, event text, step numbers, step labels, strongest-demo regression)
+- added 2 SectionEnhancementTests for decorative lines (with and without goal)
+- confirmed all 274 tests pass and `make eval` remains 38/38 green
 
 ## Current Next Action
 
@@ -156,7 +163,8 @@ Continue improving provider-backed planning and grading against the strongest-de
 1. ~~grade continuity artifacts so future agents can safely resume from repository state alone~~ ✅
 2. ~~grade handoff completeness and task-board freshness~~ ✅
 3. ~~enhance PPTX renderer with CJK font safety and native Table objects~~ ✅
-4. preserve the repository-owned strongest-demo live acceptance snapshot while keeping `reports/live-verification-latest.*` as the rolling pointer
+4. ~~upgrade all data-bearing layouts (timeline, process) to native Table objects~~ ✅
+5. preserve the repository-owned strongest-demo live acceptance snapshot while keeping `reports/live-verification-latest.*` as the rolling pointer
 5. compare future strongest-demo live refreshes against the archived acceptance summary instead of treating every passing run as interchangeable
 6. keep provider-backed planning improvements, acceptance-aligned prompt guardrails, and `make verify-online` healthy without weakening deterministic regression coverage
 

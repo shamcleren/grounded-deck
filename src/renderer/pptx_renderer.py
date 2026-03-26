@@ -385,7 +385,12 @@ def _render_summary(slide, slide_data: dict) -> None:
 
 
 def _render_timeline(slide, slide_data: dict) -> None:
-    """渲染 timeline 布局：水平时间线 + 里程碑标注 + 事件描述。"""
+    """渲染 timeline 布局：装饰线 + 原生表格（里程碑行 + 事件行）。
+
+    使用 python-pptx 原生 Table 对象展示时间线数据，
+    确保用户可以在 PowerPoint 中直接编辑里程碑和事件描述。
+    保留水平装饰线作为视觉锚点。
+    """
     _add_title_block(slide, slide_data["title"], slide_data.get("goal", ""))
 
     # 提取 milestones 和 events
@@ -401,13 +406,13 @@ def _render_timeline(slide, slide_data: dict) -> None:
         milestones = ["Start", "Middle", "End"]
 
     n = len(milestones)
-    line_y = Cm(10.0)
-    line_left = Cm(4.0)
-    line_width = Cm(25.0)
 
-    # 时间线主轴
+    # 装饰性时间线主轴
     from pptx.enum.shapes import MSO_SHAPE
 
+    line_y = Cm(5.5)
+    line_left = Cm(3.0)
+    line_width = Cm(27.0)
     line = slide.shapes.add_shape(
         MSO_SHAPE.RECTANGLE, line_left, line_y, line_width, Cm(0.15),
     )
@@ -415,11 +420,10 @@ def _render_timeline(slide, slide_data: dict) -> None:
     line.fill.fore_color.rgb = COLOR_TIMELINE_ACCENT
     line.line.fill.background()
 
-    # 里程碑节点
+    # 装饰性圆形节点
     spacing = int(line_width) // max(n, 1)
-    for i, ms in enumerate(milestones):
+    for i in range(n):
         cx = int(line_left) + spacing * i + spacing // 2
-        # 圆形节点
         dot = slide.shapes.add_shape(
             MSO_SHAPE.OVAL,
             Emu(cx - int(Cm(0.4))),
@@ -431,45 +435,64 @@ def _render_timeline(slide, slide_data: dict) -> None:
         dot.fill.fore_color.rgb = COLOR_TIMELINE_ACCENT
         dot.line.fill.background()
 
-        # 标签
-        _add_textbox(
-            slide,
-            Emu(cx - int(Cm(2.5))),
-            line_y + Cm(1.0),
-            Cm(5.0),
-            Cm(1.5),
-            str(ms),
-            font_size=14,
-            bold=True,
-            color=COLOR_DARK,
-            alignment=PP_ALIGN.CENTER,
-        )
+    # 原生表格：2 行 x n 列（里程碑行 + 事件行）
+    table_cols = min(n, 6)
+    table_rows = 2
+    table_width = CONTENT_WIDTH
+    col_width = Emu(int(table_width) // table_cols)
+    table_top = Cm(7.0)
+    table_height = Cm(7.0)
 
-        # 事件描述（如果有）
-        if i < len(events):
-            event_text = str(events[i])
+    table_shape = slide.shapes.add_table(
+        table_rows, table_cols,
+        MARGIN_LEFT, table_top,
+        table_width, table_height,
+    )
+    table = table_shape.table
+
+    for ci in range(table_cols):
+        table.columns[ci].width = col_width
+
+    # 第一行：里程碑标签（绿色强调，居中）
+    for ci in range(table_cols):
+        cell = table.cell(0, ci)
+        cell.text = ""
+        _fill_cell(cell, COLOR_TIMELINE_ACCENT)
+        p = cell.text_frame.paragraphs[0]
+        p.alignment = PP_ALIGN.CENTER
+        run = p.add_run()
+        run.text = str(milestones[ci]) if ci < n else ""
+        _set_font(run, size=18, bold=True, color=COLOR_WHITE, name=FONT_TITLE)
+        cell.vertical_anchor = MSO_ANCHOR.MIDDLE
+
+    # 第二行：事件描述（浅色背景）
+    for ci in range(table_cols):
+        cell = table.cell(1, ci)
+        cell.text = ""
+        bg = RGBColor(0xEC, 0xFD, 0xF5) if ci % 2 == 0 else COLOR_WHITE
+        _fill_cell(cell, bg)
+        p = cell.text_frame.paragraphs[0]
+        p.alignment = PP_ALIGN.CENTER
+        run = p.add_run()
+        if ci < len(events):
+            event_text = str(events[ci])
             # 去掉前缀年份（如 "2022: "）以避免重复
             if ":" in event_text:
                 event_text = event_text.split(":", 1)[1].strip()
-            _add_textbox(
-                slide,
-                Emu(cx - int(Cm(2.5))),
-                line_y + Cm(2.3),
-                Cm(5.0),
-                Cm(2.0),
-                event_text,
-                font_size=10,
-                color=COLOR_MUTED,
-                alignment=PP_ALIGN.CENTER,
-            )
+            run.text = event_text
+        else:
+            run.text = ""
+        _set_font(run, size=12, color=COLOR_BODY)
+        cell.vertical_anchor = MSO_ANCHOR.MIDDLE
 
     # key_points
     key_points = slide_data.get("key_points", [])
     if key_points:
+        kp_top = Emu(int(table_top) + int(table_height) + int(Cm(0.8)))
         _add_textbox(
             slide,
             MARGIN_LEFT,
-            Cm(13.5),
+            kp_top,
             CONTENT_WIDTH,
             Cm(3.0),
             key_points[0],
@@ -570,7 +593,12 @@ def _render_comparison(slide, slide_data: dict) -> None:
 
 
 def _render_process(slide, slide_data: dict) -> None:
-    """渲染 process 布局：水平流程步骤（箭头连接）。"""
+    """渲染 process 布局：原生表格展示步骤 + 装饰性箭头连接。
+
+    使用 python-pptx 原生 Table 对象展示流程步骤，
+    确保用户可以在 PowerPoint 中直接编辑步骤内容。
+    保留装饰性箭头作为视觉连接。
+    """
     _add_title_block(slide, slide_data["title"], slide_data.get("goal", ""))
 
     # 提取步骤数和步骤标签
@@ -593,76 +621,93 @@ def _render_process(slide, slide_data: dict) -> None:
             parts = step_labels[0].replace("，", "、").split("、")
             step_labels = parts[:step_count]
 
-    # 如果最终步骤标签仍然只有 1 个，但内容暗示多步骤，就按内容展示
     n = len(step_labels)
     if n == 0:
         n = 1
         step_labels = [""]
 
+    # 原生表格：2 行 x n 列（序号行 + 内容行）
+    table_cols = min(n, 6)
+    table_rows = 2
+    table_width = CONTENT_WIDTH
+    col_width = Emu(int(table_width) // table_cols)
+    table_top = Cm(6.0)
+    table_height = Cm(7.0)
+
+    table_shape = slide.shapes.add_table(
+        table_rows, table_cols,
+        MARGIN_LEFT, table_top,
+        table_width, table_height,
+    )
+    table = table_shape.table
+
+    for ci in range(table_cols):
+        table.columns[ci].width = col_width
+
+    # 第一行：步骤序号（紫色强调）
+    for ci in range(table_cols):
+        cell = table.cell(0, ci)
+        cell.text = ""
+        # 最后一步用紫色实底，其他用浅色
+        is_last = (ci == table_cols - 1)
+        bg = COLOR_PROCESS_ACCENT if is_last else COLOR_LIGHT_BG
+        _fill_cell(cell, bg)
+        p = cell.text_frame.paragraphs[0]
+        p.alignment = PP_ALIGN.CENTER
+        run = p.add_run()
+        run.text = f"Step {ci + 1}"
+        text_color = COLOR_WHITE if is_last else COLOR_PROCESS_ACCENT
+        _set_font(run, size=14, bold=True, color=text_color, name=FONT_TITLE)
+        cell.vertical_anchor = MSO_ANCHOR.MIDDLE
+
+    # 第二行：步骤内容
+    for ci in range(table_cols):
+        cell = table.cell(1, ci)
+        cell.text = ""
+        is_last = (ci == table_cols - 1)
+        bg = COLOR_PROCESS_ACCENT if is_last else COLOR_WHITE
+        _fill_cell(cell, bg)
+        p = cell.text_frame.paragraphs[0]
+        p.alignment = PP_ALIGN.CENTER
+        run = p.add_run()
+        run.text = step_labels[ci] if ci < len(step_labels) else ""
+        text_color = COLOR_WHITE if is_last else COLOR_BODY
+        _set_font(run, size=12, color=text_color)
+        cell.vertical_anchor = MSO_ANCHOR.MIDDLE
+
+    # 装饰性箭头（在表格下方，连接各列）
     from pptx.enum.shapes import MSO_SHAPE
 
-    total_width = int(CONTENT_WIDTH)
-    step_width = Cm(6.0)
-    arrow_width = Cm(1.5)
-
-    # 计算总内容宽度
-    content_needed = int(step_width) * n + int(arrow_width) * max(n - 1, 0)
-    start_x = int(MARGIN_LEFT) + (total_width - content_needed) // 2
-
-    step_y = Cm(8.0)
-    step_height = Cm(5.0)
-
-    for i, label in enumerate(step_labels):
-        sx = start_x + i * (int(step_width) + int(arrow_width))
-
-        # 步骤卡片
-        card = _add_rounded_rect(
-            slide, Emu(sx), step_y, step_width, step_height,
-            fill_color=COLOR_PROCESS_ACCENT if i == n - 1 else COLOR_LIGHT_BG,
-            line_color=COLOR_PROCESS_ACCENT,
+    arrow_y = Emu(int(table_top) + int(table_height) + int(Cm(0.3)))
+    arrow_height = Cm(0.6)
+    for ci in range(table_cols - 1):
+        arrow_x = Emu(int(MARGIN_LEFT) + int(col_width) * ci + int(col_width) - int(Cm(0.5)))
+        arrow = slide.shapes.add_shape(
+            MSO_SHAPE.RIGHT_ARROW,
+            arrow_x,
+            arrow_y,
+            Cm(1.0),
+            arrow_height,
         )
+        arrow.fill.solid()
+        arrow.fill.fore_color.rgb = COLOR_PROCESS_ACCENT
+        arrow.line.fill.background()
 
-        # 步骤序号
+    # key_points（放在箭头下方）
+    key_points = slide_data.get("key_points", [])
+    if key_points:
+        kp_top = Emu(int(arrow_y) + int(arrow_height) + int(Cm(0.8)))
         _add_textbox(
             slide,
-            Emu(sx + int(Cm(0.5))),
-            Emu(int(step_y) + int(Cm(0.5))),
-            Cm(5.0),
-            Cm(1.2),
-            f"Step {i + 1}",
-            font_size=12,
-            bold=True,
-            color=COLOR_WHITE if i == n - 1 else COLOR_PROCESS_ACCENT,
+            MARGIN_LEFT,
+            kp_top,
+            CONTENT_WIDTH,
+            Cm(3.0),
+            key_points[0],
+            font_size=14,
+            color=COLOR_BODY,
             alignment=PP_ALIGN.CENTER,
         )
-
-        # 步骤内容
-        text_color = COLOR_WHITE if i == n - 1 else COLOR_BODY
-        _add_textbox(
-            slide,
-            Emu(sx + int(Cm(0.3))),
-            Emu(int(step_y) + int(Cm(2.0))),
-            Cm(5.4),
-            Cm(2.5),
-            label,
-            font_size=11,
-            color=text_color,
-            alignment=PP_ALIGN.CENTER,
-        )
-
-        # 箭头（不是最后一个步骤时）
-        if i < n - 1:
-            arrow_x = sx + int(step_width)
-            arrow = slide.shapes.add_shape(
-                MSO_SHAPE.RIGHT_ARROW,
-                Emu(arrow_x),
-                Emu(int(step_y) + int(step_height) // 2 - int(Cm(0.4))),
-                arrow_width,
-                Cm(0.8),
-            )
-            arrow.fill.solid()
-            arrow.fill.fore_color.rgb = COLOR_PROCESS_ACCENT
-            arrow.line.fill.background()
 
 
 def _render_chart(slide, slide_data: dict) -> None:
@@ -748,9 +793,19 @@ def _render_chart(slide, slide_data: dict) -> None:
 
 
 def _render_section(slide, slide_data: dict) -> None:
-    """渲染 section 布局：章节分隔页。"""
+    """渲染 section 布局：章节分隔页，带装饰性分隔线。"""
+    from pptx.enum.shapes import MSO_SHAPE
+
     # 背景色块
     _add_rounded_rect(slide, Cm(0), Cm(6.0), SLIDE_WIDTH, Cm(7.0), fill_color=COLOR_PRIMARY)
+
+    # 上方装饰线
+    top_line = slide.shapes.add_shape(
+        MSO_SHAPE.RECTANGLE, Cm(6.0), Cm(6.8), Cm(21.0), Cm(0.08),
+    )
+    top_line.fill.solid()
+    top_line.fill.fore_color.rgb = COLOR_ACCENT
+    top_line.line.fill.background()
 
     # 标题
     _add_textbox(
@@ -781,6 +836,14 @@ def _render_section(slide, slide_data: dict) -> None:
             color=RGBColor(0xBF, 0xDB, 0xFE),
             alignment=PP_ALIGN.CENTER,
         )
+
+    # 下方装饰线
+    bottom_line = slide.shapes.add_shape(
+        MSO_SHAPE.RECTANGLE, Cm(6.0), Cm(12.2), Cm(21.0), Cm(0.08),
+    )
+    bottom_line.fill.solid()
+    bottom_line.fill.fore_color.rgb = COLOR_ACCENT
+    bottom_line.line.fill.background()
 
 
 def _fill_cell(cell, color: RGBColor) -> None:

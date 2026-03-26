@@ -6,6 +6,11 @@
 
 ## Recently Completed
 
+- upgraded timeline layout from text-box labels to native python-pptx Table with decorative axis and dot nodes
+- upgraded process layout from text-box step cards to native python-pptx Table with decorative arrows
+- enhanced section layout with decorative separator lines (top and bottom accent lines)
+- all 4 data-bearing layouts (comparison, chart, timeline, process) now use native Table objects
+- added 10 NativeTableRenderingTests + 2 SectionEnhancementTests, total 274 passing, 38/38 evals green
 - enhanced PPTX renderer with cross-platform CJK font fallback chain (`_detect_cjk_font`, `_set_east_asian_font`, `CJK_FONT_FALLBACK_CHAIN`)
 - upgraded comparison layout from text-box cards to native python-pptx Table with colored header row and alternating row backgrounds
 - upgraded chart layout from text-box metric cards to native python-pptx Table (2 rows x n columns)
