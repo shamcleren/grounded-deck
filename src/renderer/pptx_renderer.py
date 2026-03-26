@@ -16,6 +16,8 @@ import logging
 from pathlib import Path
 from typing import Any
 
+import platform
+
 from pptx import Presentation
 from pptx.dml.color import RGBColor
 from pptx.enum.text import MSO_ANCHOR, PP_ALIGN
@@ -42,11 +44,46 @@ COLOR_COMPARISON_RIGHT = RGBColor(0xDC, 0x26, 0x26)   # 对比右：红色
 COLOR_PROCESS_ACCENT = RGBColor(0x7C, 0x3A, 0xED)     # 流程：紫色
 COLOR_CHART_ACCENT = RGBColor(0xD9, 0x77, 0x06)       # 图表：橙色
 
-# ---------- 字体配置 ----------
+# ---------- 字体配置（跨平台中文安全回退链） ----------
 
-FONT_TITLE = "Microsoft YaHei"   # 微软雅黑作为中文标题字体
-FONT_BODY = "Microsoft YaHei"    # 微软雅黑作为中文正文字体
-FONT_MONO = "Consolas"           # 等宽字体
+
+def _detect_cjk_font() -> tuple[str, str]:
+    """根据操作系统检测可用的中文字体，返回 (标题字体, 正文字体)。
+
+    回退优先级：
+    - macOS: PingFang SC > Hiragino Sans GB > STHeiti > Microsoft YaHei
+    - Windows: Microsoft YaHei > SimHei > DengXian
+    - Linux: Noto Sans CJK SC > WenQuanYi Micro Hei > Microsoft YaHei
+    """
+    system = platform.system()
+    if system == "Darwin":  # macOS
+        return ("PingFang SC", "PingFang SC")
+    elif system == "Windows":
+        return ("Microsoft YaHei", "Microsoft YaHei")
+    else:  # Linux 及其他
+        return ("Noto Sans CJK SC", "Noto Sans CJK SC")
+
+
+# 主字体 + 回退列表（用于 XML 级别的字体回退）
+_CJK_TITLE, _CJK_BODY = _detect_cjk_font()
+
+# 跨平台回退链：渲染时写入主字体，PPTX 打开时由 PowerPoint 自动回退
+CJK_FONT_FALLBACK_CHAIN = [
+    "PingFang SC",        # macOS
+    "Microsoft YaHei",    # Windows
+    "Noto Sans CJK SC",   # Linux
+    "SimHei",             # Windows 备选
+    "Hiragino Sans GB",   # macOS 备选
+    "WenQuanYi Micro Hei",  # Linux 备选
+]
+
+FONT_TITLE = _CJK_TITLE   # 中文标题字体（平台自适应）
+FONT_BODY = _CJK_BODY      # 中文正文字体（平台自适应）
+FONT_MONO = "Consolas"     # 等宽字体
+
+# 西文回退字体（当内容为纯英文时使用）
+FONT_LATIN_TITLE = "Calibri"
+FONT_LATIN_BODY = "Calibri"
 
 # ---------- 页面尺寸（宽屏 16:9） ----------
 
@@ -69,11 +106,33 @@ CONTENT_TOP = Cm(5.0)       # 标题区域下方
 
 
 def _set_font(run, *, size: int = 14, bold: bool = False, color: RGBColor = COLOR_BODY, name: str = FONT_BODY) -> None:
-    """设置 run 的字体属性。"""
+    """设置 run 的字体属性，同时配置东亚字体回退。"""
     run.font.size = Pt(size)
     run.font.bold = bold
     run.font.color.rgb = color
     run.font.name = name
+    # 设置东亚字体（确保中文字符正确渲染）
+    _set_east_asian_font(run, name)
+
+
+def _set_east_asian_font(run, font_name: str) -> None:
+    """通过 XML 操作设置 run 的东亚字体属性。
+
+    python-pptx 不直接支持 ea (East Asian) 字体设置，
+    需要通过底层 XML 操作来确保中文字符使用正确的字体。
+    """
+    from lxml import etree
+    rPr = run._r.get_or_add_rPr()
+    nsmap = {"a": "http://schemas.openxmlformats.org/drawingml/2006/main"}
+    # 移除已有的 ea 元素
+    for ea in rPr.findall("a:ea", nsmap):
+        rPr.remove(ea)
+    # 添加东亚字体
+    ea = etree.SubElement(
+        rPr,
+        "{http://schemas.openxmlformats.org/drawingml/2006/main}ea",
+    )
+    ea.set("typeface", font_name)
 
 
 def _add_textbox(
@@ -421,7 +480,11 @@ def _render_timeline(slide, slide_data: dict) -> None:
 
 
 def _render_comparison(slide, slide_data: dict) -> None:
-    """渲染 comparison 布局：左右双栏对比，带对比要点。"""
+    """渲染 comparison 布局：原生表格对比 + 标题行着色。
+
+    使用 python-pptx 原生 Table 对象，确保输出在 PowerPoint 中
+    完全可编辑（可调整列宽、添加行、修改单元格样式）。
+    """
     _add_title_block(slide, slide_data["title"], slide_data.get("goal", ""))
 
     # 提取列名和列要点
@@ -436,74 +499,67 @@ def _render_comparison(slide, slide_data: dict) -> None:
     if len(columns) < 2:
         columns = ["Option A", "Option B"]
 
-    col_width = Cm(13.5)
-    gap = Cm(1.0)
-    left_x = MARGIN_LEFT
-    right_x = Emu(int(MARGIN_LEFT) + int(col_width) + int(gap))
+    left_points = column_points.get(columns[0], [])[:4]
+    right_points = column_points.get(columns[1], [])[:4]
+    max_rows = max(len(left_points), len(right_points), 1)
 
-    # 左侧卡片
-    _add_rounded_rect(slide, left_x, CONTENT_TOP, col_width, Cm(11.0), fill_color=RGBColor(0xEF, 0xF6, 0xFF))
-    # 左侧标题
-    _add_textbox(
-        slide,
-        Emu(int(left_x) + int(Cm(1.0))),
-        Emu(int(CONTENT_TOP) + int(Cm(0.5))),
-        Cm(11.5),
-        Cm(1.5),
-        str(columns[0]),
-        font_size=20,
-        bold=True,
-        color=COLOR_COMPARISON_LEFT,
-        alignment=PP_ALIGN.CENTER,
+    # 创建原生表格：(max_rows + 1) 行 x 2 列（+1 为标题行）
+    table_rows = max_rows + 1
+    table_cols = 2
+    table_width = CONTENT_WIDTH
+    row_height = Cm(1.8)
+    table_height = Emu(int(row_height) * table_rows)
+
+    table_shape = slide.shapes.add_table(
+        table_rows, table_cols,
+        MARGIN_LEFT, CONTENT_TOP,
+        table_width, table_height,
     )
+    table = table_shape.table
 
-    # 左侧对比要点
-    left_points = column_points.get(columns[0], [])
-    if left_points:
-        _add_bullet_list(
-            slide,
-            Emu(int(left_x) + int(Cm(0.8))),
-            Emu(int(CONTENT_TOP) + int(Cm(2.5))),
-            Cm(12.0),
-            Cm(8.0),
-            left_points[:3],
-        )
+    # 设置列宽（均分）
+    col_width = Emu(int(table_width) // 2)
+    table.columns[0].width = col_width
+    table.columns[1].width = col_width
 
-    # 右侧卡片
-    _add_rounded_rect(slide, right_x, CONTENT_TOP, col_width, Cm(11.0), fill_color=RGBColor(0xFE, 0xF2, 0xF2))
-    # 右侧标题
-    _add_textbox(
-        slide,
-        Emu(int(right_x) + int(Cm(1.0))),
-        Emu(int(CONTENT_TOP) + int(Cm(0.5))),
-        Cm(11.5),
-        Cm(1.5),
-        str(columns[1]),
-        font_size=20,
-        bold=True,
-        color=COLOR_COMPARISON_RIGHT,
-        alignment=PP_ALIGN.CENTER,
-    )
+    # 标题行
+    header_colors = [COLOR_COMPARISON_LEFT, COLOR_COMPARISON_RIGHT]
+    for ci, col_name in enumerate(columns[:2]):
+        cell = table.cell(0, ci)
+        cell.text = ""
+        _fill_cell(cell, header_colors[ci])
+        p = cell.text_frame.paragraphs[0]
+        p.alignment = PP_ALIGN.CENTER
+        run = p.add_run()
+        run.text = str(col_name)
+        _set_font(run, size=18, bold=True, color=COLOR_WHITE, name=FONT_TITLE)
+        cell.vertical_anchor = MSO_ANCHOR.MIDDLE
 
-    # 右侧对比要点
-    right_points = column_points.get(columns[1], [])
-    if right_points:
-        _add_bullet_list(
-            slide,
-            Emu(int(right_x) + int(Cm(0.8))),
-            Emu(int(CONTENT_TOP) + int(Cm(2.5))),
-            Cm(12.0),
-            Cm(8.0),
-            right_points[:3],
-        )
+    # 数据行
+    for ri in range(max_rows):
+        for ci, points in enumerate([left_points, right_points]):
+            cell = table.cell(ri + 1, ci)
+            cell.text = ""
+            # 交替行背景
+            bg = RGBColor(0xEF, 0xF6, 0xFF) if ci == 0 else RGBColor(0xFE, 0xF2, 0xF2)
+            if ri % 2 == 1:
+                bg = COLOR_WHITE
+            _fill_cell(cell, bg)
+            p = cell.text_frame.paragraphs[0]
+            p.alignment = PP_ALIGN.LEFT
+            run = p.add_run()
+            run.text = f"  {points[ri]}" if ri < len(points) else ""
+            _set_font(run, size=14, color=COLOR_BODY)
+            cell.vertical_anchor = MSO_ANCHOR.MIDDLE
 
-    # key_points 放在两栏中间底部
+    # key_points 放在表格下方
     key_points = slide_data.get("key_points", [])
     if key_points:
+        kp_top = Emu(int(CONTENT_TOP) + int(table_height) + int(Cm(1.0)))
         _add_textbox(
             slide,
             MARGIN_LEFT,
-            Cm(16.0),
+            kp_top,
             CONTENT_WIDTH,
             Cm(2.0),
             key_points[0],
@@ -610,7 +666,12 @@ def _render_process(slide, slide_data: dict) -> None:
 
 
 def _render_chart(slide, slide_data: dict) -> None:
-    """渲染 chart 布局：指标卡片 + 关键数字展示 + 上下文标签。"""
+    """渲染 chart 布局：原生表格展示指标 + 关键数字 + 上下文标签。
+
+    使用 python-pptx 原生 Table 对象展示指标数据，
+    确保用户可以在 PowerPoint 中直接编辑数值和标签。
+    当指标数量 <= 4 时使用横向表格，否则回退到纵向表格。
+    """
     _add_title_block(slide, slide_data["title"], slide_data.get("goal", ""))
 
     # 提取指标和标签
@@ -626,52 +687,49 @@ def _render_chart(slide, slide_data: dict) -> None:
         metrics = ["—"]
 
     n = len(metrics)
-    card_width = Cm(8.0)
-    card_height = Cm(6.0)
-    gap = Cm(2.0)
 
-    total_width = int(card_width) * n + int(gap) * max(n - 1, 0)
-    start_x = int(MARGIN_LEFT) + (int(CONTENT_WIDTH) - total_width) // 2
-    card_y = Cm(7.0)
+    # 使用原生表格展示指标：2 行 x n 列（标签行 + 数值行）
+    table_rows = 2
+    table_cols = min(n, 6)  # 最多 6 列
+    table_width = CONTENT_WIDTH
+    col_width = Emu(int(table_width) // table_cols)
+    table_height = Cm(6.0)
 
-    for i, metric in enumerate(metrics):
-        cx = start_x + i * (int(card_width) + int(gap))
+    table_shape = slide.shapes.add_table(
+        table_rows, table_cols,
+        MARGIN_LEFT, Cm(7.0),
+        table_width, table_height,
+    )
+    table = table_shape.table
 
-        # 卡片背景
-        _add_rounded_rect(
-            slide, Emu(cx), card_y, card_width, card_height,
-            fill_color=COLOR_LIGHT_BG,
-            line_color=COLOR_CHART_ACCENT,
-        )
+    # 设置列宽
+    for ci in range(table_cols):
+        table.columns[ci].width = col_width
 
-        # 指标值（大数字）
-        _add_textbox(
-            slide,
-            Emu(cx + int(Cm(0.5))),
-            Emu(int(card_y) + int(Cm(1.0))),
-            Cm(7.0),
-            Cm(3.0),
-            str(metric),
-            font_size=36,
-            bold=True,
-            color=COLOR_CHART_ACCENT,
-            alignment=PP_ALIGN.CENTER,
-            font_name=FONT_TITLE,
-        )
+    # 第一行：指标数值（大字体，橙色强调）
+    for ci in range(table_cols):
+        cell = table.cell(0, ci)
+        cell.text = ""
+        _fill_cell(cell, COLOR_LIGHT_BG)
+        p = cell.text_frame.paragraphs[0]
+        p.alignment = PP_ALIGN.CENTER
+        run = p.add_run()
+        run.text = str(metrics[ci]) if ci < n else "—"
+        _set_font(run, size=32, bold=True, color=COLOR_CHART_ACCENT, name=FONT_TITLE)
+        cell.vertical_anchor = MSO_ANCHOR.MIDDLE
 
-        # 指标标签（使用上下文标签如果有）
-        label_text = metric_labels[i] if i < len(metric_labels) else f"Metric {i + 1}"
-        _add_textbox(
-            slide,
-            Emu(cx + int(Cm(0.5))),
-            Emu(int(card_y) + int(Cm(4.0))),
-            Cm(7.0),
-            Cm(1.5),
-            label_text,
-            font_size=10,
-            color=COLOR_MUTED,
-            alignment=PP_ALIGN.CENTER,
-        )
+    # 第二行：指标标签（小字体，灰色）
+    for ci in range(table_cols):
+        cell = table.cell(1, ci)
+        cell.text = ""
+        _fill_cell(cell, COLOR_WHITE)
+        p = cell.text_frame.paragraphs[0]
+        p.alignment = PP_ALIGN.CENTER
+        run = p.add_run()
+        label_text = metric_labels[ci] if ci < len(metric_labels) else f"Metric {ci + 1}"
+        run.text = label_text
+        _set_font(run, size=12, color=COLOR_MUTED)
+        cell.vertical_anchor = MSO_ANCHOR.MIDDLE
 
     # key_points
     key_points = slide_data.get("key_points", [])
@@ -723,6 +781,26 @@ def _render_section(slide, slide_data: dict) -> None:
             color=RGBColor(0xBF, 0xDB, 0xFE),
             alignment=PP_ALIGN.CENTER,
         )
+
+
+def _fill_cell(cell, color: RGBColor) -> None:
+    """设置表格单元格的背景填充色。"""
+    from lxml import etree
+    tc = cell._tc
+    tcPr = tc.get_or_add_tcPr()
+    nsmap = {"a": "http://schemas.openxmlformats.org/drawingml/2006/main"}
+    # 移除已有的 solidFill
+    for sf in tcPr.findall("a:solidFill", nsmap):
+        tcPr.remove(sf)
+    solid_fill = etree.SubElement(
+        tcPr,
+        "{http://schemas.openxmlformats.org/drawingml/2006/main}solidFill",
+    )
+    srgb = etree.SubElement(
+        solid_fill,
+        "{http://schemas.openxmlformats.org/drawingml/2006/main}srgbClr",
+    )
+    srgb.set("val", f"{color[0]:02X}{color[1]:02X}{color[2]:02X}")
 
 
 # 布局路由表

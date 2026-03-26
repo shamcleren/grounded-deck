@@ -200,15 +200,15 @@ class LayoutRenderingTests(unittest.TestCase):
         self.assertGreater(len(prs.slides[0].shapes), 0)
 
     def test_chart_layout_renders(self) -> None:
-        """chart 布局能正常渲染，包含指标卡片。"""
+        """chart 布局能正常渲染，包含指标表格。"""
         prs = self._render_single(
             "chart",
             visual_elements=[{"type": "metric-cards", "metrics": ["12", "18%"]}],
             key_points=["成本降幅"],
         )
         self.assertEqual(len(prs.slides), 1)
-        # chart: 标题 + 2个卡片背景 + 2个数字 + 2个标签 + key_point
-        self.assertGreater(len(prs.slides[0].shapes), 5)
+        # chart: 标题 + 原生表格 + key_point（原生 Table 是单个 shape）
+        self.assertGreater(len(prs.slides[0].shapes), 2)
 
     def test_section_layout_renders(self) -> None:
         """section 布局能正常渲染。"""
@@ -556,6 +556,225 @@ class NarrativeQualityTests(unittest.TestCase):
         # topic-overview 应包含 4 个 topics
         topics_ve = next(ve for ve in cover["visual_elements"] if ve["type"] == "topic-overview")
         self.assertEqual(len(topics_ve["topics"]), 4)
+
+
+# ================================================================
+# 渲染器增强测试：中文字体回退链 + 原生表格
+# ================================================================
+
+
+class ChineseFontFallbackTests(unittest.TestCase):
+    """中文字体回退链测试。"""
+
+    def test_font_detection_returns_valid_fonts(self) -> None:
+        """字体检测函数返回有效的字体名称。"""
+        from src.renderer.pptx_renderer import _detect_cjk_font
+        title_font, body_font = _detect_cjk_font()
+        self.assertIsInstance(title_font, str)
+        self.assertIsInstance(body_font, str)
+        self.assertGreater(len(title_font), 0)
+        self.assertGreater(len(body_font), 0)
+
+    def test_cjk_font_fallback_chain_is_non_empty(self) -> None:
+        """CJK 字体回退链非空。"""
+        from src.renderer.pptx_renderer import CJK_FONT_FALLBACK_CHAIN
+        self.assertGreater(len(CJK_FONT_FALLBACK_CHAIN), 3)
+
+    def test_font_title_and_body_are_platform_specific(self) -> None:
+        """FONT_TITLE 和 FONT_BODY 是平台特定的中文字体。"""
+        from src.renderer.pptx_renderer import FONT_TITLE, FONT_BODY
+        # 不应该是通用的 Arial 或 Calibri
+        self.assertNotEqual(FONT_TITLE, "Arial")
+        self.assertNotEqual(FONT_BODY, "Arial")
+
+    def test_east_asian_font_set_on_rendered_text(self) -> None:
+        """渲染后的文本框应包含东亚字体属性。"""
+        spec = _make_minimal_spec([
+            _make_slide(title="中文标题测试", key_points=["中文要点一"]),
+        ])
+        with tempfile.TemporaryDirectory() as tmpdir:
+            out = render_slide_spec_to_pptx(spec, Path(tmpdir) / "test.pptx")
+            prs = Presentation(str(out))
+            slide = prs.slides[0]
+            # 检查至少一个 shape 的 run 包含 ea 字体属性
+            ea_found = False
+            for shape in slide.shapes:
+                if shape.has_text_frame:
+                    for para in shape.text_frame.paragraphs:
+                        for run in para.runs:
+                            rPr = run._r.find(
+                                "{http://schemas.openxmlformats.org/drawingml/2006/main}rPr"
+                            )
+                            if rPr is not None:
+                                ea = rPr.find(
+                                    "{http://schemas.openxmlformats.org/drawingml/2006/main}ea"
+                                )
+                                if ea is not None:
+                                    ea_found = True
+                                    break
+                    if ea_found:
+                        break
+            self.assertTrue(ea_found, "no East Asian font attribute found in rendered text")
+
+    def test_latin_font_constants_exist(self) -> None:
+        """西文回退字体常量存在。"""
+        from src.renderer.pptx_renderer import FONT_LATIN_TITLE, FONT_LATIN_BODY
+        self.assertEqual(FONT_LATIN_TITLE, "Calibri")
+        self.assertEqual(FONT_LATIN_BODY, "Calibri")
+
+
+class NativeTableRenderingTests(unittest.TestCase):
+    """原生表格渲染测试。"""
+
+    def test_comparison_uses_native_table(self) -> None:
+        """comparison 布局应使用原生 Table 对象。"""
+        spec = _make_minimal_spec([
+            _make_slide(
+                layout_type="comparison",
+                visual_elements=[{
+                    "type": "comparison-columns",
+                    "columns": ["欧洲", "东南亚"],
+                    "column_points": {
+                        "欧洲": ["法规严格", "品牌认知高"],
+                        "东南亚": ["增长快", "价格敏感"],
+                    },
+                }],
+                key_points=["市场对比分析"],
+            ),
+        ])
+        with tempfile.TemporaryDirectory() as tmpdir:
+            out = render_slide_spec_to_pptx(spec, Path(tmpdir) / "test.pptx")
+            prs = Presentation(str(out))
+            slide = prs.slides[0]
+            # 检查是否存在 Table shape
+            table_found = any(shape.has_table for shape in slide.shapes)
+            self.assertTrue(table_found, "comparison layout should contain a native Table")
+
+    def test_comparison_table_has_correct_columns(self) -> None:
+        """comparison 表格应有 2 列。"""
+        spec = _make_minimal_spec([
+            _make_slide(
+                layout_type="comparison",
+                visual_elements=[{
+                    "type": "comparison-columns",
+                    "columns": ["A方案", "B方案"],
+                    "column_points": {"A方案": ["优点1"], "B方案": ["优点2"]},
+                }],
+            ),
+        ])
+        with tempfile.TemporaryDirectory() as tmpdir:
+            out = render_slide_spec_to_pptx(spec, Path(tmpdir) / "test.pptx")
+            prs = Presentation(str(out))
+            slide = prs.slides[0]
+            table_shape = next(s for s in slide.shapes if s.has_table)
+            table = table_shape.table
+            self.assertEqual(len(table.columns), 2)
+
+    def test_comparison_table_header_row_has_column_names(self) -> None:
+        """comparison 表格标题行应包含列名。"""
+        spec = _make_minimal_spec([
+            _make_slide(
+                layout_type="comparison",
+                visual_elements=[{
+                    "type": "comparison-columns",
+                    "columns": ["欧洲市场", "亚洲市场"],
+                    "column_points": {"欧洲市场": ["点1"], "亚洲市场": ["点2"]},
+                }],
+            ),
+        ])
+        with tempfile.TemporaryDirectory() as tmpdir:
+            out = render_slide_spec_to_pptx(spec, Path(tmpdir) / "test.pptx")
+            prs = Presentation(str(out))
+            slide = prs.slides[0]
+            table_shape = next(s for s in slide.shapes if s.has_table)
+            table = table_shape.table
+            header_texts = [table.cell(0, ci).text for ci in range(2)]
+            self.assertIn("欧洲市场", header_texts)
+            self.assertIn("亚洲市场", header_texts)
+
+    def test_chart_uses_native_table(self) -> None:
+        """chart 布局应使用原生 Table 展示指标。"""
+        spec = _make_minimal_spec([
+            _make_slide(
+                layout_type="chart",
+                visual_elements=[{
+                    "type": "metric-cards",
+                    "metrics": ["120万", "18%", "3.5亿"],
+                    "labels": ["出口量", "增长率", "市场规模"],
+                }],
+                key_points=["关键数据"],
+            ),
+        ])
+        with tempfile.TemporaryDirectory() as tmpdir:
+            out = render_slide_spec_to_pptx(spec, Path(tmpdir) / "test.pptx")
+            prs = Presentation(str(out))
+            slide = prs.slides[0]
+            table_found = any(shape.has_table for shape in slide.shapes)
+            self.assertTrue(table_found, "chart layout should contain a native Table")
+
+    def test_chart_table_has_correct_structure(self) -> None:
+        """chart 表格应有 2 行（数值行 + 标签行）x n 列。"""
+        spec = _make_minimal_spec([
+            _make_slide(
+                layout_type="chart",
+                visual_elements=[{
+                    "type": "metric-cards",
+                    "metrics": ["12", "18%"],
+                    "labels": ["出口量", "增长率"],
+                }],
+            ),
+        ])
+        with tempfile.TemporaryDirectory() as tmpdir:
+            out = render_slide_spec_to_pptx(spec, Path(tmpdir) / "test.pptx")
+            prs = Presentation(str(out))
+            slide = prs.slides[0]
+            table_shape = next(s for s in slide.shapes if s.has_table)
+            table = table_shape.table
+            self.assertEqual(len(table.rows), 2)
+            self.assertEqual(len(table.columns), 2)
+
+    def test_chart_table_contains_metric_values(self) -> None:
+        """chart 表格第一行应包含指标数值。"""
+        spec = _make_minimal_spec([
+            _make_slide(
+                layout_type="chart",
+                visual_elements=[{
+                    "type": "metric-cards",
+                    "metrics": ["42%"],
+                    "labels": ["转化率"],
+                }],
+            ),
+        ])
+        with tempfile.TemporaryDirectory() as tmpdir:
+            out = render_slide_spec_to_pptx(spec, Path(tmpdir) / "test.pptx")
+            prs = Presentation(str(out))
+            slide = prs.slides[0]
+            table_shape = next(s for s in slide.shapes if s.has_table)
+            table = table_shape.table
+            self.assertIn("42%", table.cell(0, 0).text)
+            self.assertIn("转化率", table.cell(1, 0).text)
+
+    def test_strongest_demo_comparison_has_table(self) -> None:
+        """strongest-demo 的 comparison slide 应包含原生表格。"""
+        spec = load_json(STRONGEST_DEMO_SLIDE_SPEC)
+        with tempfile.TemporaryDirectory() as tmpdir:
+            out = render_slide_spec_to_pptx(spec, Path(tmpdir) / "test.pptx")
+            prs = Presentation(str(out))
+            # comparison 是第 4 个 slide（index 3）
+            comparison_slide = prs.slides[3]
+            table_found = any(shape.has_table for shape in comparison_slide.shapes)
+            self.assertTrue(table_found, "strongest-demo comparison slide should have a native Table")
+
+    def test_strongest_demo_chart_has_table(self) -> None:
+        """strongest-demo 的 chart slide 应包含原生表格。"""
+        spec = load_json(STRONGEST_DEMO_SLIDE_SPEC)
+        with tempfile.TemporaryDirectory() as tmpdir:
+            out = render_slide_spec_to_pptx(spec, Path(tmpdir) / "test.pptx")
+            prs = Presentation(str(out))
+            # chart 是第 6 个 slide（index 5）
+            chart_slide = prs.slides[5]
+            table_found = any(shape.has_table for shape in chart_slide.shapes)
+            self.assertTrue(table_found, "strongest-demo chart slide should have a native Table")
 
 
 if __name__ == "__main__":

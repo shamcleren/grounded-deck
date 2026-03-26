@@ -3,10 +3,13 @@
 ## In Progress
 
 - keep strongest-demo provider prompts and live verification aligned to the archived acceptance snapshot before promoting more provider-backed planning changes
-- narrative quality post-validation in `OpenAICompatibleProvider.grade_slide_spec` — deterministic narrative grader cross-validates model grading results
 
 ## Recently Completed
 
+- enhanced PPTX renderer with cross-platform CJK font fallback chain (`_detect_cjk_font`, `_set_east_asian_font`, `CJK_FONT_FALLBACK_CHAIN`)
+- upgraded comparison layout from text-box cards to native python-pptx Table with colored header row and alternating row backgrounds
+- upgraded chart layout from text-box metric cards to native python-pptx Table (2 rows x n columns)
+- added 5 ChineseFontFallbackTests and 8 NativeTableRenderingTests, total 262 passing, 38/38 evals green
 - added narrative quality post-validation to `OpenAICompatibleProvider.grade_slide_spec`: deterministic narrative grader results attached as `_narrative_validation` metadata for cross-validation of model grading
 - automated acceptance delta comparison in `src/runtime/verification.py`
 - `compare_against_accepted_baseline()` function compares any candidate acceptance summary against the accepted baseline

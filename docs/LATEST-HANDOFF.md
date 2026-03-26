@@ -2,16 +2,21 @@
 
 ## Session Summary
 
-GroundedDeck now has narrative quality post-validation in the OpenAI-compatible provider grading path. The deterministic narrative grader cross-validates model grading results, attaching `_narrative_validation` metadata. Combined with the automated acceptance delta comparison and continuity grading from previous sessions, the repository now has comprehensive self-validation for AI continuity and provider-backed planning consistency.
+GroundedDeck PPTX renderer now has cross-platform CJK font safety and native Table rendering for comparison and chart layouts. The font system auto-detects the operating system and selects the best available Chinese font (PingFang SC on macOS, Microsoft YaHei on Windows, Noto Sans CJK SC on Linux), with East Asian font attributes written at the XML level to ensure correct rendering. Comparison and chart layouts now use python-pptx native Table objects instead of text-box cards, making the output fully editable in PowerPoint (column resize, row add, cell style changes).
 
 ## What Was Just Completed
 
-- added narrative quality post-validation to `OpenAICompatibleProvider.grade_slide_spec`: deterministic narrative grader results attached as `_narrative_validation` metadata for cross-validation of model grading
-- post-validation failure does not block grading (graceful degradation)
-- cleaned up TASK-BOARD.md: removed duplicate Ready Next entries, marked completed Later items
-- updated PROJECT-STATE.md Immediate Priorities: marked #1 and #2 as complete
-- removed unnecessary bilingual zh-CN copies of AI-facing continuity docs (AGENTS, START-HERE, LATEST-HANDOFF, PROJECT-STATE, TASK-BOARD, evaluation-plan) — these files are for AI consumption only and maintaining two copies creates sync burden
-- total test count: 249 passing
+- enhanced PPTX renderer with cross-platform CJK font fallback chain:
+  - `_detect_cjk_font()` auto-detects platform and returns appropriate Chinese font pair
+  - `_set_east_asian_font()` writes East Asian font attributes via lxml to ensure Chinese characters render correctly
+  - `CJK_FONT_FALLBACK_CHAIN` constant provides ordered fallback list for all major platforms
+  - `FONT_LATIN_TITLE` and `FONT_LATIN_BODY` constants for Western text fallback
+- upgraded comparison layout from text-box cards to native python-pptx Table with colored header row and alternating row backgrounds
+- upgraded chart layout from text-box metric cards to native python-pptx Table (2 rows x n columns: metric values + labels)
+- native Table objects are fully editable in PowerPoint (column resize, row add, cell style changes)
+- added 5 ChineseFontFallbackTests covering: font detection, fallback chain, platform-specific fonts, East Asian XML attributes, Latin font constants
+- added 8 NativeTableRenderingTests covering: comparison native table, column count, header row content, chart native table, chart table structure, metric values, strongest-demo comparison table, strongest-demo chart table
+- total test count: 262 passing
 - eval harness: 38/38 passing
 - added [AGENTS.md](../AGENTS.md) as the AI operating contract
 - added [docs/PROJECT-STATE.md](PROJECT-STATE.md) as the canonical current-state record

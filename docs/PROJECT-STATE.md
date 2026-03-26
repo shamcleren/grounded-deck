@@ -136,6 +136,16 @@ The strongest deterministic planning demo is now curated back onto `main` as a c
 - added `acceptance-baseline` check to eval harness (38/38 evals)
 - added `make compare-acceptance` Makefile target for independent baseline comparison
 - added 12 acceptance baseline comparison tests, total 248 passing
+- enhanced PPTX renderer with cross-platform CJK font fallback chain:
+  - `_detect_cjk_font()` auto-detects platform (macOS: PingFang SC, Windows: Microsoft YaHei, Linux: Noto Sans CJK SC)
+  - `_set_east_asian_font()` writes East Asian font attributes via XML to ensure Chinese characters render correctly
+  - `CJK_FONT_FALLBACK_CHAIN` constant provides ordered fallback list for all major platforms
+  - `FONT_LATIN_TITLE` and `FONT_LATIN_BODY` constants for Western text fallback
+- upgraded comparison layout from text-box cards to native python-pptx Table with colored header row and alternating row backgrounds
+- upgraded chart layout from text-box metric cards to native python-pptx Table (2 rows x n columns: metric values + labels)
+- native Table objects are fully editable in PowerPoint (column resize, row add, cell style changes)
+- added 5 ChineseFontFallbackTests and 8 NativeTableRenderingTests in `tests/test_pptx_renderer.py`
+- confirmed all 262 tests pass and `make eval` remains 38/38 green
 
 ## Current Next Action
 
@@ -145,9 +155,10 @@ Continue improving provider-backed planning and grading against the strongest-de
 
 1. ~~grade continuity artifacts so future agents can safely resume from repository state alone~~ ✅
 2. ~~grade handoff completeness and task-board freshness~~ ✅
-3. preserve the repository-owned strongest-demo live acceptance snapshot while keeping `reports/live-verification-latest.*` as the rolling pointer
-4. compare future strongest-demo live refreshes against the archived acceptance summary instead of treating every passing run as interchangeable
-5. keep provider-backed planning improvements, acceptance-aligned prompt guardrails, and `make verify-online` healthy without weakening deterministic regression coverage
+3. ~~enhance PPTX renderer with CJK font safety and native Table objects~~ ✅
+4. preserve the repository-owned strongest-demo live acceptance snapshot while keeping `reports/live-verification-latest.*` as the rolling pointer
+5. compare future strongest-demo live refreshes against the archived acceptance summary instead of treating every passing run as interchangeable
+6. keep provider-backed planning improvements, acceptance-aligned prompt guardrails, and `make verify-online` healthy without weakening deterministic regression coverage
 
 External feedback has been absorbed as a prioritization change, not an architecture change. The environment-variable configuration contract is documented in `docs/runtime-config.md`, placeholder values are rejected during live preflight, and the strongest-demo live path has now been proven once against a real provider while preserving the deterministic baseline.
 
